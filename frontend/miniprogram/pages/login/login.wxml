@@ -5,42 +5,39 @@
   </view>
 
   <view class="login-form">
+    <!-- 手机号输入 -->
     <view class="input-group">
-      <input class="input-field" placeholder="请输入用户名或手机号" value="{{username}}" bind:input="onUsernameInput"/>
+      <input class="input-field" type="number" placeholder="请输入手机号" value="{{phone}}" bind:input="onPhoneInput"/>
     </view>
 
+    <!-- 密码输入 -->
     <view class="input-group">
       <input class="input-field" password placeholder="请输入密码" value="{{password}}" bind:input="onPasswordInput"/>
     </view>
 
+    <!-- 租户选择按钮组 -->
+    <view class="tenant-selection-group">
+      <text class="selection-label">选择角色</text>
+      <view class="tenant-buttons">
+        <view class="tenant-btn {{selectedTenant.code === 'tenant1' ? 'selected' : ''}}" bind:tap="selectTenant" data-tenant="tenant1">
+          <text>租户一</text>
+        </view>
+        <view class="tenant-btn {{selectedTenant.code === 'tenant2' ? 'selected' : ''}}" bind:tap="selectTenant" data-tenant="tenant2">
+          <text>租户二</text>
+        </view>
+        <view class="tenant-btn {{selectedTenant.code === 'tenant3' ? 'selected' : ''}}" bind:tap="selectTenant" data-tenant="tenant3">
+          <text>租户三</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 登录按钮 -->
     <button class="login-btn btn-primary" bind:tap="login">登录</button>
 
+    <!-- 注册链接 -->
     <view class="register-link text-center">
       <text>还没有账号？</text>
       <text class="link-text" bind:tap="goToRegister">立即注册</text>
-    </view>
-  </view>
-
-  <view class="tenant-selector" bind:tap="showTenantSelector">
-    <view class="picker">
-      <text>选择租户: {{tenantList[tenantIndex] ? tenantList[tenantIndex].name : '请选择'}}</text>
-      <text class="arrow">></text>
-    </view>
-  </view>
-  
-  <!-- 租户选择弹窗 -->
-  <view wx:if="{{showTenantPicker}}" class="tenant-picker-modal">
-    <view class="modal-overlay" bind:tap="hideTenantSelector"></view>
-    <view class="modal-content">
-      <view class="modal-header">
-        <text class="modal-title">选择租户</text>
-        <text class="close-btn" bind:tap="hideTenantSelector">×</text>
-      </view>
-      <view class="tenant-options">
-        <view wx:for="{{tenantList}}" wx:key="id" class="tenant-option" bind:tap="selectTenant" data-index="{{index}}">
-          <text>{{item.name}}</text>
-        </view>
-      </view>
     </view>
   </view>
 </view>

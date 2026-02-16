@@ -33,6 +33,9 @@ app.use(limiter);
 const path = require('path');
 app.use('/images', express.static(path.join(__dirname, '../frontend/miniprogram/images'))); // 使用绝对路径
 
+// 提供管理后台静态文件服务
+app.use('/admin', express.static(path.join(__dirname, '../admin')));
+
 // 解析JSON请求体
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

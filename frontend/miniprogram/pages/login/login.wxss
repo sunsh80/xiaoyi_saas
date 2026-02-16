@@ -42,6 +42,51 @@
   background-color: white;
 }
 
+/* 租户选择组 */
+.tenant-selection-group {
+  margin-bottom: 50rpx;
+}
+
+.selection-label {
+  display: block;
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 20rpx;
+  font-weight: bold;
+}
+
+.tenant-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.tenant-btn {
+  flex: 1;
+  margin: 0 10rpx;
+  padding: 30rpx 20rpx;
+  text-align: center;
+  border: 2rpx solid #ddd;
+  border-radius: 10rpx;
+  background-color: #f8f8f8;
+  font-size: 32rpx;
+  color: #666;
+}
+
+.tenant-btn.selected {
+  background-color: #00BCD4;
+  border-color: #00BCD4;
+  color: white;
+}
+
+.tenant-btn:first-child {
+  margin-left: 0;
+}
+
+.tenant-btn:last-child {
+  margin-right: 0;
+}
+
 .login-btn {
   width: 100%;
   height: 80rpx;
@@ -63,101 +108,6 @@
   margin-left: 10rpx;
 }
 
-/* 租户选择器 */
-.tenant-selector {
-  position: fixed;
-  bottom: 40rpx;
-  left: 40rpx;
-  right: 40rpx;
-  background: #fff;
-  padding: 30rpx;
-  border-radius: 15rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
-}
-
-.picker {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 32rpx;
-  color: #333;
-  padding: 10rpx 0;
-}
-
-.arrow {
-  font-size: 36rpx;
-  color: #999;
-}
-
-/* 租户选择弹窗 */
-.tenant-picker-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1000;
-}
-
-.modal-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: white;
-  border-radius: 20rpx 20rpx 0 0;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 30rpx;
-  border-bottom: 1rpx solid #eee;
-}
-
-.modal-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #333;
-}
-
-.close-btn {
-  font-size: 48rpx;
-  color: #999;
-  padding: 10rpx;
-}
-
-.tenant-options {
-  padding: 20rpx 0;
-}
-
-.tenant-option {
-  padding: 35rpx;
-  border-bottom: 1rpx solid #f5f5f5;
-  font-size: 34rpx;
-  color: #333;
-}
-
-.tenant-option:last-child {
-  border-bottom: none;
-}
-
-.tenant-option:active {
-  background-color: #f0f8ff;
-}
-
 /* 适配大屏手机 */
 @media screen and (min-width: 414px) {
   .container {
@@ -173,12 +123,12 @@
     height: 90rpx;
   }
 
-  .tenant-option {
-    padding: 40rpx;
-    font-size: 38rpx;
+  .tenant-btn {
+    font-size: 36rpx;
+    padding: 35rpx 25rpx;
   }
 
-  .picker {
+  .selection-label {
     font-size: 36rpx;
   }
 

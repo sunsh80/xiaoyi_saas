@@ -83,11 +83,12 @@ body {
   text-align: center;
 }
 
-/* 主面板样式 */
+/* 主面板样式 - 使用 !important 确保不被 Bootstrap 覆盖 */
 .main-panel {
   flex: 1;
-  margin-left: var(--sidebar-width);
+  margin-left: var(--sidebar-width) !important;
   transition: all 0.3s ease;
+  width: calc(100% - var(--sidebar-width));
 }
 
 /* 顶部导航样式 */

@@ -25,7 +25,8 @@ class AdminFinanceController {
       const withdrawals = await Withdrawal.getList(filters, options);
 
       // 获取总数
-      const connection = await require('../middleware/tenant').getTenantConnection('global');
+      const pool = await require('../middleware/tenant').getTenantConnection('global');
+      const connection = await pool.getConnection();
       try {
         let countQuery = `SELECT COUNT(*) as count FROM ${Withdrawal.tableName} WHERE 1=1`;
         const countParams = [];
@@ -201,7 +202,8 @@ class AdminFinanceController {
       const commissions = await Commission.getList(filters, options);
 
       // 获取总数
-      const connection = await require('../middleware/tenant').getTenantConnection('global');
+      const pool = await require('../middleware/tenant').getTenantConnection('global');
+      const connection = await pool.getConnection();
       try {
         let countQuery = `SELECT COUNT(*) as count FROM ${Commission.tableName} WHERE 1=1`;
         const countParams = [];

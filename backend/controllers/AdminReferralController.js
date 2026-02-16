@@ -10,7 +10,8 @@ class AdminReferralController {
     try {
       const { status, page = 1, limit = 10 } = req.query;
 
-      const connection = await require('../middleware/tenant').getTenantConnection('global');
+      const pool = await require('../middleware/tenant').getTenantConnection('global');
+      const connection = await pool.getConnection();
       try {
         let query = `SELECT * FROM ${ReferralCampaign.tableName}`;
         const params = [];
@@ -27,15 +28,10 @@ class AdminReferralController {
 
         query += ` ORDER BY created_at DESC`;
 
-        if (limit) {
-          query += ` LIMIT ?`;
-          params.push(parseInt(limit));
+        const limitValue = parseInt(limit);
+        const offsetValue = (parseInt(page) - 1) * limitValue;
 
-          if ((page - 1) * limit) {
-            query += ` OFFSET ?`;
-            params.push((parseInt(page) - 1) * parseInt(limit));
-          }
-        }
+        query += ` LIMIT ${limitValue} OFFSET ${offsetValue}`;
 
         const [rows] = await connection.execute(query, params);
         const campaigns = rows.map(row => new ReferralCampaign(row));
@@ -329,9 +325,10 @@ class AdminReferralController {
     try {
       const { campaignId, startDate, endDate } = req.query;
 
-      const connection = await require('../middleware/tenant').getTenantConnection('global');
+      const pool = await require('../middleware/tenant').getTenantConnection('global');
+      const connection = await pool.getConnection();
       try {
-        let baseQuery = `SELECT 
+        let baseQuery = `SELECT
           COUNT(*) as total_referrals,
           SUM(CASE WHEN r.status = 'confirmed' THEN 1 ELSE 0 END) as confirmed_referrals,
           SUM(CASE WHEN r.status = 'rewarded' THEN 1 ELSE 0 END) as rewarded_referrals,
@@ -386,9 +383,10 @@ class AdminReferralController {
     try {
       const { campaignId, referrerId, status, page = 1, limit = 10, startDate, endDate } = req.query;
 
-      const connection = await require('../middleware/tenant').getTenantConnection('global');
+      const pool = await require('../middleware/tenant').getTenantConnection('global');
+      const connection = await pool.getConnection();
       try {
-        let query = `SELECT r.*, u1.real_name as referrer_name, u2.real_name as referee_name, 
+        let query = `SELECT r.*, u1.real_name as referrer_name, u2.real_name as referee_name,
                      rc.campaign_name
                      FROM referrals r
                      LEFT JOIN users u1 ON r.referrer_user_id = u1.id

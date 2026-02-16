@@ -13,19 +13,51 @@ dotenv.config();
 const app = express();
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 3000; // 优先使用 BACKEND_PORT，其次 PORT，最后默认 3000
 
-// 安全中间件
-app.use(helmet());
+// 安全中间件 - 开发环境放宽 CSP 限制
+if (process.env.NODE_ENV === 'development') {
+  // 开发环境：允许 CDN 和 inline 脚本
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+        fontSrc: ["'self'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: []
+      }
+    }
+  }));
+} else {
+  // 生产环境：使用默认安全策略
+  app.use(helmet());
+}
 
-// CORS配置
+// CORS 配置 - 本地开发环境允许所有来源
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
-  credentials: true
+  origin: function (origin, callback) {
+    // 允许没有 origin 的请求（如 Postman、curl 等工具）
+    if (!origin) return callback(null, true);
+    
+    // 检查允许的来源
+    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+    if (allowedOrigins.includes(origin) || origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-tenant-code']
 }));
 
 // 请求限制
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15分钟
-  max: 100 // 限制每个IP 15分钟内最多100个请求
+  windowMs: 15 * 60 * 1000, // 15 分钟
+  max: 100 // 限制每个 IP 15 分钟内最多 100 个请求
 });
 app.use(limiter);
 
@@ -36,11 +68,14 @@ app.use('/images', express.static(path.join(__dirname, '../frontend/miniprogram/
 // 提供管理后台静态文件服务
 app.use('/admin', express.static(path.join(__dirname, '../admin')));
 
-// 解析JSON请求体
+// 提供管理后台资源文件服务（CSS、JS 等）
+app.use('/assets', express.static(path.join(__dirname, '../admin/assets')));
+
+// 解析 JSON 请求体
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// JWT认证中间件
+// JWT 认证中间件
 app.use((req, res, next) => {
   console.log('[DEBUG] JWT Middleware called for path:', req.path, 'method:', req.method);
   const authHeader = req.headers.authorization;
@@ -53,7 +88,7 @@ app.use((req, res, next) => {
     jwt.verify(token, process.env.JWT_SECRET || 'xiaoyi_banyun_secret_key', (err, decoded) => {
       if (err) {
         console.log('[DEBUG] JWT Verification failed:', err.message);
-        return next(); // 如果token无效，继续执行但不解码用户信息
+        return next(); // 如果 token 无效，继续执行但不解码用户信息
       }
       console.log('[DEBUG] JWT Verification succeeded, decoded:', decoded);
       req.user = decoded;
@@ -65,10 +100,10 @@ app.use((req, res, next) => {
   }
 });
 
-// OpenAPI/Swagger文档路由
+// OpenAPI/Swagger 文档路由
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-// API路由
+// API 路由
 app.use('/api', apiRoutes);
 
 // 管理后台路由
@@ -83,7 +118,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404处理
+// 404 处理
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
@@ -106,7 +141,9 @@ process.on('unhandledRejection', (reason, promise) => {
 
 app.listen(PORT, () => {
   console.log(`小蚁搬运后端服务启动在端口 ${PORT}`);
-  console.log(`API文档地址: http://localhost:${PORT}/api-docs`);
+  console.log(`API 文档地址：http://localhost:${PORT}/api-docs`);
+  console.log(`管理后台地址：http://localhost:${PORT}/admin/login.html`);
+  console.log(`CORS 配置：允许 localhost 和 127.0.0.1 的所有端口`);
 });
 
 module.exports = app;

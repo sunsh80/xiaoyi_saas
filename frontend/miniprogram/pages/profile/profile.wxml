@@ -26,7 +26,7 @@
     <!-- 我发布的订单 -->
     <view class="menu-item-large border-bottom" bind:tap="goToPage" data-page="pages/orders/list">
       <view class="menu-icon-container">
-        <image src="/images/order-icon.png" class="menu-icon-large"></image>
+        <image src="/images/menu-order-icon.png" class="menu-icon-large"></image>
       </view>
       <text class="menu-text-large">我发布的订单</text>
       <text class="arrow-large">></text>

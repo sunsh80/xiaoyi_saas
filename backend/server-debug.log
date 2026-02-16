@@ -1,0 +1,352 @@
+[DEBUG] AuthController: [class AuthController]
+[DEBUG] AuthController.login: function
+[DEBUG] OrderController.create: function
+[DEBUG] OrderController.getById: function
+[DEBUG] OrderController.list: function
+[DEBUG] OrderController.assignOrder: function
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/' tenantMiddleware
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/auth/register'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/auth/register'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route post '/auth/register'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/auth/login'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/auth/login'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route post '/auth/login'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/auth/me'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/auth/me'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/auth/me'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/auth/change-password'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/auth/change-password'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/auth/change-password'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/orders'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/orders'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route post '/orders'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/orders/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/orders/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/orders/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/orders'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/orders'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/orders'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/orders/:id/assign'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/orders/:id/assign'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/orders/:id/assign'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/orders/:id/start'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/orders/:id/start'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/orders/:id/start'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/orders/:id/complete'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/orders/:id/complete'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/orders/:id/complete'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/orders/:id/cancel'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/orders/:id/cancel'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/orders/:id/cancel'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/orders/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/orders/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/orders/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/map/search-address'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/map/search-address'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/map/search-address'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/map/geocode'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/map/geocode'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route post '/map/geocode'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/map/reverse-geocode'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/map/reverse-geocode'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route post '/map/reverse-geocode'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/map/calculate-distance'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/map/calculate-distance'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route post '/map/calculate-distance'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/workers/:workerId/location'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/workers/:workerId/location'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/workers/:workerId/location'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/workers/location'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/workers/location'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/workers/location'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/orders/:orderId/track'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/orders/:orderId/track'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/orders/:orderId/track'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/finance/account'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/finance/account'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/finance/account'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/finance/withdrawals'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/finance/withdrawals'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route post '/finance/withdrawals'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/finance/withdrawals'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/finance/withdrawals'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/finance/withdrawals'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/finance/payments'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/finance/payments'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/finance/payments'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/referral/campaigns'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/referral/campaigns'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/referral/campaigns'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/referral/campaigns/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/referral/campaigns/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/referral/campaigns/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/referral/stats'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/referral/stats'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/referral/stats'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/referral/rewards'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/referral/rewards'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/referral/rewards'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/referral/total-rewards'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/referral/total-rewards'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/referral/total-rewards'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/referral/generate-link'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/referral/generate-link'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route post '/referral/generate-link'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/referral/confirm'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/referral/confirm'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route post '/referral/confirm'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/payments/callback'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/payments/callback'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route post '/payments/callback'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/withdrawals'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/withdrawals'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/admin/withdrawals'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/withdrawals/:id/approve'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/withdrawals/:id/approve'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/admin/withdrawals/:id/approve'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/withdrawals/:id/reject'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/withdrawals/:id/reject'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/admin/withdrawals/:id/reject'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/withdrawals/:id/processing'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/withdrawals/:id/processing'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/admin/withdrawals/:id/processing'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/commissions'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/commissions'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/admin/commissions'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/commissions/statistics'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/commissions/statistics'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/admin/commissions/statistics'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/configs'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/configs'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/admin/configs'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/configs'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/configs'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/admin/configs'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/referral/campaigns'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/referral/campaigns'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/admin/referral/campaigns'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/referral/campaigns/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/referral/campaigns/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/admin/referral/campaigns/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/referral/campaigns'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/referral/campaigns'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route post '/admin/referral/campaigns'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/referral/campaigns/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/referral/campaigns/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/admin/referral/campaigns/:id'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/referral/campaigns/:id/activate'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/referral/campaigns/:id/activate'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/admin/referral/campaigns/:id/activate'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/referral/campaigns/:id/pause'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/referral/campaigns/:id/pause'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/admin/referral/campaigns/:id/pause'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/referral/campaigns/:id/end'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/referral/campaigns/:id/end'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route put '/admin/referral/campaigns/:id/end'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/referral/stats'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/referral/stats'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/admin/referral/stats'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route new '/admin/referral/list'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/admin/referral/list'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:route get '/admin/referral/list'
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "x-powered-by" to true
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "etag" to 'weak'
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "etag fn" to [Function: generateETag]
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "env" to 'development'
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "query parser" to 'extended'
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "query parser fn" to [Function: parseExtendedQueryString]
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "subdomain offset" to 2
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "trust proxy" to false
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "trust proxy fn" to [Function: trustNone]
+Sun, 15 Feb 2026 02:25:03 GMT express:application booting in development mode
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "view" to [Function: View]
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "views" to '/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/views'
+Sun, 15 Feb 2026 02:25:03 GMT express:application set "jsonp callback name" to 'callback'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/' query
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/' expressInit
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/' helmetMiddleware
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/' corsMiddleware
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/' <anonymous>
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/images' serveStatic
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/images'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/' jsonParser
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/' urlencodedParser
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/' <anonymous>
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/api-docs' swaggerInitFn
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/api-docs'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/api-docs' serveStatic
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/api-docs'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/api-docs' <anonymous>
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/api-docs'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/api' router
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/api'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/api' router
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/api'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '/' <anonymous>
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '/'
+Sun, 15 Feb 2026 02:25:03 GMT express:router use '*' <anonymous>
+Sun, 15 Feb 2026 02:25:03 GMT express:router:layer new '*'
+(node:76724) Warning: Accessing non-existent property 'getTenantConnection' of module exports inside circular dependency
+(Use `node --trace-warnings ...` to show where the warning was created)
+小蚁搬运后端服务启动在端口 4002
+API文档地址: http://localhost:4002/api-docs
+Sun, 15 Feb 2026 02:31:41 GMT express:router dispatching GET /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT express:router query  : /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT express:router expressInit  : /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT express:router helmetMiddleware  : /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT express:router corsMiddleware  : /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT express:router <anonymous>  : /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT express:router jsonParser  : /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT body-parser:json skip empty body
+Sun, 15 Feb 2026 02:31:41 GMT express:router urlencodedParser  : /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT body-parser:urlencoded skip empty body
+Sun, 15 Feb 2026 02:31:41 GMT express:router <anonymous>  : /api-docs
+[DEBUG] JWT Middleware called for path: /api-docs method: GET
+[DEBUG] Authorization header: undefined
+[DEBUG] No Authorization header or not Bearer, calling next()
+Sun, 15 Feb 2026 02:31:41 GMT express:router trim prefix (/api-docs) from url /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT express:router swaggerInitFn /api-docs : /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT express:router trim prefix (/api-docs) from url /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT express:router serveStatic /api-docs : /api-docs
+Sun, 15 Feb 2026 02:31:41 GMT send stat "/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/swagger-ui-dist"
+Sun, 15 Feb 2026 02:35:02 GMT express:router dispatching POST /api/auth/login
+Sun, 15 Feb 2026 02:35:02 GMT express:router query  : /api/auth/login
+Sun, 15 Feb 2026 02:35:02 GMT express:router expressInit  : /api/auth/login
+Sun, 15 Feb 2026 02:35:02 GMT express:router helmetMiddleware  : /api/auth/login
+Sun, 15 Feb 2026 02:35:02 GMT express:router corsMiddleware  : /api/auth/login
+Sun, 15 Feb 2026 02:35:02 GMT express:router <anonymous>  : /api/auth/login
+Sun, 15 Feb 2026 02:35:02 GMT express:router jsonParser  : /api/auth/login
+Sun, 15 Feb 2026 02:35:02 GMT body-parser:json content-type "application/json"
+Sun, 15 Feb 2026 02:35:02 GMT body-parser:json content-encoding "identity"
+Sun, 15 Feb 2026 02:35:02 GMT body-parser:json read body
+Sun, 15 Feb 2026 02:35:02 GMT body-parser:json parse body
+Sun, 15 Feb 2026 02:35:02 GMT body-parser:json parse json
+Sun, 15 Feb 2026 02:35:02 GMT express:router urlencodedParser  : /api/auth/login
+Sun, 15 Feb 2026 02:35:02 GMT body-parser:urlencoded body already parsed
+Sun, 15 Feb 2026 02:35:02 GMT express:router <anonymous>  : /api/auth/login
+[DEBUG] JWT Middleware called for path: /api/auth/login method: POST
+[DEBUG] Authorization header: undefined
+[DEBUG] No Authorization header or not Bearer, calling next()
+Sun, 15 Feb 2026 02:35:02 GMT express:router trim prefix (/api) from url /api/auth/login
+Sun, 15 Feb 2026 02:35:02 GMT express:router router /api : /api/auth/login
+Sun, 15 Feb 2026 02:35:02 GMT express:router dispatching POST /auth/login
+Sun, 15 Feb 2026 02:35:02 GMT express:router tenantMiddleware  : /api/auth/login
+[DEBUG] AuthController.login STARTING...
+[DEBUG] AuthController.login called with body: { username: 'test_worker', password: 'password123' }
+[DEBUG] AuthController.login parsed username: test_worker
+Sun, 15 Feb 2026 02:35:02 GMT express:router dispatching GET /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+Sun, 15 Feb 2026 02:35:02 GMT express:router query  : /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+Sun, 15 Feb 2026 02:35:02 GMT express:router expressInit  : /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+Sun, 15 Feb 2026 02:35:02 GMT express:router helmetMiddleware  : /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+Sun, 15 Feb 2026 02:35:02 GMT express:router corsMiddleware  : /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+Sun, 15 Feb 2026 02:35:02 GMT express:router <anonymous>  : /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+Sun, 15 Feb 2026 02:35:02 GMT express:router jsonParser  : /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+Sun, 15 Feb 2026 02:35:02 GMT body-parser:json skip empty body
+Sun, 15 Feb 2026 02:35:02 GMT express:router urlencodedParser  : /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+Sun, 15 Feb 2026 02:35:02 GMT body-parser:urlencoded skip empty body
+Sun, 15 Feb 2026 02:35:02 GMT express:router <anonymous>  : /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+[DEBUG] JWT Middleware called for path: /api/map/search-address method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTEyMjkwMiwiZXhwIjoxNzcxMjA5MzAyfQ.QAhTUNVnLUucOx3kZSkDil3HVNTA2CgxePI6eDCsnDg
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTEyMjkwMiwiZXhwIjoxNzcxMjA5MzAyfQ.QAhTUNVnLUucOx3kZSkDil3HVNTA2CgxePI6eDCsnDg
+[DEBUG] JWT Verification succeeded, decoded: {
+  userId: 5,
+  tenantId: 5,
+  tenantCode: 'TEST_TENANT',
+  username: 'test_worker',
+  role: 'worker',
+  iat: 1771122902,
+  exp: 1771209302
+}
+Sun, 15 Feb 2026 02:35:02 GMT express:router trim prefix (/api) from url /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+Sun, 15 Feb 2026 02:35:02 GMT express:router router /api : /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+Sun, 15 Feb 2026 02:35:02 GMT express:router dispatching GET /map/search-address?keyword=%E5%8C%97%E4%BA%AC
+Sun, 15 Feb 2026 02:35:02 GMT express:router tenantMiddleware  : /api/map/search-address?keyword=%E5%8C%97%E4%BA%AC
+[INFO] 未配置真实地图API密钥，使用模拟服务
+Sun, 15 Feb 2026 02:35:02 GMT express:router dispatching GET /api/workers/5/location
+Sun, 15 Feb 2026 02:35:02 GMT express:router query  : /api/workers/5/location
+Sun, 15 Feb 2026 02:35:02 GMT express:router expressInit  : /api/workers/5/location
+Sun, 15 Feb 2026 02:35:02 GMT express:router helmetMiddleware  : /api/workers/5/location
+Sun, 15 Feb 2026 02:35:02 GMT express:router corsMiddleware  : /api/workers/5/location
+Sun, 15 Feb 2026 02:35:02 GMT express:router <anonymous>  : /api/workers/5/location
+Sun, 15 Feb 2026 02:35:02 GMT express:router jsonParser  : /api/workers/5/location
+Sun, 15 Feb 2026 02:35:02 GMT body-parser:json skip empty body
+Sun, 15 Feb 2026 02:35:02 GMT express:router urlencodedParser  : /api/workers/5/location
+Sun, 15 Feb 2026 02:35:02 GMT body-parser:urlencoded skip empty body
+Sun, 15 Feb 2026 02:35:02 GMT express:router <anonymous>  : /api/workers/5/location
+[DEBUG] JWT Middleware called for path: /api/workers/5/location method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTEyMjkwMiwiZXhwIjoxNzcxMjA5MzAyfQ.QAhTUNVnLUucOx3kZSkDil3HVNTA2CgxePI6eDCsnDg
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTEyMjkwMiwiZXhwIjoxNzcxMjA5MzAyfQ.QAhTUNVnLUucOx3kZSkDil3HVNTA2CgxePI6eDCsnDg
+[DEBUG] JWT Verification succeeded, decoded: {
+  userId: 5,
+  tenantId: 5,
+  tenantCode: 'TEST_TENANT',
+  username: 'test_worker',
+  role: 'worker',
+  iat: 1771122902,
+  exp: 1771209302
+}
+Sun, 15 Feb 2026 02:35:02 GMT express:router trim prefix (/api) from url /api/workers/5/location
+Sun, 15 Feb 2026 02:35:02 GMT express:router router /api : /api/workers/5/location
+Sun, 15 Feb 2026 02:35:02 GMT express:router dispatching GET /workers/5/location
+Sun, 15 Feb 2026 02:35:02 GMT express:router tenantMiddleware  : /api/workers/5/location
+获取工人位置失败: ReferenceError: req is not defined
+    at MapController.getLocationFromDB (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/controllers/MapController.js:335:20)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async getWorkerLocation (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/controllers/MapController.js:180:30)

@@ -1,0 +1,46 @@
+<view class="container">
+  <view class="login-header text-center">
+    <image src="/images/logo.png" class="logo" mode="aspectFit"></image>
+    <text class="app-name">小蚁搬运</text>
+  </view>
+
+  <view class="login-form">
+    <view class="input-group">
+      <input class="input-field" placeholder="请输入用户名或手机号" value="{{username}}" bind:input="onUsernameInput"/>
+    </view>
+
+    <view class="input-group">
+      <input class="input-field" password placeholder="请输入密码" value="{{password}}" bind:input="onPasswordInput"/>
+    </view>
+
+    <button class="login-btn btn-primary" bind:tap="login">登录</button>
+
+    <view class="register-link text-center">
+      <text>还没有账号？</text>
+      <text class="link-text" bind:tap="goToRegister">立即注册</text>
+    </view>
+  </view>
+
+  <view class="tenant-selector" bind:tap="showTenantSelector">
+    <view class="picker">
+      <text>选择租户: {{tenantList[tenantIndex] ? tenantList[tenantIndex].name : '请选择'}}</text>
+      <text class="arrow">></text>
+    </view>
+  </view>
+  
+  <!-- 租户选择弹窗 -->
+  <view wx:if="{{showTenantPicker}}" class="tenant-picker-modal">
+    <view class="modal-overlay" bind:tap="hideTenantSelector"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">选择租户</text>
+        <text class="close-btn" bind:tap="hideTenantSelector">×</text>
+      </view>
+      <view class="tenant-options">
+        <view wx:for="{{tenantList}}" wx:key="id" class="tenant-option" bind:tap="selectTenant" data-index="{{index}}">
+          <text>{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

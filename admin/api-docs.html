@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小蚁搬运 - API文档</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding-top: 20px;
+      padding-bottom: 40px;
+      background-color: #f8f9fa;
+    }
+    
+    .api-doc-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .doc-header {
+      background: linear-gradient(to right, #1a237e, #283593);
+      color: white;
+      padding: 30px;
+    }
+    
+    .doc-content {
+      padding: 30px;
+    }
+    
+    .endpoint {
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    
+    .endpoint-header {
+      padding: 15px 20px;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+      display: flex;
+      align-items: center;
+    }
+    
+    .method {
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-right: 15px;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    
+    .method.GET { background-color: #d4edda; color: #155724; }
+    .method.POST { background-color: #d1ecf1; color: #0c5460; }
+    .method.PUT { background-color: #d1ecf1; color: #0c5460; }
+    .method.DELETE { background-color: #f8d7da; color: #721c24; }
+    
+    .endpoint-url {
+      font-family: monospace;
+      font-weight: bold;
+      color: #495057;
+    }
+    
+    .endpoint-body {
+      padding: 20px;
+    }
+    
+    .param-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .param-table th, .param-table td {
+      border: 1px solid #dee2e6;
+      padding: 8px;
+      text-align: left;
+    }
+    
+    .param-table th {
+      background-color: #f8f9fa;
+    }
+    
+    .code-block {
+      background-color: #2d3748;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: monospace;
+      overflow-x: auto;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="api-doc-container">
+    <div class="doc-header">
+      <h1><i class="fas fa-code me-2"></i>小蚁搬运 API 文档</h1>
+      <p class="mb-0">SaaS多租户跑腿装卸平台后端API接口文档</p>
+    </div>
+    
+    <div class="doc-content">
+      <h2>概述</h2>
+      <p>小蚁搬运是一个SaaS架构的多租户跑腿装卸平台，支持多种类型的搬运服务，包括：</p>
+      <ul>
+        <li>货物装卸</li>
+        <li>办公室搬迁</li>
+        <li>仓储整理</li>
+        <li>搬家服务</li>
+        <li>其他跑腿服务</li>
+      </ul>
+      
+      <h2>认证</h2>
+      <p>所有API请求都需要在HTTP头部包含租户信息和认证令牌：</p>
+      <ul>
+        <li><code>X-Tenant-Code</code>: 租户编码</li>
+        <li><code>Authorization</code>: Bearer Token</li>
+      </ul>
+      
+      <h2>API端点</h2>
+      
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method GET">GET</span>
+          <span class="endpoint-url">/api/auth/me</span>
+        </div>
+        <div class="endpoint-body">
+          <h5>获取当前用户信息</h5>
+          <p>获取当前认证用户的信息和权限。</p>
+          
+          <h6>请求头:</h6>
+          <div class="code-block">
+            X-Tenant-Code: tenant1<br>
+            Authorization: Bearer {token}
+          </div>
+          
+          <h6>响应示例:</h6>
+          <div class="code-block">
+            {<br>
+            &nbsp;&nbsp;"success": true,<br>
+            &nbsp;&nbsp;"data": {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"user": {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id": 1,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"username": "worker001",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"phone": "13800138000",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"real_name": "张三",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"role": "worker"<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"tenant": {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id": 1,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"tenant_code": "tenant1",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"name": "商户A"<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            &nbsp;&nbsp;}<br>
+            }
+          </div>
+        </div>
+      </div>
+      
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method GET">GET</span>
+          <span class="endpoint-url">/api/orders</span>
+        </div>
+        <div class="endpoint-body">
+          <h5>获取订单列表</h5>
+          <p>获取当前租户的订单列表，支持分页和状态筛选。</p>
+          
+          <h6>查询参数:</h6>
+          <table class="param-table">
+            <tr>
+              <th>参数</th>
+              <th>类型</th>
+              <th>必填</th>
+              <th>说明</th>
+            </tr>
+            <tr>
+              <td>status</td>
+              <td>string</td>
+              <td>否</td>
+              <td>订单状态筛选 (pending, assigned, in_progress, completed, cancelled)</td>
+            </tr>
+            <tr>
+              <td>page</td>
+              <td>integer</td>
+              <td>否</td>
+              <td>页码，默认为1</td>
+            </tr>
+            <tr>
+              <td>limit</td>
+              <td>integer</td>
+              <td>否</td>
+              <td>每页数量，默认为10</td>
+            </tr>
+          </table>
+          
+          <h6>请求头:</h6>
+          <div class="code-block">
+            X-Tenant-Code: tenant1<br>
+            Authorization: Bearer {token}
+          </div>
+          
+          <h6>响应示例:</h6>
+          <div class="code-block">
+            {<br>
+            &nbsp;&nbsp;"success": true,<br>
+            &nbsp;&nbsp;"data": {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"orders": [<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id": 1,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"order_no": "XY2401231503210001",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "办公室搬迁",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"pickup_address": "北京市朝阳区xxx大厦",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"delivery_address": "北京市海淀区yyy园区",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"amount": 280.00,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"status": "completed",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"created_at": "2024-01-23T15:03:21.000Z"<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;],<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"pagination": {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"page": 1,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"limit": 10,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"total": 150,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"pages": 15<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            &nbsp;&nbsp;}<br>
+            }
+          </div>
+        </div>
+      </div>
+      
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method POST">POST</span>
+          <span class="endpoint-url">/api/orders</span>
+        </div>
+        <div class="endpoint-body">
+          <h5>创建订单</h5>
+          <p>为当前租户创建新的搬运订单。</p>
+          
+          <h6>请求体:</h6>
+          <table class="param-table">
+            <tr>
+              <th>字段</th>
+              <th>类型</th>
+              <th>必填</th>
+              <th>说明</th>
+            </tr>
+            <tr>
+              <td>title</td>
+              <td>string</td>
+              <td>是</td>
+              <td>订单标题</td>
+            </tr>
+            <tr>
+              <td>pickup_address</td>
+              <td>string</td>
+              <td>是</td>
+              <td>取货地址</td>
+            </tr>
+            <tr>
+              <td>delivery_address</td>
+              <td>string</td>
+              <td>是</td>
+              <td>送货地址</td>
+            </tr>
+            <tr>
+              <td>amount</td>
+              <td>number</td>
+              <td>是</td>
+              <td>订单金额</td>
+            </tr>
+            <tr>
+              <td>description</td>
+              <td>string</td>
+              <td>否</td>
+              <td>订单描述</td>
+            </tr>
+            <tr>
+              <td>pickup_time</td>
+              <td>string</td>
+              <td>否</td>
+              <td>取货时间 (ISO 8601格式)</td>
+            </tr>
+            <tr>
+              <td>delivery_time</td>
+              <td>string</td>
+              <td>否</td>
+              <td>送达时间 (ISO 8601格式)</td>
+            </tr>
+            <tr>
+              <td>distance</td>
+              <td>number</td>
+              <td>否</td>
+              <td>距离 (公里)</td>
+            </tr>
+            <tr>
+              <td>weight</td>
+              <td>number</td>
+              <td>否</td>
+              <td>重量 (公斤)</td>
+            </tr>
+            <tr>
+              <td>volume</td>
+              <td>number</td>
+              <td>否</td>
+              <td>体积 (立方米)</td>
+            </tr>
+          </table>
+          
+          <h6>请求头:</h6>
+          <div class="code-block">
+            X-Tenant-Code: tenant1<br>
+            Authorization: Bearer {token}<br>
+            Content-Type: application/json
+          </div>
+          
+          <h6>请求示例:</h6>
+          <div class="code-block">
+            {<br>
+            &nbsp;&nbsp;"title": "办公室搬迁",<br>
+            &nbsp;&nbsp;"pickup_address": "北京市朝阳区xxx大厦",<br>
+            &nbsp;&nbsp;"delivery_address": "北京市海淀区yyy园区",<br>
+            &nbsp;&nbsp;"amount": 280.00,<br>
+            &nbsp;&nbsp;"description": "搬迁办公设备和文件",<br>
+            &nbsp;&nbsp;"weight": 150,<br>
+            &nbsp;&nbsp;"distance": 15.5<br>
+            }
+          </div>
+          
+          <h6>响应示例:</h6>
+          <div class="code-block">
+            {<br>
+            &nbsp;&nbsp;"success": true,<br>
+            &nbsp;&nbsp;"message": "订单创建成功",<br>
+            &nbsp;&nbsp;"data": {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"order": {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id": 1,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"order_no": "XY2401231503210001",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "办公室搬迁",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"status": "pending",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"created_at": "2024-01-23T15:03:21.000Z"<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            &nbsp;&nbsp;}<br>
+            }
+          </div>
+        </div>
+      </div>
+      
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method PUT">PUT</span>
+          <span class="endpoint-url">/api/orders/{id}/assign</span>
+        </div>
+        <div class="endpoint-body">
+          <h5>分配订单</h5>
+          <p>将订单分配给指定的接单人员。</p>
+          
+          <h6>路径参数:</h6>
+          <table class="param-table">
+            <tr>
+              <th>参数</th>
+              <th>类型</th>
+              <th>必填</th>
+              <th>说明</th>
+            </tr>
+            <tr>
+              <td>id</td>
+              <td>integer</td>
+              <td>是</td>
+              <td>订单ID</td>
+            </tr>
+          </table>
+          
+          <h6>请求体:</h6>
+          <table class="param-table">
+            <tr>
+              <th>字段</th>
+              <th>类型</th>
+              <th>必填</th>
+              <th>说明</th>
+            </tr>
+            <tr>
+              <td>assigneeId</td>
+              <td>integer</td>
+              <td>否</td>
+              <td>接单人员ID，如果不提供则分配给当前用户</td>
+            </tr>
+          </table>
+          
+          <h6>请求头:</h6>
+          <div class="code-block">
+            X-Tenant-Code: tenant1<br>
+            Authorization: Bearer {token}<br>
+            Content-Type: application/json
+          </div>
+          
+          <h6>响应示例:</h6>
+          <div class="code-block">
+            {<br>
+            &nbsp;&nbsp;"success": true,<br>
+            &nbsp;&nbsp;"message": "订单分配成功",<br>
+            &nbsp;&nbsp;"data": {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"order": {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id": 1,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"order_no": "XY2401231503210001",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"status": "assigned",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"assignee_user_id": 5,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"assign_time": "2024-01-23T15:30:00.000Z"<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            &nbsp;&nbsp;}<br>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

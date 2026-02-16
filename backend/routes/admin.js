@@ -1,0 +1,33 @@
+const express = require('express');
+const router = express.Router();
+const AdminFinanceController = require('../controllers/AdminFinanceController');
+const AdminReferralController = require('../controllers/AdminReferralController');
+
+// 提现管理路由
+router.get('/admin/withdrawals', AdminFinanceController.getWithdrawalList);
+router.put('/admin/withdrawals/:id/approve', AdminFinanceController.approveWithdrawal);
+router.put('/admin/withdrawals/:id/reject', AdminFinanceController.rejectWithdrawal);
+router.put('/admin/withdrawals/:id/processing', AdminFinanceController.processingWithdrawal);
+
+// 佣金管理路由
+router.get('/admin/commissions', AdminFinanceController.getCommissionList);
+router.get('/admin/commissions/statistics', AdminFinanceController.getCommissionStatistics);
+
+// 系统配置管理路由
+router.get('/admin/configs', AdminFinanceController.getSystemConfigs);
+router.put('/admin/configs', AdminFinanceController.updateSystemConfig);
+
+// 推荐活动管理路由
+router.get('/admin/referral/campaigns', AdminReferralController.getCampaignList);
+router.get('/admin/referral/campaigns/:id', AdminReferralController.getCampaignDetail);
+router.post('/admin/referral/campaigns', AdminReferralController.createCampaign);
+router.put('/admin/referral/campaigns/:id', AdminReferralController.updateCampaign);
+router.put('/admin/referral/campaigns/:id/activate', AdminReferralController.activateCampaign);
+router.put('/admin/referral/campaigns/:id/pause', AdminReferralController.pauseCampaign);
+router.put('/admin/referral/campaigns/:id/end', AdminReferralController.endCampaign);
+
+// 推荐统计和管理路由
+router.get('/admin/referral/stats', AdminReferralController.getReferralStats);
+router.get('/admin/referral/list', AdminReferralController.getReferralList);
+
+module.exports = router;

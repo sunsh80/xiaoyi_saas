@@ -1,0 +1,229 @@
+/* pages/map/address-selector.wxss */
+.container {
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* 大字体样式 */
+.large-text {
+  font-size: 34rpx; /* 约17px - 更大更易读 */
+  line-height: 1.6;
+}
+
+.large-bold-text {
+  font-size: 36rpx; /* 约18px - 更大更粗 */
+  font-weight: bold;
+  line-height: 1.6;
+}
+
+/* 搜索栏 */
+.search-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: white;
+}
+
+.search-input-container {
+  background-color: #f8f8f8;
+  border-radius: 50rpx;
+  padding: 15rpx 20rpx;
+  min-height: 100rpx;
+}
+
+.search-input {
+  margin: 0 15rpx;
+  height: 60rpx;
+  font-size: 34rpx !important;
+}
+
+/* 搜索结果 */
+.search-results {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.search-result-item {
+  border-bottom: 2rpx solid #eee; /* 更粗的分割线 */
+  cursor: pointer;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.result-name {
+  font-size: 36rpx !important;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15rpx;
+}
+
+.result-address {
+  font-size: 32rpx !important;
+  color: #666;
+  word-break: break-all;
+}
+
+.result-distance {
+  font-size: 30rpx !important;
+  color: #999;
+  margin-top: 15rpx;
+}
+
+/* 当前位置部分 */
+.current-location-section {
+  margin-top: 30rpx;
+}
+
+.section-title {
+  font-size: 38rpx !important;
+  font-weight: bold;
+  color: #333;
+}
+
+.current-location-item {
+  cursor: pointer;
+  min-height: 120rpx; /* 更大的点击区域 */
+}
+
+.current-location-item:active {
+  background-color: #f0f0f0;
+}
+
+/* 历史记录 */
+.history-section {
+  margin-top: 30rpx;
+}
+
+.history-item {
+  cursor: pointer;
+  min-height: 120rpx; /* 更大的点击区域 */
+}
+
+.history-item:active {
+  background-color: #f0f0f0;
+}
+
+.history-name {
+  font-size: 36rpx !important;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.history-address {
+  font-size: 32rpx !important;
+  color: #666;
+}
+
+/* 空状态 */
+.empty-search, .empty-history {
+  font-size: 34rpx !important;
+  color: #999;
+}
+
+/* 通用样式类 */
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.padding-30 {
+  padding: 30rpx;
+}
+
+.padding-40 {
+  padding: 40rpx;
+}
+
+.padding-60 {
+  padding: 60rpx;
+}
+
+.padding-left-20 {
+  padding-left: 20rpx;
+}
+
+.margin-top-20 {
+  margin-top: 20rpx;
+}
+
+.margin-top-30 {
+  margin-top: 30rpx;
+}
+
+.margin-top-10 {
+  margin-top: 10rpx;
+}
+
+.margin-bottom-10 {
+  margin-bottom: 10rpx;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.bg-light-gray {
+  background-color: #f8f8f8;
+}
+
+.border-bottom-large {
+  border-bottom: 2rpx solid #eee;
+}
+
+.border-bottom-large:last-child {
+  border-bottom: none;
+}
+
+.radius-50 {
+  border-radius: 50rpx;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-gray {
+  color: #666;
+}
+
+/* 适配大屏手机 */
+@media screen and (min-width: 414px) {
+  .large-text {
+    font-size: 36rpx !important;
+  }
+  
+  .large-bold-text {
+    font-size: 40rpx !important;
+  }
+  
+  .search-input {
+    font-size: 36rpx !important;
+  }
+  
+  .search-result-item {
+    padding: 50rpx;
+  }
+  
+  .current-location-item {
+    padding: 50rpx;
+  }
+  
+  .history-item {
+    padding: 50rpx;
+  }
+}

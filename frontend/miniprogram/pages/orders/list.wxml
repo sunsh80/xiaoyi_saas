@@ -1,0 +1,126 @@
+<!-- pages/orders/list.wxml -->
+<view class="container">
+  <!-- 筛选栏 - 简化为大按钮 -->
+  <view class="filter-bar bg-white padding-20">
+    <scroll-view scroll-x="true" class="filter-scroll">
+      <view class="filter-container">
+        <view class="filter-item {{currentFilter === 'pending' ? 'active' : ''}}" bind:tap="changeFilter" data-filter="pending">
+          <text class="filter-text">待接单</text>
+        </view>
+        <view class="filter-item {{currentFilter === 'assigned' ? 'active' : ''}}" bind:tap="changeFilter" data-filter="assigned">
+          <text class="filter-text">已分配</text>
+        </view>
+        <view class="filter-item {{currentFilter === 'in_progress' ? 'active' : ''}}" bind:tap="changeFilter" data-filter="in_progress">
+          <text class="filter-text">进行中</text>
+        </view>
+        <view class="filter-item {{currentFilter === 'completed' ? 'active' : ''}}" bind:tap="changeFilter" data-filter="completed">
+          <text class="filter-text">已完成</text>
+        </view>
+        <view class="filter-item {{currentFilter === 'all' ? 'active' : ''}}" bind:tap="changeFilter" data-filter="all">
+          <text class="filter-text">全部</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 订单列表 -->
+  <view class="order-list">
+    <block wx:for="{{orders}}" wx:key="id">
+      <view class="order-card bg-white margin-bottom-20">
+        <view class="order-header padding-20 border-bottom">
+          <view class="order-title-container">
+            <text class="order-title large-text">{{item.title}}</text>
+            <text class="order-status status-{{item.status}} large-text">{{getStatusText(item.status)}}</text>
+          </view>
+        </view>
+        
+        <view class="order-body padding-20">
+          <view class="order-detail-item margin-bottom-15">
+            <text class="label large-text">取货地址：</text>
+            <text class="address-text large-text">{{item.pickup_address}}</text>
+          </view>
+          <view class="order-detail-item margin-bottom-15">
+            <text class="label large-text">送货地址：</text>
+            <text class="address-text large-text">{{item.delivery_address}}</text>
+          </view>
+          <view class="order-detail-item margin-bottom-15">
+            <text class="label large-text">取货时间：</text>
+            <text class="large-text">{{item.pickup_time || '待定'}}</text>
+          </view>
+          <view class="order-detail-item margin-bottom-15">
+            <text class="label large-text">金额：</text>
+            <text class="amount-text large-text">¥{{item.amount}}</text>
+          </view>
+          <view class="order-detail-item margin-bottom-15">
+            <text class="label large-text">距离：</text>
+            <text class="large-text">{{item.distance || 0}} km</text>
+          </view>
+          <view class="order-detail-item margin-bottom-15">
+            <text class="label large-text">重量：</text>
+            <text class="large-text">{{item.weight || 0}} kg</text>
+          </view>
+          <view class="order-detail-item margin-bottom-15">
+            <text class="label large-text">体积：</text>
+            <text class="large-text">{{item.volume || 0}} m³</text>
+          </view>
+        </view>
+        
+        <view class="order-footer padding-20">
+          <view class="create-time large-text">创建时间: {{formatTime(item.created_at)}}</view>
+          
+          <!-- 操作按钮区域 - 大按钮设计 -->
+          <view class="action-buttons">
+            <!-- 接单按钮 - 醒目设计 -->
+            <button wx:if="{{item.status === 'pending' && userRole === 'worker'}}" 
+                    class="btn-large btn-primary accept-btn" 
+                    bind:tap="acceptOrder" 
+                    data-id="{{item.id}}" 
+                    catch:tap="stopPropagation">
+              <text class="btn-text">接单</text>
+            </button>
+            
+            <!-- 开始处理按钮 -->
+            <button wx:elif="{{item.status === 'assigned' && userRole === 'worker' && item.assignee_user_id == userInfo.id}}" 
+                    class="btn-large btn-success start-btn" 
+                    bind:tap="startOrder" 
+                    data-id="{{item.id}}" 
+                    catch:tap="stopPropagation">
+              <text class="btn-text">开始处理</text>
+            </button>
+            
+            <!-- 完成订单按钮 -->
+            <button wx:elif="{{item.status === 'in_progress' && userRole === 'worker' && item.assignee_user_id == userInfo.id}}" 
+                    class="btn-large btn-warning complete-btn" 
+                    bind:tap="completeOrder" 
+                    data-id="{{item.id}}" 
+                    catch:tap="stopPropagation">
+              <text class="btn-text">完成订单</text>
+            </button>
+            
+            <!-- 查看详情按钮 -->
+            <button class="btn-large btn-default detail-btn" 
+                    bind:tap="viewOrderDetail" 
+                    data-id="{{item.id}}" 
+                    catch:tap="stopPropagation">
+              <text class="btn-text">查看详情</text>
+            </button>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{orders.length === 0}}" class="empty-state flex-column justify-center align-center">
+    <image src="/images/empty-order.png" class="empty-image" mode="aspectFit" />
+    <text class="empty-text large-text">暂无{{currentFilterText}}订单</text>
+  </view>
+
+  <!-- 加载更多 -->
+  <view wx:if="{{hasMore && orders.length > 0}}" class="loading padding-20 text-center">
+    <text class="large-text">加载中...</text>
+  </view>
+  <view wx:elif="{{!hasMore && orders.length > 0}}" class="loading padding-20 text-center">
+    <text class="large-text">已加载全部订单</text>
+  </view>
+</view>

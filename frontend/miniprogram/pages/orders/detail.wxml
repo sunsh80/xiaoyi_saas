@@ -1,0 +1,143 @@
+<!-- pages/orders/detail.wxml -->
+<view class="container">
+  <scroll-view class="order-detail-container" scroll-y="true">
+    <view class="order-card bg-white margin-20">
+      <!-- 订单头部信息 -->
+      <view class="order-header padding-30 bg-light-blue">
+        <view class="order-title-container flex-row justify-between align-center">
+          <text class="order-title large-bold-text">{{order.title}}</text>
+          <text class="order-status status-{{order.status}} large-bold-text">{{getStatusText(order.status)}}</text>
+        </view>
+        <view class="order-no margin-top-20">
+          <text class="label large-text">订单号：</text>
+          <text class="order-number large-text">{{order.order_no}}</text>
+        </view>
+      </view>
+
+      <!-- 订单详细信息 -->
+      <view class="order-details padding-30">
+        <view class="detail-group margin-bottom-30">
+          <text class="group-title large-bold-text">地址信息</text>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">取货地址：</text>
+            <text class="value large-text">{{order.pickup_address}}</text>
+          </view>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">送货地址：</text>
+            <text class="value large-text">{{order.delivery_address}}</text>
+          </view>
+        </view>
+
+        <view class="detail-group margin-bottom-30">
+          <text class="group-title large-bold-text">订单信息</text>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">订单描述：</text>
+            <text class="value large-text">{{order.description}}</text>
+          </view>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">距离：</text>
+            <text class="value large-text">{{order.distance || 0}} km</text>
+          </view>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">重量：</text>
+            <text class="value large-text">{{order.weight || 0}} kg</text>
+          </view>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">体积：</text>
+            <text class="value large-text">{{order.volume || 0}} m³</text>
+          </view>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">金额：</text>
+            <text class="value large-text amount-text">¥{{order.amount}}</text>
+          </view>
+        </view>
+
+        <view class="detail-group margin-bottom-30">
+          <text class="group-title large-bold-text">时间信息</text>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">取货时间：</text>
+            <text class="value large-text">{{order.pickup_time || '待定'}}</text>
+          </view>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">送货时间：</text>
+            <text class="value large-text">{{order.delivery_time || '待定'}}</text>
+          </view>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">创建时间：</text>
+            <text class="value large-text">{{formatTime(order.created_at)}}</text>
+          </view>
+        </view>
+
+        <view class="detail-group margin-bottom-30" wx:if="{{order.assignee_user_name}}">
+          <text class="group-title large-bold-text">接单信息</text>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">接单人员：</text>
+            <text class="value large-text">{{order.assignee_user_name}}</text>
+          </view>
+          <view class="detail-item margin-top-20">
+            <text class="label large-text">接单时间：</text>
+            <text class="value large-text">{{order.assign_time ? formatTime(order.assign_time) : '未接单'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作按钮区域 - 大按钮设计 -->
+      <view class="action-buttons padding-30">
+        <!-- 接单按钮 - 醒目的大按钮 -->
+        <button wx:if="{{order.status === 'pending' && userRole === 'worker'}}" 
+                class="btn-large btn-primary accept-btn" 
+                bind:tap="acceptOrder" 
+                catch:tap="stopPropagation">
+          <text class="btn-text large-bold-text">接单</text>
+        </button>
+        
+        <!-- 开始处理按钮 -->
+        <button wx:elif="{{order.status === 'assigned' && userRole === 'worker' && order.assignee_user_id == userInfo.id}}" 
+                class="btn-large btn-success start-btn" 
+                bind:tap="startOrder" 
+                catch:tap="stopPropagation">
+          <text class="btn-text large-bold-text">开始处理</text>
+        </button>
+        
+        <!-- 完成订单按钮 -->
+        <button wx:elif="{{order.status === 'in_progress' && userRole === 'worker' && order.assignee_user_id == userInfo.id}}" 
+                class="btn-large btn-warning complete-btn" 
+                bind:tap="completeOrder" 
+                catch:tap="stopPropagation">
+          <text class="btn-text large-bold-text">完成订单</text>
+        </button>
+        
+        <!-- 拨打电话按钮 -->
+        <button class="btn-large btn-call" 
+                bind:tap="callPhone" 
+                catch:tap="stopPropagation">
+          <text class="btn-text large-bold-text">拨打电话</text>
+        </button>
+        
+        <!-- 查看地图按钮 -->
+        <button class="btn-large btn-map" 
+                bind:tap="viewOnMap" 
+                catch:tap="stopPropagation">
+          <text class="btn-text large-bold-text">查看地图</text>
+        </button>
+      </view>
+    </view>
+
+    <!-- 订单日志 -->
+    <view wx:if="{{orderLogs.length > 0}}" class="order-logs bg-white margin-20 margin-top-0">
+      <text class="group-title large-bold-text padding-30">订单日志</text>
+      <view class="log-list">
+        <block wx:for="{{orderLogs}}" wx:key="id">
+          <view class="log-item padding-30 border-bottom">
+            <view class="log-type large-text">{{item.operation_type}}</view>
+            <view class="log-desc large-text margin-top-10">{{item.description}}</view>
+            <view class="log-meta flex-row justify-between margin-top-10">
+              <text class="operator large-text">{{item.operator_name}}</text>
+              <text class="time large-text">{{formatTime(item.created_at)}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </scroll-view>
+</view>

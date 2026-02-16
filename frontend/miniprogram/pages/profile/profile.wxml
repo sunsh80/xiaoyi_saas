@@ -1,0 +1,143 @@
+<!-- pages/profile/profile.wxml -->
+<view class="container">
+  <!-- 用户信息区域 - 简化版 -->
+  <view class="user-info-section bg-white padding-40">
+    <view class="user-info-container text-center">
+      <view class="user-name-large">{{userInfo.real_name || userInfo.username || '未登录'}}</view>
+      <view class="user-role-large">{{getUserRoleText(userInfo.role)}}</view>
+    </view>
+  </view>
+
+  <!-- 发单相关功能（仅对租户管理员/用户显示） -->
+  <view class="page-section bg-white margin-bottom-20" wx:if="{{userInfo.role === 'tenant_admin' || userInfo.role === 'tenant_user'}}">
+    <view class="section-title padding-30 border-bottom">
+      <text class="title-text-large">发单功能</text>
+    </view>
+
+    <!-- 创建订单 -->
+    <view class="menu-item-large border-bottom" bind:tap="goToPage" data-page="pages/orders/create">
+      <view class="menu-icon-container">
+        <image src="/images/create-order-icon.png" class="menu-icon-large"></image>
+      </view>
+      <text class="menu-text-large">创建订单</text>
+      <text class="arrow-large">></text>
+    </view>
+
+    <!-- 我发布的订单 -->
+    <view class="menu-item-large border-bottom" bind:tap="goToPage" data-page="pages/orders/list">
+      <view class="menu-icon-container">
+        <image src="/images/order-icon.png" class="menu-icon-large"></image>
+      </view>
+      <text class="menu-text-large">我发布的订单</text>
+      <text class="arrow-large">></text>
+    </view>
+  </view>
+
+  <!-- 接单相关功能（仅对工人显示） -->
+  <view class="page-section bg-white margin-bottom-20" wx:if="{{userInfo.role === 'worker'}}">
+    <view class="section-title padding-30 border-bottom">
+      <text class="title-text-large">接单功能</text>
+    </view>
+
+    <!-- 我接的订单 -->
+    <view class="menu-item-large border-bottom" bind:tap="goToPage" data-page="pages/orders/list">
+      <view class="menu-icon-container">
+        <image src="/images/order-icon.png" class="menu-icon-large"></image>
+      </view>
+      <text class="menu-text-large">我接的订单</text>
+      <text class="arrow-large">></text>
+    </view>
+
+    <!-- 接单范围设置 -->
+    <view class="menu-item-large border-bottom" bind:tap="goToJobRangeSettings">
+      <view class="menu-icon-container">
+        <image src="/images/location-icon.png" class="menu-icon-large"></image>
+      </view>
+      <text class="menu-text-large">接单范围设置</text>
+      <text class="arrow-large">></text>
+    </view>
+
+    <!-- 工作状态切换 -->
+    <view class="menu-item-large border-bottom" bind:tap="switchWorkStatus">
+      <view class="menu-icon-container">
+        <image src="/images/{{workStatusIcon}}" class="menu-icon-large"></image>
+      </view>
+      <text class="menu-text-large">工作状态</text>
+      <text class="status-indicator {{workerStats.workStatus === 1 ? 'working' : 'resting'}}">{{workStatusText}}</text>
+      <text class="arrow-large">></text>
+    </view>
+  </view>
+
+  <!-- 通用功能 -->
+  <view class="page-section bg-white margin-bottom-20">
+    <view class="section-title padding-30 border-bottom">
+      <text class="title-text-large">账户功能</text>
+    </view>
+
+    <!-- 账户余额 -->
+    <view class="menu-item-large border-bottom" bind:tap="goToPage" data-page="pages/finance/account">
+      <view class="menu-icon-container">
+        <image src="/images/wallet-icon.png" class="menu-icon-large"></image>
+      </view>
+      <text class="menu-text-large">账户余额</text>
+      <text class="arrow-large">></text>
+    </view>
+
+    <!-- 推荐赚钱 -->
+    <view class="menu-item-large border-bottom" bind:tap="goToPage" data-page="pages/referral/index">
+      <view class="menu-icon-container">
+        <image src="/images/referral-icon.png" class="menu-icon-large"></image>
+      </view>
+      <text class="menu-text-large">推荐赚钱</text>
+      <text class="arrow-large">></text>
+    </view>
+  </view>
+
+  <!-- 辅助功能菜单 -->
+  <view class="page-section bg-white margin-bottom-20">
+    <view class="section-title padding-30 border-bottom">
+      <text class="title-text-large">辅助功能</text>
+    </view>
+    
+    <!-- 帮助中心 -->
+    <view class="menu-item-large border-bottom" bind:tap="goToPage" data-page="pages/profile/help">
+      <view class="menu-icon-container">
+        <image src="/images/help-icon.png" class="menu-icon-large"></image>
+      </view>
+      <text class="menu-text-large">帮助中心</text>
+      <text class="arrow-large">></text>
+    </view>
+    
+    <!-- 联系我们 -->
+    <view class="menu-item-large border-bottom" bind:tap="contactUs">
+      <view class="menu-icon-container">
+        <image src="/images/contact-icon.png" class="menu-icon-large"></image>
+      </view>
+      <text class="menu-text-large">联系我们</text>
+      <text class="arrow-large">></text>
+    </view>
+    
+    <!-- 关于我们 -->
+    <view class="menu-item-large border-bottom" bind:tap="goToPage" data-page="pages/profile/about">
+      <view class="menu-icon-container">
+        <image src="/images/info-icon.png" class="menu-icon-large"></image>
+      </view>
+      <text class="menu-text-large">关于我们</text>
+      <text class="arrow-large">></text>
+    </view>
+  </view>
+
+  <!-- 登录入口（未登录时显示） -->
+  <view class="page-section bg-white margin-bottom-20" wx:if="{{!isLogin}}">
+    <view class="menu-item-large text-center" bind:tap="goToLoginPage">
+      <text class="login-text">立即登录</text>
+    </view>
+  </view>
+
+  <!-- 退出登录（已登录时显示） -->
+  <view class="page-section bg-white margin-bottom-20" wx:if="{{isLogin}}">
+    <view class="menu-item-large text-center" bind:tap="logout">
+      <text class="logout-text">退出登录</text>
+    </view>
+  </view>
+</view>

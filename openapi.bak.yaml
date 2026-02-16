@@ -1,0 +1,2969 @@
+openapi: 3.0.0
+info:
+  title: 小蚁搬运 SaaS 平台 API
+  description: 小蚁搬运是一个SaaS架构的多租户跑腿装卸平台，支持货物的装卸搬运工作。
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: 开发环境
+  - url: https://api.xiaoyibanyun.com/api
+    description: 生产环境
+paths:
+  /auth/register:
+    post:
+      summary: 用户注册
+      tags:
+        - Authentication
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '201':
+          description: 注册成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/login:
+    post:
+      summary: 用户登录
+      tags:
+        - Authentication
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: 用户名或密码错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/me:
+    get:
+      summary: 获取当前用户信息
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfoResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/change-password:
+    put:
+      summary: 修改密码
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - oldPassword
+                - newPassword
+              properties:
+                oldPassword:
+                  type: string
+                  description: 原密码
+                newPassword:
+                  type: string
+                  description: 新密码
+      responses:
+        '200':
+          description: 密码修改成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "密码修改成功"
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /orders:
+    get:
+      summary: 获取订单列表
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, assigned, in_progress, completed, cancelled]
+          description: 订单状态筛选
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: 创建订单
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrder'
+      responses:
+        '201':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /orders/{id}:
+    get:
+      summary: 获取订单详情
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 订单ID
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 订单不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: 更新订单
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 订单ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrder'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /orders/{id}/assign:
+    put:
+      summary: 分配订单给接单人员
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 订单ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assigneeId:
+                  type: integer
+                  description: 接单人员ID
+      responses:
+        '200':
+          description: 分配成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权操作
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /orders/{id}/start:
+    put:
+      summary: 开始处理订单
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 订单ID
+      responses:
+        '200':
+          description: 开始处理成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权操作
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /orders/{id}/complete:
+    put:
+      summary: 完成订单
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 订单ID
+      responses:
+        '200':
+          description: 完成订单成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权操作
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /orders/{id}/cancel:
+    put:
+      summary: 取消订单
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 订单ID
+      responses:
+        '200':
+          description: 取消订单成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权操作
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /finance/account:
+    get:
+      summary: 获取账户信息
+      tags:
+        - Finance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /finance/withdrawals:
+    post:
+      summary: 申请提现
+      tags:
+        - Finance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawalRequest'
+      responses:
+        '201':
+          description: 提现申请已提交
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WithdrawalResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: 获取提现记录列表
+      tags:
+        - Finance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, processing, completed, rejected]
+          description: 提现状态筛选
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WithdrawalListResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /finance/payments:
+    get:
+      summary: 获取支付记录列表
+      tags:
+        - Finance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, paid, failed, refunded]
+          description: 支付状态筛选
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentListResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /payments/callback:
+    post:
+      summary: 支付回调接口
+      tags:
+        - Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - transaction_no
+                - order_id
+                - status
+              properties:
+                transaction_no:
+                  type: string
+                  description: 第三方交易号
+                order_id:
+                  type: integer
+                  description: 订单ID
+                status:
+                  type: string
+                  enum: [success, failed]
+                  description: 支付状态
+      responses:
+        '200':
+          description: 回调处理成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "支付回调处理成功"
+  /admin/withdrawals:
+    get:
+      summary: 获取提现申请列表（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, processing, completed, rejected]
+          description: 提现状态筛选
+        - in: query
+          name: user_id
+          schema:
+            type: integer
+          description: 用户ID筛选
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminWithdrawalListResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/withdrawals/{id}/approve:
+    put:
+      summary: 批准提现申请（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 提现申请ID
+      responses:
+        '200':
+          description: 批准成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WithdrawalResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 提现申请不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/withdrawals/{id}/reject:
+    put:
+      summary: 拒绝提现申请（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 提现申请ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                remark:
+                  type: string
+                  description: 拒绝原因
+      responses:
+        '200':
+          description: 拒绝成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WithdrawalResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 提现申请不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/commissions:
+    get:
+      summary: 获取佣金记录列表（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: order_id
+          schema:
+            type: integer
+          description: 订单ID筛选
+        - in: query
+          name: admin_user_id
+          schema:
+            type: integer
+          description: 管理员ID筛选
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommissionListResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/commissions/statistics:
+    get:
+      summary: 获取佣金统计（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: start_date
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - in: query
+          name: end_date
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommissionStatisticsResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/withdrawals/{id}/processing:
+    put:
+      summary: 更新提现申请为处理中状态（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 提现申请ID
+      responses:
+        '200':
+          description: 状态更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WithdrawalResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 提现申请不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/configs:
+    get:
+      summary: 获取系统配置（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      configs:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SystemConfig'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: 更新系统配置（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - config_key
+                - config_value
+              properties:
+                config_key:
+                  type: string
+                  description: 配置键
+                config_value:
+                  type: string
+                  description: 配置值
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "配置更新成功"
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /referral/campaigns:
+    get:
+      summary: 获取当前可用的推荐活动
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      campaigns:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ReferralCampaign'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /referral/campaigns/{id}:
+    get:
+      summary: 获取推荐活动详情
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      campaign:
+                        $ref: '#/components/schemas/ReferralCampaign'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /referral/stats:
+    get:
+      summary: 获取用户的推荐统计
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      stats:
+                        $ref: '#/components/schemas/ReferralStats'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /referral/rewards:
+    get:
+      summary: 获取用户的推荐奖励记录
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, paid, failed]
+          description: 奖励状态筛选
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReferralRewardsResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /referral/total-rewards:
+    get:
+      summary: 获取用户的总奖励金额
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      totalRewards:
+                        type: number
+                        format: decimal
+                        example: 150.00
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /referral/generate-link:
+    post:
+      summary: 生成推荐链接/二维码
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - campaignId
+              properties:
+                campaignId:
+                  type: integer
+                  description: 活动ID
+      responses:
+        '200':
+          description: 生成成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      referralCode:
+                        type: string
+                        example: "REF_123_1705982400000"
+                      referralLink:
+                        type: string
+                        example: "https://xiaoyibanyun.com/register?ref=REF_123_1705982400000&campaign=1"
+                      shareInfo:
+                        $ref: '#/components/schemas/ShareInfo'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /referral/confirm:
+    post:
+      summary: 确认推荐关系（被推荐人完成首次订单后）
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - referralCode
+              properties:
+                referralCode:
+                  type: string
+                  description: 推荐码
+      responses:
+        '200':
+          description: 确认成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐关系确认成功"
+                  data:
+                    type: object
+                    properties:
+                      referral:
+                        $ref: '#/components/schemas/Referral'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 推荐码无效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/referral/campaigns:
+    get:
+      summary: 获取推荐活动列表（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [draft, active, paused, ended]
+          description: 活动状态筛选
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReferralCampaignListResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: 创建推荐活动（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReferralCampaignCreateRequest'
+      responses:
+        '201':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐活动创建成功"
+                  data:
+                    type: object
+                    properties:
+                      campaign:
+                        $ref: '#/components/schemas/ReferralCampaign'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/referral/campaigns/{id}:
+    get:
+      summary: 获取推荐活动详情（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      campaign:
+                        $ref: '#/components/schemas/ReferralCampaign'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: 更新推荐活动（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReferralCampaignUpdateRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐活动更新成功"
+                  data:
+                    type: object
+                    properties:
+                      campaign:
+                        $ref: '#/components/schemas/ReferralCampaign'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/referral/campaigns/{id}/activate:
+    put:
+      summary: 激活推荐活动（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      responses:
+        '200':
+          description: 激活成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐活动已激活"
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/referral/campaigns/{id}/pause:
+    put:
+      summary: 暂停推荐活动（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      responses:
+        '200':
+          description: 暂停成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐活动已暂停"
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/referral/campaigns/{id}/end:
+    put:
+      summary: 结束推荐活动（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      responses:
+        '200':
+          description: 结束成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐活动已结束"
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/referral/stats:
+    get:
+      summary: 获取推荐统计（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: campaignId
+          schema:
+            type: integer
+          description: 活动ID筛选
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      stats:
+                        $ref: '#/components/schemas/ReferralAdminStats'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/referral/list:
+    get:
+      summary: 获取推荐列表（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: campaignId
+          schema:
+            type: integer
+          description: 活动ID筛选
+        - in: query
+          name: referrerId
+          schema:
+            type: integer
+          description: 推荐人ID筛选
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, confirmed, rewarded, expired]
+          description: 状态筛选
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReferralListResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UserRegistration:
+      type: object
+      required:
+        - username
+        - password
+        - phone
+        - real_name
+        - role
+      properties:
+        username:
+          type: string
+          description: 用户名
+        password:
+          type: string
+          description: 密码
+        phone:
+          type: string
+          description: 手机号
+        email:
+          type: string
+          description: 邮箱
+        real_name:
+          type: string
+          description: 真实姓名
+        role:
+          type: string
+          enum: [tenant_admin, tenant_user, worker]
+          description: 用户角色
+    Account:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        tenant_id:
+          type: integer
+          example: 1
+        account_type:
+          type: string
+          enum: [platform, tenant, user]
+          example: "user"
+        balance:
+          type: number
+          format: decimal
+          example: 1000.00
+        frozen_amount:
+          type: number
+          format: decimal
+          example: 0.00
+        available_balance:
+          type: number
+          format: decimal
+          example: 1000.00
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+    AccountResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            account:
+              $ref: '#/components/schemas/Account'
+    WithdrawalRequest:
+      type: object
+      required:
+        - amount
+        - account_info
+      properties:
+        amount:
+          type: number
+          format: decimal
+          description: 提现金额
+        account_info:
+          type: object
+          description: 提现账户信息
+          properties:
+            account_type:
+              type: string
+              enum: [bank_card, alipay, wechat_pay]
+              description: 账户类型
+            account_number:
+              type: string
+              description: 账户号码
+            account_name:
+              type: string
+              description: 账户名称
+        remark:
+          type: string
+          description: 备注
+    Withdrawal:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        amount:
+          type: number
+          format: decimal
+          example: 500.00
+        account_info:
+          type: object
+          description: 提现账户信息
+          properties:
+            account_type:
+              type: string
+              example: "wechat_pay"
+            account_number:
+              type: string
+              example: "wx123456"
+            account_name:
+              type: string
+              example: "张三"
+        status:
+          type: string
+          enum: [pending, processing, completed, rejected]
+          example: "pending"
+        remark:
+          type: string
+          example: "首次提现"
+        processed_by:
+          type: integer
+          example: 1
+        processed_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+    WithdrawalResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "提现申请已提交"
+        data:
+          type: object
+          properties:
+            withdrawal:
+              $ref: '#/components/schemas/Withdrawal'
+    WithdrawalListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            withdrawals:
+              type: array
+              items:
+                $ref: '#/components/schemas/Withdrawal'
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                total:
+                  type: integer
+                  example: 100
+                pages:
+                  type: integer
+                  example: 10
+    AdminWithdrawalListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            withdrawals:
+              type: array
+              items:
+                $ref: '#/components/schemas/Withdrawal'
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                total:
+                  type: integer
+                  example: 100
+                pages:
+                  type: integer
+                  example: 10
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        order_id:
+          type: integer
+          example: 1
+        payer_id:
+          type: integer
+          example: 1
+        payee_id:
+          type: integer
+          example: 2
+        amount:
+          type: number
+          format: decimal
+          example: 280.00
+        payment_method:
+          type: string
+          enum: [wechat_pay, alipay, balance]
+          example: "wechat_pay"
+        transaction_no:
+          type: string
+          example: "TX202401230001"
+        status:
+          type: string
+          enum: [pending, paid, failed, refunded]
+          example: "paid"
+        payment_time:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+    PaymentListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            payments:
+              type: array
+              items:
+                $ref: '#/components/schemas/Payment'
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                total:
+                  type: integer
+                  example: 100
+                pages:
+                  type: integer
+                  example: 10
+    Commission:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        order_id:
+          type: integer
+          example: 1
+        admin_user_id:
+          type: integer
+          example: 1
+        commission_rate:
+          type: number
+          format: decimal
+          example: 0.1000
+        commission_amount:
+          type: number
+          format: decimal
+          example: 28.00
+        platform_revenue:
+          type: number
+          format: decimal
+          example: 28.00
+        description:
+          type: string
+          example: "订单 XY2401231503210001 的抽佣，比例 10%"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+    CommissionListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            commissions:
+              type: array
+              items:
+                $ref: '#/components/schemas/Commission'
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                total:
+                  type: integer
+                  example: 100
+                pages:
+                  type: integer
+                  example: 10
+    CommissionStatisticsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            statistics:
+              type: object
+              properties:
+                total_orders:
+                  type: integer
+                  example: 150
+                total_commission:
+                  type: number
+                  format: decimal
+                  example: 4200.00
+                total_revenue:
+                  type: number
+                  format: decimal
+                  example: 4200.00
+                avg_rate:
+                  type: number
+                  format: decimal
+                  example: 0.1000
+    SystemConfig:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        config_key:
+          type: string
+          example: "commission_rate"
+        config_value:
+          type: string
+          example: "0.1000"
+        description:
+          type: string
+          example: "默认抽佣比例 10%"
+        updated_by:
+          type: integer
+          example: 1
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+    ReferralCampaign:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        campaign_name:
+          type: string
+          example: "春季拉新活动"
+        campaign_title:
+          type: string
+          example: "邀请好友，共享好礼"
+        campaign_description:
+          type: string
+          example: "邀请好友注册并完成首单，双方均可获得奖励"
+        share_title:
+          type: string
+          example: "快来加入小蚁搬运，一起赚钱吧！"
+        share_desc:
+          type: string
+          example: "专业搬运服务，安全可靠，收益丰厚"
+        share_image:
+          type: string
+          example: "https://example.com/share-image.jpg"
+        referral_reward_type:
+          type: string
+          enum: [fixed, percentage]
+          example: "fixed"
+        referral_reward_amount:
+          type: number
+          format: decimal
+          example: 10.00
+        referral_reward_percentage:
+          type: number
+          format: decimal
+          example: 0.05
+        referee_reward_type:
+          type: string
+          enum: [fixed, percentage]
+          example: "fixed"
+        referee_reward_amount:
+          type: number
+          format: decimal
+          example: 5.00
+        referee_reward_percentage:
+          type: number
+          format: decimal
+          example: 0.02
+        reward_limit_per_referrer:
+          type: integer
+          example: 10
+        reward_limit_per_referee:
+          type: integer
+          example: 1
+        start_time:
+          type: string
+          format: date-time
+          example: "2024-01-01T00:00:00.000Z"
+        end_time:
+          type: string
+          format: date-time
+          example: "2024-03-31T23:59:59.000Z"
+        status:
+          type: string
+          enum: [draft, active, paused, ended]
+          example: "active"
+        created_by:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+    Referral:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        referrer_user_id:
+          type: integer
+          example: 100
+        referee_user_id:
+          type: integer
+          example: 101
+        campaign_id:
+          type: integer
+          example: 1
+        referral_code:
+          type: string
+          example: "REF_100_1705982400000"
+        status:
+          type: string
+          enum: [pending, confirmed, rewarded, expired]
+          example: "pending"
+        confirmed_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+        rewarded_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+    ReferralReward:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        referral_id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 100
+        reward_type:
+          type: string
+          enum: [referrer, referee]
+          example: "referrer"
+        reward_amount:
+          type: number
+          format: decimal
+          example: 10.00
+        reward_description:
+          type: string
+          example: "推荐奖励 - 活动: 春季拉新活动"
+        status:
+          type: string
+          enum: [pending, paid, failed]
+          example: "pending"
+        paid_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T15:03:21.000Z"
+    ReferralStats:
+      type: object
+      properties:
+        total_referrals:
+          type: integer
+          example: 25
+        confirmed_referrals:
+          type: integer
+          example: 20
+        rewarded_referrals:
+          type: integer
+          example: 18
+    ReferralRewardsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            rewards:
+              type: array
+              items:
+                $ref: '#/components/schemas/ReferralReward'
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                total:
+                  type: integer
+                  example: 100
+                pages:
+                  type: integer
+                  example: 10
+    ShareInfo:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "快来加入小蚁搬运，一起赚钱吧！"
+        desc:
+          type: string
+          example: "专业搬运服务，安全可靠，收益丰厚"
+        imageUrl:
+          type: string
+          example: "https://example.com/share-image.jpg"
+        path:
+          type: string
+          example: "/pages/auth/register?ref=REF_123_1705982400000&campaign=1"
+    ReferralCampaignCreateRequest:
+      type: object
+      required:
+        - campaign_name
+        - campaign_title
+        - share_title
+        - start_time
+        - end_time
+      properties:
+        campaign_name:
+          type: string
+          description: 活动名称
+        campaign_title:
+          type: string
+          description: 活动标题
+        campaign_description:
+          type: string
+          description: 活动描述
+        share_title:
+          type: string
+          description: 分享标题
+        share_desc:
+          type: string
+          description: 分享描述
+        share_image:
+          type: string
+          description: 分享图片
+        referral_reward_type:
+          type: string
+          enum: [fixed, percentage]
+          description: 推荐人奖励类型
+        referral_reward_amount:
+          type: number
+          format: decimal
+          description: 推荐人固定奖励金额
+        referral_reward_percentage:
+          type: number
+          format: decimal
+          description: 推荐人奖励百分比
+        referee_reward_type:
+          type: string
+          enum: [fixed, percentage]
+          description: 被推荐人奖励类型
+        referee_reward_amount:
+          type: number
+          format: decimal
+          description: 被推荐人固定奖励金额
+        referee_reward_percentage:
+          type: number
+          format: decimal
+          description: 被推荐人奖励百分比
+        reward_limit_per_referrer:
+          type: integer
+          description: 推荐人奖励上限次数
+        reward_limit_per_referee:
+          type: integer
+          description: 被推荐人奖励上限次数
+        start_time:
+          type: string
+          format: date-time
+          description: 活动开始时间
+        end_time:
+          type: string
+          format: date-time
+          description: 活动结束时间
+    ReferralCampaignUpdateRequest:
+      type: object
+      properties:
+        campaign_name:
+          type: string
+          description: 活动名称
+        campaign_title:
+          type: string
+          description: 活动标题
+        campaign_description:
+          type: string
+          description: 活动描述
+        share_title:
+          type: string
+          description: 分享标题
+        share_desc:
+          type: string
+          description: 分享描述
+        share_image:
+          type: string
+          description: 分享图片
+        referral_reward_type:
+          type: string
+          enum: [fixed, percentage]
+          description: 推荐人奖励类型
+        referral_reward_amount:
+          type: number
+          format: decimal
+          description: 推荐人固定奖励金额
+        referral_reward_percentage:
+          type: number
+          format: decimal
+          description: 推荐人奖励百分比
+        referee_reward_type:
+          type: string
+          enum: [fixed, percentage]
+          description: 被推荐人奖励类型
+        referee_reward_amount:
+          type: number
+          format: decimal
+          description: 被推荐人固定奖励金额
+        referee_reward_percentage:
+          type: number
+          format: decimal
+          description: 被推荐人奖励百分比
+        reward_limit_per_referrer:
+          type: integer
+          description: 推荐人奖励上限次数
+        reward_limit_per_referee:
+          type: integer
+          description: 被推荐人奖励上限次数
+        start_time:
+          type: string
+          format: date-time
+          description: 活动开始时间
+        end_time:
+          type: string
+          format: date-time
+          description: 活动结束时间
+        status:
+          type: string
+          enum: [draft, active, paused, ended]
+          description: 活动状态
+    ReferralCampaignListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            campaigns:
+              type: array
+              items:
+                $ref: '#/components/schemas/ReferralCampaign'
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                total:
+                  type: integer
+                  example: 100
+                pages:
+                  type: integer
+                  example: 10
+    ReferralAdminStats:
+      type: object
+      properties:
+        total_referrals:
+          type: integer
+          example: 150
+        confirmed_referrals:
+          type: integer
+          example: 120
+        rewarded_referrals:
+          type: integer
+          example: 100
+        total_referrer_rewards:
+          type: number
+          format: decimal
+          example: 1200.00
+        total_referee_rewards:
+          type: number
+          format: decimal
+          example: 600.00
+        total_rewards:
+          type: number
+          format: decimal
+          example: 1800.00
+    ReferralListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            referrals:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  referrer_user_id:
+                    type: integer
+                    example: 100
+                  referee_user_id:
+                    type: integer
+                    example: 101
+                  campaign_id:
+                    type: integer
+                    example: 1
+                  referral_code:
+                    type: string
+                    example: "REF_100_1705982400000"
+                  status:
+                    type: string
+                    enum: [pending, confirmed, rewarded, expired]
+                    example: "rewarded"
+                  referrer_name:
+                    type: string
+                    example: "张三"
+                  referee_name:
+                    type: string
+                    example: "李四"
+                  campaign_name:
+                    type: string
+                    example: "春季拉新活动"
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: "2024-01-23T15:03:21.000Z"
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                total:
+                  type: integer
+                  example: 100
+                pages:
+                  type: integer
+                  example: 10
+    UserLogin:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: 用户名或手机号
+        password:
+          type: string
+          description: 密码
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "登录成功"
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            token:
+              type: string
+              description: JWT令牌
+    UserInfoResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            tenant:
+              $ref: '#/components/schemas/Tenant'
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: "user123"
+        phone:
+          type: string
+          example: "13800138000"
+        email:
+          type: string
+          example: "user@example.com"
+        real_name:
+          type: string
+          example: "张三"
+        role:
+          type: string
+          enum: [tenant_admin, tenant_user, worker]
+        created_at:
+          type: string
+          format: date-time
+    Tenant:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        tenant_code:
+          type: string
+          example: "tenant1"
+        name:
+          type: string
+          example: "商户A"
+    CreateOrder:
+      type: object
+      required:
+        - title
+        - pickup_address
+        - delivery_address
+        - amount
+      properties:
+        title:
+          type: string
+          description: 订单标题
+        description:
+          type: string
+          description: 订单描述
+        pickup_address:
+          type: string
+          description: 取货地址
+        delivery_address:
+          type: string
+          description: 送货地址
+        pickup_time:
+          type: string
+          format: date-time
+          description: 取货时间
+        delivery_time:
+          type: string
+          format: date-time
+          description: 送达时间
+        distance:
+          type: number
+          description: 距离(公里)
+        weight:
+          type: number
+          description: 重量(公斤)
+        volume:
+          type: number
+          description: 体积(立方米)
+        amount:
+          type: number
+          description: 金额
+    UpdateOrder:
+      type: object
+      properties:
+        title:
+          type: string
+          description: 订单标题
+        description:
+          type: string
+          description: 订单描述
+        pickup_address:
+          type: string
+          description: 取货地址
+        delivery_address:
+          type: string
+          description: 送货地址
+        pickup_time:
+          type: string
+          format: date-time
+          description: 取货时间
+        delivery_time:
+          type: string
+          format: date-time
+          description: 送达时间
+        distance:
+          type: number
+          description: 距离(公里)
+        weight:
+          type: number
+          description: 重量(公斤)
+        volume:
+          type: number
+          description: 体积(立方米)
+        amount:
+          type: number
+          description: 金额
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        order_no:
+          type: string
+          example: "XY2401231503210001"
+        title:
+          type: string
+          example: "办公室搬迁"
+        description:
+          type: string
+          example: "搬迁办公设备和文件"
+        pickup_address:
+          type: string
+          example: "北京市朝阳区xxx大厦"
+        delivery_address:
+          type: string
+          example: "北京市海淀区yyy园区"
+        pickup_time:
+          type: string
+          format: date-time
+          example: "2024-01-23T10:00:00.000Z"
+        delivery_time:
+          type: string
+          format: date-time
+          example: "2024-01-23T12:00:00.000Z"
+        distance:
+          type: number
+          example: 15.5
+        weight:
+          type: number
+          example: 150
+        volume:
+          type: number
+          example: 5.2
+        amount:
+          type: number
+          example: 280.00
+        status:
+          type: string
+          enum: [pending, assigned, in_progress, completed, cancelled]
+          example: "pending"
+        assignee_user_id:
+          type: integer
+          example: 5
+        assign_time:
+          type: string
+          format: date-time
+        complete_time:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-23T09:00:00.000Z"
+        updated_at:
+          type: string
+          format: date-time
+    OrderResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "订单创建成功"
+        data:
+          type: object
+          properties:
+            order:
+              $ref: '#/components/schemas/Order'
+    OrderListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            orders:
+              type: array
+              items:
+                $ref: '#/components/schemas/Order'
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                total:
+                  type: integer
+                  example: 100
+                pages:
+                  type: integer
+                  example: 10
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "错误信息"

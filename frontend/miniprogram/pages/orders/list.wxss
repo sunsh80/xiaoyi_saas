@@ -1,0 +1,262 @@
+/* pages/orders/list.wxss */
+.container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* 大字体样式 */
+.large-text {
+  font-size: 32rpx !important; /* 约16px */
+  line-height: 1.5;
+}
+
+/* 筛选栏 - 大按钮设计 */
+.filter-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.filter-scroll {
+  white-space: nowrap;
+  padding: 10rpx 0;
+}
+
+.filter-container {
+  display: inline-flex;
+}
+
+.filter-item {
+  padding: 25rpx 35rpx;  /* 增大内边距 */
+  margin-right: 20rpx;
+  border-radius: 50rpx;
+  background-color: #f0f0f0;
+  border: 2rpx solid #ddd;
+  min-width: 120rpx;  /* 确保最小宽度 */
+  text-align: center;  /* 居中对齐 */
+}
+
+.filter-item.active {
+  background-color: #ff3b30;  /* 使用更醒目的红色 */
+  color: white;
+  border-color: #ff3b30;
+}
+
+.filter-text {
+  font-size: 34rpx;  /* 增大字体 */
+  color: #333;
+}
+
+.filter-item.active .filter-text {
+  color: white;
+  font-weight: bold;  /* 加粗选中项 */
+}
+
+
+/* 订单卡片 */
+.order-card {
+  border-radius: 20rpx;
+  margin: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.order-header {
+  background-color: #f9f9f9;
+}
+
+.order-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-title {
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.order-status {
+  padding: 10rpx 20rpx;
+  border-radius: 30rpx;
+  font-weight: bold;
+}
+
+.status-pending {
+  background-color: #ff9800;
+  color: white;
+}
+
+.status-assigned {
+  background-color: #2196f3;
+  color: white;
+}
+
+.status-in_progress {
+  background-color: #4caf50;
+  color: white;
+}
+
+.status-completed {
+  background-color: #9e9e9e;
+  color: white;
+}
+
+.status-cancelled {
+  background-color: #f44336;
+  color: white;
+}
+
+.order-body {
+  background-color: white;
+}
+
+.order-detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-weight: bold;
+  color: #666;
+  margin-bottom: 5rpx;
+}
+
+.address-text {
+  color: #333;
+  word-break: break-all;
+  margin-top: 5rpx;
+}
+
+.amount-text {
+  color: #ff5722;
+  font-weight: bold;
+  font-size: 36rpx; /* 更大的金额字体 */
+}
+
+.order-footer {
+  border-top: 1rpx solid #eee;
+  background-color: #fafafa;
+}
+
+.create-time {
+  color: #999;
+  margin-bottom: 20rpx;
+}
+
+/* 大按钮样式 */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.btn-large {
+  flex: 1;
+  min-height: 80rpx;
+  font-size: 32rpx;
+  border-radius: 15rpx;
+  padding: 20rpx 0;
+  margin: 10rpx 0;
+}
+
+.btn-primary {
+  background-color: #007aff;
+  color: white;
+}
+
+.btn-success {
+  background-color: #4cd964;
+  color: white;
+}
+
+.btn-warning {
+  background-color: #ffcc00;
+  color: black;
+}
+
+.btn-default {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.accept-btn {
+  background-color: #ff3b30 !important; /* 醒目的红色接单按钮 */
+  color: white !important;
+  font-weight: bold;
+  font-size: 36rpx !important;
+}
+
+/* 空状态 */
+.empty-state {
+  height: 60vh;
+}
+
+.empty-image {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 30rpx;
+}
+
+.empty-text {
+  color: #999;
+}
+
+/* 加载指示器 */
+.loading {
+  color: #999;
+  font-size: 32rpx;
+}
+
+/* 通用样式 */
+.bg-white {
+  background-color: white;
+}
+
+.padding-20 {
+  padding: 20rpx;
+}
+
+.margin-bottom-20 {
+  margin-bottom: 20rpx;
+}
+
+.border-bottom {
+  border-bottom: 1rpx solid #eee;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
+}
+
+/* 底部安全区域 */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 适配大屏手机 */
+@media screen and (min-width: 414px) {
+  .order-card {
+    margin: 25rpx;
+  }
+  
+  .filter-item {
+    padding: 25rpx 35rpx;
+    font-size: 34rpx;
+  }
+}

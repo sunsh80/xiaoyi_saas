@@ -1,0 +1,197 @@
+
+> xiaoyi-banyun-backend@1.0.0 start
+> node server.js
+
+[DEBUG] AuthController: [class AuthController]
+[DEBUG] AuthController.login: function
+[DEBUG] OrderController.create: function
+[DEBUG] OrderController.getById: function
+[DEBUG] OrderController.list: function
+[DEBUG] OrderController.assignOrder: function
+(node:78731) Warning: Accessing non-existent property 'getTenantConnection' of module exports inside circular dependency
+(Use `node --trace-warnings ...` to show where the warning was created)
+小蚁搬运后端服务启动在端口 4003
+API文档地址: http://localhost:4003/api-docs
+[DEBUG] JWT Middleware called for path: /api/workers/5/location method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] JWT Verification failed: invalid signature
+获取工人位置失败: TypeError: Cannot read properties of undefined (reading 'role')
+    at getWorkerLocation (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/controllers/MapController.js:168:20)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:284:15
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:365:14)
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:376:14)
+    at router.process_params (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:421:3)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:280:10)
+[DEBUG] JWT Middleware called for path: /api/auth/login method: POST
+[DEBUG] Authorization header: undefined
+[DEBUG] No Authorization header or not Bearer, calling next()
+[DEBUG] AuthController.login STARTING...
+[DEBUG] AuthController.login called with body: { username: 'test_worker', password: 'password123' }
+[DEBUG] AuthController.login parsed username: test_worker
+[DEBUG] JWT Middleware called for path: /api/workers/5/location method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] JWT Verification failed: invalid signature
+获取工人位置失败: TypeError: Cannot read properties of undefined (reading 'role')
+    at getWorkerLocation (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/controllers/MapController.js:168:20)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:284:15
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:365:14)
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:376:14)
+    at router.process_params (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:421:3)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:280:10)
+[DEBUG] JWT Middleware called for path: /api/workers/5/location method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] JWT Verification failed: invalid signature
+获取工人位置失败: TypeError: Cannot read properties of undefined (reading 'role')
+    at getWorkerLocation (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/controllers/MapController.js:168:20)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:284:15
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:365:14)
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:376:14)
+    at router.process_params (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:421:3)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:280:10)
+[DEBUG] JWT Middleware called for path: /api/workers/5/location method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] JWT Verification failed: invalid signature
+获取工人位置失败: TypeError: Cannot read properties of undefined (reading 'role')
+    at getWorkerLocation (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/controllers/MapController.js:168:20)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:284:15
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:365:14)
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:376:14)
+    at router.process_params (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:421:3)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:280:10)
+[DEBUG] JWT Middleware called for path: /api/workers/5/location method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] JWT Verification failed: invalid signature
+获取工人位置失败: TypeError: Cannot read properties of undefined (reading 'role')
+    at getWorkerLocation (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/controllers/MapController.js:168:20)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:284:15
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:365:14)
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:376:14)
+    at router.process_params (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:421:3)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:280:10)
+[DEBUG] JWT Middleware called for path: /api/workers/5/location method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] JWT Verification failed: invalid signature
+获取工人位置失败: TypeError: Cannot read properties of undefined (reading 'role')
+    at getWorkerLocation (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/controllers/MapController.js:168:20)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:284:15
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:365:14)
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:376:14)
+    at router.process_params (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:421:3)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:280:10)
+[DEBUG] JWT Middleware called for path: /api/workers/5/location method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] JWT Verification failed: invalid signature
+获取工人位置失败: TypeError: Cannot read properties of undefined (reading 'role')
+    at getWorkerLocation (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/controllers/MapController.js:168:20)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:284:15
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:365:14)
+    at param (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:376:14)
+    at router.process_params (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:421:3)
+    at next (/Users/sunsh80/Downloads/易工到项目/小蚁搬运/backend/node_modules/express/lib/router/index.js:280:10)
+[DEBUG] JWT Middleware called for path: /api/workers/5/location method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTEyMzU3MCwiZXhwIjoxNzcxMjA5OTcwfQ.0pbiKsHH_9kF_ld4RUnEu_DDdp_PMSTPalJ4InE_iko
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTEyMzU3MCwiZXhwIjoxNzcxMjA5OTcwfQ.0pbiKsHH_9kF_ld4RUnEu_DDdp_PMSTPalJ4InE_iko
+[DEBUG] JWT Verification succeeded, decoded: {
+  userId: 5,
+  tenantId: 5,
+  tenantCode: 'TEST_TENANT',
+  username: 'test_worker',
+  role: 'worker',
+  iat: 1771123570,
+  exp: 1771209970
+}
+[DEBUG] JWT Middleware called for path: /api/auth/login method: POST
+[DEBUG] Authorization header: undefined
+[DEBUG] No Authorization header or not Bearer, calling next()
+[DEBUG] AuthController.login STARTING...
+[DEBUG] AuthController.login called with body: { username: 'test_worker', password: 'password123' }
+[DEBUG] AuthController.login parsed username: test_worker
+[DEBUG] JWT Middleware called for path: /api/orders method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] JWT Verification failed: invalid signature
+[PERFORMANCE] 开始获取订单列表... {
+  query: { status: 'pending' },
+  user: undefined,
+  currentTenant: { id: 5, name: '测试租户', status: 1 }
+}
+[DEBUG] 租户用户查询自己租户的订单
+[DEBUG] 执行查询逻辑，条件: { tenant_id: 5, status: 'pending' }
+[PERFORMANCE] 获取订单列表完成，耗时: 21ms，返回 4 条记录
+[DEBUG] JWT Middleware called for path: /api/auth/login method: POST
+[DEBUG] Authorization header: undefined
+[DEBUG] No Authorization header or not Bearer, calling next()
+[DEBUG] AuthController.login STARTING...
+[DEBUG] AuthController.login called with body: { username: 'test_admin', password: 'password123' }
+[DEBUG] AuthController.login parsed username: test_admin
+[DEBUG] JWT Middleware called for path: /api/orders method: POST
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3RfYWRtaW4iLCJyb2xlIjoidGVuYW50X2FkbWluIiwiaWF0IjoxNzcxMjIxNjc0LCJleHAiOjE3NzEzMDgwNzR9.4PVww_qt7SRXzwWjYuEJOsE2o-53WJ0Srwh0HwRHU4U
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3RfYWRtaW4iLCJyb2xlIjoidGVuYW50X2FkbWluIiwiaWF0IjoxNzcxMjIxNjc0LCJleHAiOjE3NzEzMDgwNzR9.4PVww_qt7SRXzwWjYuEJOsE2o-53WJ0Srwh0HwRHU4U
+[DEBUG] JWT Verification succeeded, decoded: {
+  userId: 4,
+  tenantId: 5,
+  tenantCode: 'TEST_TENANT',
+  username: 'test_admin',
+  role: 'tenant_admin',
+  iat: 1771221674,
+  exp: 1771308074
+}
+[DEBUG] JWT Middleware called for path: /api/orders method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTEyNjA5MSwiZXhwIjoxNzcxMjEyNDkxfQ.ZaF7UsX2uEMJQD6Dpxhic0W0r4cw6isq8wMseamqap8
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTEyNjA5MSwiZXhwIjoxNzcxMjEyNDkxfQ.ZaF7UsX2uEMJQD6Dpxhic0W0r4cw6isq8wMseamqap8
+[DEBUG] JWT Verification failed: jwt expired
+[PERFORMANCE] 开始获取订单列表... {
+  query: { status: 'pending' },
+  user: undefined,
+  currentTenant: { id: 5, name: '测试租户', status: 1 }
+}
+[DEBUG] 租户用户查询自己租户的订单
+[DEBUG] 执行查询逻辑，条件: { tenant_id: 5, status: 'pending' }
+[PERFORMANCE] 获取订单列表完成，耗时: 9ms，返回 5 条记录
+[DEBUG] JWT Middleware called for path: /api/orders method: GET
+[DEBUG] Authorization header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] Extracted token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInRlbmFudElkIjo1LCJ0ZW5hbnRDb2RlIjoiVEVTVF9URU5BTlQiLCJ1c2VybmFtZSI6InRlc3Rfd29ya2VyIiwicm9sZSI6IndvcmtlciIsImlhdCI6MTc3MTExMzc3NywiZXhwIjoxNzcxMjAwMTc3fQ.bamzxcW6j-lik-VNNncnG09-Vv-tcDWjRxFbfZbyU4c
+[DEBUG] JWT Verification failed: invalid signature
+[PERFORMANCE] 开始获取订单列表... {
+  query: { status: 'pending' },
+  user: undefined,
+  currentTenant: { id: 5, name: '测试租户', status: 1 }
+}
+[DEBUG] 租户用户查询自己租户的订单
+[DEBUG] 执行查询逻辑，条件: { tenant_id: 5, status: 'pending' }
+[PERFORMANCE] 获取订单列表完成，耗时: 4ms，返回 5 条记录

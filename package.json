@@ -1,0 +1,62 @@
+{
+  "name": "xiaoyi-banyun-platform",
+  "version": "1.0.0",
+  "description": "小蚁搬运SaaS平台 - 跑腿装卸服务平台",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && nodemon server.js",
+    "dev:frontend": "cd frontend && echo '请在微信开发者工具中打开frontend/miniprogram'",
+    "start": "node backend/server.js",
+    "init-db": "node init-db.js",
+    "init-sample-data": "node init-db.js",
+    "test": "./run-tests.sh",
+    "test-connectivity": "node test/connectivity-test.js",
+    "test-login": "node test/login-flow-test.js",
+    "test-api": "node test/api-test-suite.js",
+    "generate-report": "node test/report-generator.js",
+    "docs": "npx @redocly/cli preview-docs openapi.yaml",
+    "validate-api": "npx @apidevtools/swagger-cli validate openapi.yaml",
+    "sync-api": "node check-api-consistency-simple.js",
+    "watch-api": "node scripts/watch-openapi.js",
+    "watcher:install": "bash scripts/openapi-watcher.sh install",
+    "watcher:uninstall": "bash scripts/openapi-watcher.sh uninstall",
+    "watcher:status": "bash scripts/openapi-watcher.sh status",
+    "postinstall": "npm run sync-api"
+  },
+  "keywords": [
+    "saas",
+    "logistics",
+    "delivery",
+    "mini-program",
+    "multi-tenant"
+  ],
+  "author": "XiaoYi Banyun",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.13.5",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.10.0",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.16.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-cli": "^4.0.4",
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xiaoyi-banyun/platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xiaoyi-banyun/platform/issues"
+  },
+  "homepage": "https://github.com/xiaoyi-banyun/platform#readme"
+}

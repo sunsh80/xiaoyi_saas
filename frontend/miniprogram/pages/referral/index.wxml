@@ -1,0 +1,71 @@
+<!-- pages/referral/index.wxml -->
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-title">
+    <text>推荐赚钱</text>
+  </view>
+
+  <!-- 推荐活动列表 -->
+  <view class="referral-campaigns">
+    <block wx:for="{{campaigns}}" wx:key="id">
+      <view class="campaign-card" bind:tap="viewCampaignDetail" data-id="{{item.id}}">
+        <view class="campaign-header">
+          <view class="campaign-title">{{item.campaign_title}}</view>
+          <view class="campaign-status {{item.status}}">{{getStatusText(item.status)}}</view>
+        </view>
+        <view class="campaign-body">
+          <view class="campaign-desc">{{item.campaign_description}}</view>
+          <view class="campaign-rewards">
+            <view class="reward-item">
+              <text class="reward-label">推荐奖励:</text>
+              <text class="reward-amount">¥{{item.referral_reward_amount}}</text>
+            </view>
+            <view class="reward-item">
+              <text class="reward-label">被推荐奖励:</text>
+              <text class="reward-amount">¥{{item.referee_reward_amount}}</text>
+            </view>
+          </view>
+          <view class="campaign-time">
+            <text>活动时间: {{formatDate(item.start_time)}} 至 {{formatDate(item.end_time)}}</text>
+          </view>
+        </view>
+        <view class="campaign-footer">
+          <button class="share-btn" bind:tap="shareCampaign" data-id="{{item.id}}" data-campaign="{{item}}">立即分享</button>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{campaigns.length === 0}}" class="empty-state">
+    <text class="empty-text">暂无推荐活动</text>
+  </view>
+
+  <!-- 我的推荐统计 -->
+  <view class="my-referral-stats" wx:if="{{referralStats}}">
+    <view class="stats-title">我的推荐统计</view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-number">{{referralStats.total_referrals}}</text>
+        <text class="stat-label">总推荐</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{referralStats.confirmed_referrals}}</text>
+        <text class="stat-label">已确认</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{referralStats.rewarded_referrals}}</text>
+        <text class="stat-label">已奖励</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 我的奖励 -->
+  <view class="my-rewards-section" wx:if="{{totalRewards}}">
+    <view class="rewards-title">我的奖励</view>
+    <view class="total-rewards">
+      <text class="rewards-amount">¥{{totalRewards}}</text>
+      <text class="rewards-desc">总奖励金额</text>
+    </view>
+  </view>
+</view>

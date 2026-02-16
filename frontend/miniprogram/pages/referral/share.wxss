@@ -1,0 +1,119 @@
+/**
+ * pages/referral/share.wxss
+ */
+
+.share-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa, #e4edf5);
+}
+
+.share-header {
+  background: linear-gradient(135deg, #00BCD4, #0097A7);
+  color: white;
+  padding: 40rpx 30rpx;
+  text-align: center;
+}
+
+.share-title {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.share-content {
+  flex: 1;
+  padding: 40rpx 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.campaign-info {
+  text-align: center;
+  margin-bottom: 50rpx;
+}
+
+.campaign-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.campaign-desc {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.5;
+}
+
+.qr-code-section {
+  text-align: center;
+  margin-bottom: 60rpx;
+}
+
+.qr-placeholder {
+  width: 300rpx;
+  height: 300rpx;
+  background: white;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20rpx;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.1);
+}
+
+.qr-image {
+  width: 250rpx;
+  height: 250rpx;
+}
+
+.qr-desc {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.share-methods {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 40rpx;
+}
+
+.method-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx;
+  background: white;
+  border-radius: 20rpx;
+  width: 200rpx;
+  box-shadow: 0 5rpx 15rpx rgba(0, 0, 0, 0.05);
+}
+
+.method-icon {
+  width: 80rpx;
+  height: 80rpx;
+  margin-bottom: 15rpx;
+}
+
+.method-text {
+  font-size: 24rpx;
+  color: #333;
+}
+
+.share-footer {
+  padding: 30rpx;
+  text-align: center;
+}
+
+.close-btn {
+  background: linear-gradient(90deg, #FF9800, #FF5722);
+  color: white;
+  border: none;
+  border-radius: 30rpx;
+  padding: 20rpx 60rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}

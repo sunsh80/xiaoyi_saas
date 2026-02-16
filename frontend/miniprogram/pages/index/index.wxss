@@ -1,0 +1,170 @@
+/**
+ * pages/index/index.wxss
+ */
+
+.banner-swiper {
+  height: 200rpx;  /* 缩小banner高度 */
+}
+
+.slide-image {
+  width: 100%;
+  height: 200rpx;
+}
+
+
+.section-title {
+  margin-bottom: 30rpx;
+}
+
+.title-text {
+  font-size: 36rpx;  /* 增大标题字体 */
+  font-weight: bold;
+  color: #333;
+}
+
+.more-text {
+  font-size: 28rpx;  /* 增大字体 */
+  color: #00BCD4;
+}
+
+.stats-container {
+  margin-top: 20rpx;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number {
+  font-size: 44rpx;  /* 增大数字字体 */
+  font-weight: bold;
+  color: #00BCD4;
+  margin-bottom: 10rpx;
+}
+
+.stat-label {
+  font-size: 30rpx;  /* 增大标签字体 */
+  color: #666;
+}
+
+/* 推荐拉新横幅样式 */
+.referral-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #FF9800, #FF5722);
+  color: white;
+  border-radius: 15rpx;
+  padding: 30rpx;
+  margin: 20rpx 0;
+}
+
+.referral-content {
+  flex: 1;
+}
+
+.referral-title {
+  font-size: 34rpx;  /* 增大标题字体 */
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.referral-desc {
+  font-size: 28rpx;  /* 增大描述字体 */
+  opacity: 0.9;
+  margin-bottom: 15rpx;
+}
+
+.referral-reward {
+  display: flex;
+  flex-direction: column;
+}
+
+.reward-text, .referee-reward-text {
+  font-size: 28rpx;  /* 增大奖励字体 */
+  margin-bottom: 5rpx;
+}
+
+.referral-button {
+  background-color: #fff;
+  color: #FF5722;
+  padding: 20rpx 30rpx;  /* 增大按钮内边距 */
+  border-radius: 35rpx;
+  font-size: 30rpx;  /* 增大按钮字体 */
+  font-weight: bold;
+}
+
+.order-list {
+  margin-top: 20rpx;
+}
+
+.order-card {
+  background-color: white;
+  border-radius: 20rpx;  /* 增大圆角 */
+  padding: 40rpx;  /* 增大内边距 */
+  margin-bottom: 30rpx;  /* 增大间距 */
+  box-shadow: 0 6rpx 16rpx rgba(0,0,0,0.1);  /* 增强阴影 */
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.order-title {
+  font-size: 34rpx;  /* 增大字体 */
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.order-status {
+  padding: 12rpx 25rpx;  /* 增大内边距 */
+  border-radius: 35rpx;
+  font-size: 28rpx;  /* 增大字体 */
+  font-weight: bold;
+}
+
+.order-body {
+  margin-bottom: 20rpx;
+}
+
+.order-detail-item {
+  display: flex;
+  margin-bottom: 20rpx;  /* 增加间距 */
+  font-size: 32rpx;  /* 增大字体 */
+}
+
+.order-detail-item text:first-child {
+  width: 150rpx;  /* 增加标签宽度 */
+  color: #666;
+  margin-right: 15rpx;  /* 增加间距 */
+  font-weight: bold;  /* 加粗标签 */
+}
+
+.order-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-primary {
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 15rpx;
+  padding: 25rpx 40rpx;  /* 增大内边距 */
+  font-size: 32rpx;  /* 增大字体 */
+  min-height: 80rpx;  /* 确保最小高度 */
+}
+
+.empty-state {
+  padding: 100rpx 40rpx;
+  text-align: center;
+  color: #999;
+  font-size: 32rpx;
+}

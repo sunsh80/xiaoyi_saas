@@ -1,0 +1,57 @@
+<!-- pages/map/address-selector.wxml -->
+<view class="container">
+  <!-- 搜索栏 - 大输入框 -->
+  <view class="search-bar bg-white padding-30">
+    <view class="search-input-container flex-row align-center bg-light-gray radius-50 padding-10">
+      <icon type="search" size="24" color="#999" />
+      <input 
+        class="search-input flex-1 large-text padding-left-20" 
+        placeholder="请输入地址关键词（如：北京、朝阳区）" 
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput" 
+        focus="{{true}}" 
+        placeholder-style="font-size: 32rpx;" />
+      <icon wx:if="{{searchKeyword}}" type="clear" size="24" bind:tap="clearSearch" />
+    </view>
+  </view>
+
+  <!-- 搜索结果列表 - 大按钮设计 -->
+  <view wx:if="{{showSearchResults}}" class="search-results bg-white margin-top-20">
+    <block wx:for="{{searchResults}}" wx:key="id">
+      <view class="search-result-item padding-40 border-bottom-large" bind:tap="selectAddress" data-index="{{index}}">
+        <view class="result-name large-bold-text">{{item.name}}</view>
+        <view class="result-address large-text text-gray margin-top-10">{{item.address}}</view>
+        <view class="result-distance large-text text-gray margin-top-10" wx:if="{{item.distance}}">
+          距离: {{item.distance}}km
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 当前位置选项 -->
+  <view wx:if="{{userLocation && !showSearchResults}}" class="current-location-section bg-white margin-top-30">
+    <view class="section-title padding-40 large-bold-text border-bottom-large">当前位置</view>
+    <view class="current-location-item padding-40 flex-row align-center" bind:tap="useCurrentLocation">
+      <icon type="location" size="24" color="#007AFF" />
+      <text class="large-text flex-1 margin-left-20">使用当前位置</text>
+      <icon type="arrow-right" size="20" color="#ccc" />
+    </view>
+  </view>
+
+  <!-- 历史记录（可选） -->
+  <view wx:if="{{!searchKeyword && !showSearchResults && !userLocation}}" class="history-section bg-white margin-top-30">
+    <view class="section-title padding-40 large-bold-text border-bottom-large">最近使用</view>
+    <view class="history-item padding-40 border-bottom-large" wx:for="{{history}}" wx:key="id" bind:tap="selectAddress" data-index="{{index}}">
+      <view class="history-name large-bold-text">{{item.name}}</view>
+      <view class="history-address large-text text-gray margin-top-10">{{item.address}}</view>
+    </view>
+    <view wx:if="{{history.length === 0}}" class="empty-history padding-60 text-center text-gray">
+      <text class="large-text">暂无历史记录</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{showSearchResults && searchResults.length === 0}}" class="empty-search padding-60 text-center text-gray">
+    <text class="large-text">没有找到相关地址</text>
+  </view>
+</view>

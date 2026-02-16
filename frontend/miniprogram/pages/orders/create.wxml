@@ -1,0 +1,132 @@
+<!-- pages/orders/create.wxml -->
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-title bg-white padding-30 border-bottom">
+    <text class="title-text-large">发布订单</text>
+  </view>
+
+  <!-- 订单表单 -->
+  <form class="form-container" bind:submit="submitOrder">
+    <view class="form-section bg-white margin-bottom-20">
+      <!-- 订单标题 -->
+      <view class="form-item border-bottom">
+        <view class="form-label">
+          <text class="required">*</text>
+          <text class="label-text">订单标题</text>
+        </view>
+        <input class="form-input large-text" name="title" placeholder="请输入订单标题" placeholder-style="font-size: 32rpx; color: #999;" maxlength="100" />
+      </view>
+
+      <!-- 订单描述 -->
+      <view class="form-item border-bottom">
+        <view class="form-label">
+          <text class="label-text">订单描述</text>
+        </view>
+        <textarea class="form-textarea large-text" name="description" placeholder="请输入订单详细描述" placeholder-style="font-size: 32rpx; color: #999;" maxlength="500" auto-height="true" />
+      </view>
+
+      <!-- 客户姓名 -->
+      <view class="form-item border-bottom">
+        <view class="form-label">
+          <text class="required">*</text>
+          <text class="label-text">客户姓名</text>
+        </view>
+        <input class="form-input large-text" name="customer_name" placeholder="请输入客户姓名" placeholder-style="font-size: 32rpx; color: #999;" maxlength="50" />
+      </view>
+
+      <!-- 客户电话 -->
+      <view class="form-item border-bottom">
+        <view class="form-label">
+          <text class="required">*</text>
+          <text class="label-text">客户电话</text>
+        </view>
+        <input class="form-input large-text" name="phone" placeholder="请输入客户电话" placeholder-style="font-size: 32rpx; color: #999;" maxlength="20" />
+      </view>
+
+      <!-- 客户地址 -->
+      <view class="form-item border-bottom">
+        <view class="form-label">
+          <text class="required">*</text>
+          <text class="label-text">客户地址</text>
+        </view>
+        <input class="form-input large-text" name="address" placeholder="请输入客户地址" placeholder-style="font-size: 32rpx; color: #999;" maxlength="200" />
+      </view>
+    </view>
+
+    <view class="form-section bg-white margin-bottom-20">
+      <!-- 取货地址 -->
+      <view class="form-item border-bottom">
+        <view class="form-label">
+          <text class="required">*</text>
+          <text class="label-text">取货地址</text>
+        </view>
+        <input class="form-input large-text" name="pickup_address" placeholder="请输入取货地址" placeholder-style="font-size: 32rpx; color: #999;" maxlength="200" />
+      </view>
+
+      <!-- 送货地址 -->
+      <view class="form-item border-bottom">
+        <view class="form-label">
+          <text class="required">*</text>
+          <text class="label-text">送货地址</text>
+        </view>
+        <input class="form-input large-text" name="delivery_address" placeholder="请输入送货地址" placeholder-style="font-size: 32rpx; color: #999;" maxlength="200" />
+      </view>
+
+      <!-- 取货时间 -->
+      <view class="form-item border-bottom">
+        <view class="form-label">
+          <text class="label-text">取货时间</text>
+        </view>
+        <input class="form-input large-text" name="pickup_time" type="datetime-local" placeholder="请选择取货时间" placeholder-style="font-size: 32rpx; color: #999;" />
+      </view>
+
+      <!-- 送货时间 -->
+      <view class="form-item">
+        <view class="form-label">
+          <text class="label-text">送货时间</text>
+        </view>
+        <input class="form-input large-text" name="delivery_time" type="datetime-local" placeholder="请选择送货时间" placeholder-style="font-size: 32rpx; color: #999;" />
+      </view>
+    </view>
+
+    <view class="form-section bg-white margin-bottom-20">
+      <!-- 距离 -->
+      <view class="form-item border-bottom">
+        <view class="form-label">
+          <text class="label-text">距离(km)</text>
+        </view>
+        <input class="form-input large-text" name="distance" type="digit" placeholder="请输入距离" placeholder-style="font-size: 32rpx; color: #999;" />
+      </view>
+
+      <!-- 重量 -->
+      <view class="form-item border-bottom">
+        <view class="form-label">
+          <text class="label-text">重量(kg)</text>
+        </view>
+        <input class="form-input large-text" name="weight" type="digit" placeholder="请输入重量" placeholder-style="font-size: 32rpx; color: #999;" />
+      </view>
+
+      <!-- 体积 -->
+      <view class="form-item border-bottom">
+        <view class="form-label">
+          <text class="label-text">体积(m³)</text>
+        </view>
+        <input class="form-input large-text" name="volume" type="digit" placeholder="请输入体积" placeholder-style="font-size: 32rpx; color: #999;" />
+      </view>
+
+      <!-- 金额 -->
+      <view class="form-item">
+        <view class="form-label">
+          <text class="required">*</text>
+          <text class="label-text">金额(元)</text>
+        </view>
+        <input class="form-input large-text" name="amount" type="digit" placeholder="请输入订单金额" placeholder-style="font-size: 32rpx; color: #999;" />
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="form-submit padding-40">
+      <button class="btn-submit-large" form-type="submit">发布订单</button>
+    </view>
+  </form>
+</view>

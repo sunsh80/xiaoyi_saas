@@ -1,0 +1,41 @@
+<!-- pages/referral/share.wxml -->
+<view class="container">
+  <view class="share-container">
+    <view class="share-header">
+      <text class="share-title">分享推荐</text>
+    </view>
+    
+    <view class="share-content">
+      <view class="campaign-info">
+        <view class="campaign-name">{{campaign.campaign_title}}</view>
+        <view class="campaign-desc">{{campaign.campaign_description}}</view>
+      </view>
+      
+      <view class="qr-code-section">
+        <view class="qr-placeholder">
+          <image src="/images/qr-placeholder.png" class="qr-image" mode="aspectFit"></image>
+        </view>
+        <text class="qr-desc">扫描二维码加入活动</text>
+      </view>
+      
+      <view class="share-methods">
+        <view class="method-item" bind:tap="shareToFriends">
+          <image src="/images/wechat-friends.png" class="method-icon"></image>
+          <text class="method-text">分享给朋友</text>
+        </view>
+        <view class="method-item" bind:tap="shareToTimeline">
+          <image src="/images/wechat-moments.png" class="method-icon"></image>
+          <text class="method-text">分享到朋友圈</text>
+        </view>
+        <view class="method-item" bind:tap="copyLink">
+          <image src="/images/link-icon.png" class="method-icon"></image>
+          <text class="method-text">复制链接</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="share-footer">
+      <button class="close-btn" bind:tap="closePage">关闭</button>
+    </view>
+  </view>
+</view>

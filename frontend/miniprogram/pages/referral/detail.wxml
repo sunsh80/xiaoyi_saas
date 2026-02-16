@@ -1,0 +1,58 @@
+<!-- pages/referral/detail.wxml -->
+<view class="container">
+  <view class="campaign-detail">
+    <view class="campaign-header">
+      <view class="campaign-title">{{campaign.campaign_title}}</view>
+      <view class="campaign-status {{campaign.status}}">{{getStatusText(campaign.status)}}</view>
+    </view>
+    
+    <view class="campaign-body">
+      <view class="campaign-desc">
+        <text class="desc-label">活动介绍:</text>
+        <text class="desc-content">{{campaign.campaign_description}}</text>
+      </view>
+      
+      <view class="reward-section">
+        <view class="section-title">奖励详情</view>
+        <view class="reward-item">
+          <text class="reward-label">推荐奖励:</text>
+          <text class="reward-amount">¥{{campaign.referral_reward_amount}}</text>
+        </view>
+        <view class="reward-item">
+          <text class="reward-label">被推荐奖励:</text>
+          <text class="reward-amount">¥{{campaign.referee_reward_amount}}</text>
+        </view>
+        <view class="reward-type" wx:if="{{campaign.referral_reward_type === 'percentage'}}">
+          <text>推荐人奖励类型: 百分比 ({{campaign.referral_reward_percentage}}%)</text>
+        </view>
+        <view class="reward-type" wx:if="{{campaign.referee_reward_type === 'percentage'}}">
+          <text>被推荐人奖励类型: 百分比 ({{campaign.referee_reward_percentage}}%)</text>
+        </view>
+      </view>
+      
+      <view class="limit-section">
+        <view class="section-title">奖励限制</view>
+        <view class="limit-item" wx:if="{{campaign.reward_limit_per_referrer}}">
+          <text>推荐人奖励上限: {{campaign.reward_limit_per_referrer}}次</text>
+        </view>
+        <view class="limit-item" wx:if="{{campaign.reward_limit_per_referee}}">
+          <text>被推荐人奖励上限: {{campaign.reward_limit_per_referee}}次</text>
+        </view>
+      </view>
+      
+      <view class="time-section">
+        <view class="section-title">活动时间</view>
+        <view class="time-item">
+          <text>开始时间: {{formatDate(campaign.start_time)}}</text>
+        </view>
+        <view class="time-item">
+          <text>结束时间: {{formatDate(campaign.end_time)}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="campaign-action">
+      <button class="share-btn" bind:tap="shareCampaign">立即分享</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,64 @@
+# 依赖目录
+node_modules/
+backend/node_modules/
+frontend/miniprogram/node_modules/
+
+# 日志文件
+*.log
+auto-push.log
+cron-push.log
+server.log
+server-debug.log
+server-new.log
+
+# 构建产物
+dist/
+build/
+.nyc_output/
+coverage/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+*.temp
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlitedb
+
+# 上传文件
+backend/uploads/
+backend/public/uploads/
+frontend/miniprogram/images/*.png
+frontend/miniprogram/images/*.jpg
+frontend/miniprogram/images/*.jpeg
+frontend/miniprogram/images/*.gif
+frontend/miniprogram/images/*.bmp
+
+# 环境配置
+.env
+.backend/.env
+.frontend/.env
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# 操作系统文件
+Thumbs.db
+desktop.ini
+
+# 大文件
+*.dmg
+*.zip
+*.rar
+*.tar
+*.gz
+*.iso
+*.exe
+*.pkg

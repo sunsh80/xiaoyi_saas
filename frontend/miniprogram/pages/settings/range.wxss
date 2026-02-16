@@ -1,0 +1,95 @@
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.section {
+  background: #fff;
+  margin-bottom: 20rpx;
+  padding: 20rpx;
+  border-radius: 10rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.location-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.location-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 10rpx;
+  background-color: #fafafa;
+}
+
+.location-name {
+  font-size: 28rpx;
+  color: #666;
+  flex: 1;
+}
+
+.icon-arrow {
+  color: #ccc;
+  font-size: 24rpx;
+}
+
+.radius-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.radius-option {
+  flex: 1;
+  min-width: calc(33% - 14rpx); /* 一行最多3个 */
+  padding: 20rpx 10rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 10rpx;
+  background-color: #fff;
+  font-size: 28rpx;
+  color: #666;
+  text-align: center;
+}
+
+.radius-option.selected {
+  background-color: #00BCD4;
+  color: #fff;
+  border-color: #00BCD4;
+}
+
+.btn {
+  height: 80rpx;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  background-color: #00BCD4;
+  color: white;
+  margin-top: 40rpx;
+}
+
+.btn-secondary {
+  background-color: #f0f0f0;
+  color: #666;
+}
+.save-btn {
+  width: 100%;
+}

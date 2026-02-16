@@ -1,0 +1,40 @@
+{
+  "name": "xiaoyi-banyun-platform-core",
+  "version": "1.0.0",
+  "description": "小蚁搬运SaaS平台 - 跑腿装卸服务平台 - 精简版",
+  "main": "backend/server.js",
+  "scripts": {
+    "dev": "cd backend && nodemon server.js",
+    "start": "cd backend && node server.js",
+    "init-db": "node init-db.js"
+  },
+  "keywords": [
+    "saas",
+    "logistics",
+    "delivery",
+    "mini-program",
+    "multi-tenant"
+  ],
+  "author": "XiaoYi Banyun",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.16.3",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "express-rate-limit": "^6.10.0",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sunsh80/xiaoyi_saas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sunsh80/xiaoyi_saas/issues"
+  },
+  "homepage": "https://github.com/sunsh80/xiaoyi_saas#readme"
+}

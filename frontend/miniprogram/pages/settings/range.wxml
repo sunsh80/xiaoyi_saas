@@ -1,0 +1,29 @@
+<view class="container">
+  <view class="section">
+    <text class="section-title">接单位置</text>
+    <view class="location-card">
+      <view class="location-info" bind:tap="selectLocationOnMap">
+        <text class="location-name">{{ locationName }}</text>
+        <text class="icon-arrow">></text>
+      </view>
+      <button class="btn btn-secondary" bind:tap="useCurrentLocation">使用当前位置</button>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="section-title">接单半径</text>
+    <view class="radius-options">
+      <block wx:for="{{ radiusOptions }}" wx:key="value">
+        <button
+          class="radius-option {{ item.value == radius ? 'selected' : '' }}"
+          data-radius="{{ item.value }}"
+          bind:tap="selectRadius"
+        >
+          {{ item.label }}
+        </button>
+      </block>
+    </view>
+  </view>
+
+  <button class="btn btn-primary save-btn" bind:tap="saveSettings">保存设置</button>
+</view>

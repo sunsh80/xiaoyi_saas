@@ -3,6 +3,16 @@ const router = express.Router();
 const AdminFinanceController = require('../controllers/AdminFinanceController');
 const AdminReferralController = require('../controllers/AdminReferralController');
 
+// 财务管理路由
+router.get('/admin/finance/overview', AdminFinanceController.getFinanceOverview);
+
+// 佣金配置路由
+router.get('/admin/commission/config', AdminFinanceController.getCommissionConfig);
+router.put('/admin/commission/config', AdminFinanceController.updateCommissionConfig);
+
+// 订单佣金明细路由
+router.get('/admin/orders/:id/commission', AdminFinanceController.getOrderCommission);
+
 // 提现管理路由
 router.get('/admin/withdrawals', AdminFinanceController.getWithdrawalList);
 router.put('/admin/withdrawals/:id/approve', AdminFinanceController.approveWithdrawal);

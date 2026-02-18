@@ -31,18 +31,8 @@ temp/
 # 上传文件
 backend/uploads/
 backend/public/uploads/
-frontend/miniprogram/images/*.png
-frontend/miniprogram/images/*.jpg
-frontend/miniprogram/images/*.jpeg
-frontend/miniprogram/images/*.gif
-frontend/miniprogram/images/*.bmp
 
-# 环境配置
-.env
-.backend/.env
-.frontend/.env
-
-# IDE文件
+# IDE 文件
 .vscode/
 .idea/
 *.swp

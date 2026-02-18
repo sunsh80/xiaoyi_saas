@@ -1,0 +1,431 @@
+/**
+ * 小蚁搬运租户管理后台 CSS
+ * 采用绿色主题，与总后台（蓝色主题）区分
+ */
+
+:root {
+  --sidebar-bg-start: #1b5e20;
+  --sidebar-bg-end: #2e7d32;
+  --sidebar-width: 250px;
+  --top-nav-height: 60px;
+  --content-bg: #f5f5f5;
+  --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --transition-speed: 0.3s;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--content-bg);
+  color: #333;
+  line-height: 1.6;
+}
+
+#app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ========== 侧边栏样式 ========== */
+.sidebar {
+  width: var(--sidebar-width);
+  background: linear-gradient(180deg, var(--sidebar-bg-start), var(--sidebar-bg-end));
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 1000;
+  overflow-y: auto;
+  transition: transform var(--transition-speed) ease;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 3px;
+}
+
+.logo-container {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo-container h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.logo-container p {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.tenant-info {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.tenant-name {
+  font-size: 0.95rem;
+  word-break: break-all;
+}
+
+/* 导航菜单 */
+.sidebar .nav {
+  padding: 1rem 0;
+}
+
+.sidebar .nav-item {
+  margin-bottom: 0.25rem;
+}
+
+.sidebar .nav-link {
+  color: rgba(255,255,255,0.8);
+  padding: 0.75rem 1.5rem;
+  transition: all var(--transition-speed) ease;
+  border-left: 3px solid transparent;
+  font-size: 0.9rem;
+}
+
+.sidebar .nav-link:hover {
+  color: white;
+  background: rgba(255,255,255,0.1);
+  border-left-color: rgba(255,255,255,0.3);
+}
+
+.sidebar .nav-link.active {
+  color: white;
+  background: rgba(255,255,255,0.15);
+  border-left-color: #4caf50;
+}
+
+.sidebar .nav-link i {
+  width: 20px;
+  text-align: center;
+}
+
+/* ========== 主内容区样式 ========== */
+.main-panel {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left var(--transition-speed) ease;
+}
+
+/* 顶部导航栏 */
+.navbar {
+  height: var(--top-nav-height);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  background-color: white !important;
+  padding: 0 1.5rem;
+}
+
+.navbar .dropdown-toggle {
+  border: 1px solid #dee2e6;
+  color: #495057;
+}
+
+.navbar .dropdown-toggle:hover {
+  background-color: #f8f9fa;
+}
+
+.navbar .dropdown-menu {
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 内容区域 */
+.content {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+/* 页面 */
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+/* 卡片样式 */
+.card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background-color: white;
+  border-bottom: 1px solid #e9ecef;
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+/* 统计卡片 */
+.card.text-white {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.card.text-white .card-body {
+  padding: 1.25rem;
+}
+
+.card.text-white h4,
+.card.text-white h6 {
+  font-size: 0.85rem;
+  font-weight: 500;
+  opacity: 0.9;
+  margin-bottom: 0.5rem;
+}
+
+.card.text-white h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+.card.text-white small {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* 表格样式 */
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #6c757d;
+  border-bottom-width: 1px;
+  padding: 0.75rem 1rem;
+}
+
+.table tbody td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0,0,0,0.02);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0,0,0,0.03);
+}
+
+/* 徽章样式 */
+.badge {
+  padding: 0.35rem 0.65rem;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+/* 按钮样式 */
+.btn {
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all var(--transition-speed) ease;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-primary {
+  background-color: #2e7d32;
+  border-color: #2e7d32;
+}
+
+.btn-primary:hover {
+  background-color: #1b5e20;
+  border-color: #1b5e20;
+}
+
+.btn-outline-secondary {
+  color: #6c757d;
+  border-color: #dee2e6;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+/* 表单样式 */
+.form-control,
+.form-select {
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  padding: 0.5rem 0.75rem;
+  transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+}
+
+.form-label {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #495057;
+  margin-bottom: 0.35rem;
+}
+
+.form-text {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+/* 开关样式 */
+.form-check-input:checked {
+  background-color: #2e7d32;
+  border-color: #2e7d32;
+}
+
+/* 分页样式 */
+.pagination .page-link {
+  border-radius: 6px;
+  margin: 0 0.25rem;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  padding: 0.5rem 0.75rem;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #2e7d32;
+  border-color: #2e7d32;
+}
+
+.pagination .page-link:hover {
+  background-color: #f8f9fa;
+}
+
+/* ========== 响应式设计 ========== */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .main-panel {
+    margin-left: 0;
+  }
+
+  .navbar {
+    padding: 0 1rem;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+
+  .card.text-white h3 {
+    font-size: 1.5rem;
+  }
+
+  .table-responsive {
+    font-size: 0.85rem;
+  }
+}
+
+/* ========== 工具类 ========== */
+.border-bottom {
+  border-bottom: 1px solid #e9ecef !important;
+}
+
+.fw-bold {
+  font-weight: 700 !important;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.text-white-50 {
+  color: rgba(255,255,255,0.5) !important;
+}
+
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+.shadow-sm {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08) !important;
+}
+
+.rounded {
+  border-radius: 8px !important;
+}
+
+/* ========== 加载动画 ========== */
+.loading-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spinner 0.6s linear infinite;
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
+/* ========== 空状态 ========== */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6c757d;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* ========== 警告和提示 ========== */
+.alert {
+  border-radius: 8px;
+  border: none;
+  padding: 1rem 1.25rem;
+}
+
+.alert-dismissible .btn-close {
+  padding: 1rem;
+}
+
+/* ========== Chart.js 容器 ========== */
+canvas {
+  max-height: 300px;
+}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>租户登录测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 10px 20px;
+      background: #2e7d32;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #ccc;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>租户登录测试</h1>
+  
+  <div class="form-group">
+    <label>租户编码:</label>
+    <input type="text" id="tenantCode" value="TEST_TENANT">
+  </div>
+  
+  <div class="form-group">
+    <label>用户名:</label>
+    <input type="text" id="username" value="test_admin">
+  </div>
+  
+  <div class="form-group">
+    <label>密码:</label>
+    <input type="password" id="password" value="password123">
+  </div>
+  
+  <button onclick="testLogin()" id="loginBtn">测试登录</button>
+  
+  <div id="result"></div>
+  
+  <div style="margin-top: 30px;">
+    <h3>测试账户信息：</h3>
+    <ul>
+      <li>租户编码：TEST_TENANT</li>
+      <li>用户名：test_admin</li>
+      <li>密码：password123</li>
+    </ul>
+  </div>
+
+  <script>
+    async function testLogin() {
+      const tenantCode = document.getElementById('tenantCode').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const loginBtn = document.getElementById('loginBtn');
+      const resultDiv = document.getElementById('result');
+      
+      loginBtn.disabled = true;
+      loginBtn.textContent = '登录中...';
+      resultDiv.className = '';
+      resultDiv.innerHTML = '正在连接...';
+      
+      try {
+        console.log('发送登录请求:', { tenantCode, username });
+        
+        const response = await fetch('/api/auth/tenant-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-tenant-code': tenantCode
+          },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        console.log('响应数据:', data);
+        
+        if (data.success) {
+          resultDiv.className = 'success';
+          resultDiv.innerHTML = `
+            <h3>✅ 登录成功！</h3>
+            <p><strong>用户名:</strong> ${data.data.user.username}</p>
+            <p><strong>角色:</strong> ${data.data.user.role}</p>
+            <p><strong>Token:</strong> ${data.data.token.substring(0, 50)}...</p>
+            <p><strong>租户编码:</strong> ${tenantCode}</p>
+            <p style="margin-top: 10px;">
+              <a href="/tenant-admin/index.html" style="background: #2e7d32; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">进入租户管理后台</a>
+            </p>
+          `;
+          
+          // 保存 token
+          localStorage.setItem('tenant_admin_token', data.data.token);
+          localStorage.setItem('tenant_code', tenantCode);
+        } else {
+          resultDiv.className = 'error';
+          resultDiv.innerHTML = `<h3>❌ 登录失败</h3><p>${data.message}</p>`;
+        }
+      } catch (error) {
+        console.error('登录错误:', error);
+        resultDiv.className = 'error';
+        resultDiv.innerHTML = `<h3>❌ 请求失败</h3><p>${error.message}</p><p>请检查后端服务是否启动</p>`;
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = '测试登录';
+      }
+    }
+  </script>
+</body>
+</html>

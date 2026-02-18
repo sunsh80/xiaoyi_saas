@@ -1,0 +1,69 @@
+<!--pages/auth/tenant-register/tenant-register.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">租户注册</text>
+    <text class="subtitle">填写企业信息，等待审批</text>
+  </view>
+
+  <view class="form">
+    <!-- 企业信息 -->
+    <view class="form-section">
+      <view class="section-title">企业信息</view>
+      
+      <view class="input-group">
+        <text class="label">企业名称 <text class="required">*</text></text>
+        <input class="input" placeholder="请输入企业名称" value="{{tenant_name}}" bind:input="onInput" data-field="tenant_name"/>
+      </view>
+
+      <view class="input-group">
+        <text class="label">企业地址</text>
+        <input class="input" placeholder="请输入企业地址" value="{{address}}" bind:input="onInput" data-field="address"/>
+      </view>
+    </view>
+
+    <!-- 联系人信息 -->
+    <view class="form-section">
+      <view class="section-title">联系人信息</view>
+      
+      <view class="input-group">
+        <text class="label">联系人姓名 <text class="required">*</text></text>
+        <input class="input" placeholder="请输入联系人姓名" value="{{contact_person}}" bind:input="onInput" data-field="contact_person"/>
+      </view>
+
+      <view class="input-group">
+        <text class="label">联系电话 <text class="required">*</text></text>
+        <input class="input" type="number" maxlength="11" placeholder="请输入联系电话" value="{{contact_phone}}" bind:input="onInput" data-field="contact_phone"/>
+      </view>
+
+      <view class="input-group">
+        <text class="label">联系邮箱</text>
+        <input class="input" type="text" placeholder="请输入联系邮箱" value="{{contact_email}}" bind:input="onInput" data-field="contact_email"/>
+      </view>
+    </view>
+
+    <!-- 管理员账户 -->
+    <view class="form-section">
+      <view class="section-title">管理员账户</view>
+      
+      <view class="input-group">
+        <text class="label">用户名 <text class="required">*</text></text>
+        <input class="input" placeholder="请设置用户名" value="{{admin_username}}" bind:input="onInput" data-field="admin_username"/>
+      </view>
+
+      <view class="input-group">
+        <text class="label">密码 <text class="required">*</text></text>
+        <input class="input" type="password" placeholder="请设置密码（6-20 位）" value="{{admin_password}}" bind:input="onInput" data-field="admin_password"/>
+      </view>
+
+      <view class="input-group">
+        <text class="label">确认密码 <text class="required">*</text></text>
+        <input class="input" type="password" placeholder="请再次输入密码" value="{{confirm_password}}" bind:input="onInput" data-field="confirm_password"/>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer">
+    <button class="submit-btn" bind:tap="submitRegister">提交注册</button>
+    <view class="tip">提交后需等待总后台审批，审批通过后会通知您</view>
+  </view>
+</view>

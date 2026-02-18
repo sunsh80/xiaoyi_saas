@@ -26,7 +26,7 @@ class Order {
   }
 
   /**
-   * 根据ID查找订单
+   * 根据 ID 查找订单
    */
   static async findById(orderId, tenantCode) {
     const pool = getTenantConnection(tenantCode);
@@ -112,7 +112,7 @@ class Order {
     const minute = String(date.getMinutes()).padStart(2, '0');
     const second = String(date.getSeconds()).padStart(2, '0');
     const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    
+
     return `XY${year}${month}${day}${hour}${minute}${second}${randomNum}`;
   }
 
@@ -123,12 +123,12 @@ class Order {
     const connection = await getTenantConnection(tenantCode);
     try {
       await connection.execute(
-        `UPDATE ${this.tableName} 
-         SET status = 'assigned', assignee_user_id = ?, assign_time = NOW() 
+        `UPDATE ${this.tableName}
+         SET status = 'assigned', assignee_user_id = ?, assign_time = NOW()
          WHERE id = ?`,
         [workerUserId, this.id]
       );
-      
+
       this.status = 'assigned';
       this.assignee_user_id = workerUserId;
       this.assign_time = new Date();
@@ -147,7 +147,7 @@ class Order {
         `UPDATE ${this.tableName} SET status = 'in_progress' WHERE id = ?`,
         [this.id]
       );
-      
+
       this.status = 'in_progress';
     } finally {
       connection.release();
@@ -236,7 +236,7 @@ class Order {
         `UPDATE ${this.tableName} SET status = 'cancelled' WHERE id = ?`,
         [this.id]
       );
-      
+
       this.status = 'cancelled';
     } finally {
       connection.release();
@@ -251,21 +251,21 @@ class Order {
     try {
       const fields = [];
       const values = [];
-      
+
       Object.keys(updateData).forEach(key => {
         if (this.hasOwnProperty(key) && key !== 'id' && key !== 'order_no') {
           fields.push(`${key} = ?`);
           values.push(updateData[key]);
         }
       });
-      
+
       values.push(this.id);
-      
+
       await connection.execute(
         `UPDATE ${this.tableName} SET ${fields.join(', ')} WHERE id = ?`,
         values
       );
-      
+
       // 更新当前实例
       Object.assign(this, updateData);
     } finally {
@@ -281,20 +281,20 @@ class Order {
     try {
       let query = `SELECT * FROM ${this.tableName} WHERE tenant_id = ?`;
       const params = [tenantId];
-      
+
       if (options.status) {
         query += ` AND status = ?`;
         params.push(options.status);
       }
-      
+
       if (options.userId) {
         query += ` AND assignee_user_id = ?`;
         params.push(options.userId);
       }
-      
+
       query += ` ORDER BY created_at DESC`;
 
-      // 使用字符串拼接LIMIT和OFFSET以避免参数类型问题
+      // 使用字符串拼接 LIMIT 和 OFFSET 以避免参数类型问题
       if (options.limit) {
         const limit = Math.max(1, Math.min(100, parseInt(options.limit) || 10));
         const offset = Math.max(0, parseInt(options.offset) || 0);
@@ -357,15 +357,15 @@ class Order {
       // 添加排序
       query += ` ORDER BY created_at DESC`;
 
-      // 使用字符串拼接LIMIT和OFFSET以避免参数类型问题
+      // 使用字符串拼接 LIMIT 和 OFFSET 以避免参数类型问题
       const limit = Math.max(1, Math.min(100, parseInt(options.limit) || 10));
       const offset = Math.max(0, parseInt(options.offset) || 0);
       query += ` LIMIT ${limit} OFFSET ${offset}`;
 
-      // 执行查询（不包含LIMIT和OFFSET参数）
+      // 执行查询（不包含 LIMIT 和 OFFSET 参数）
       const [rows] = await connection.execute(query, params);
 
-      // 为计数查询单独执行（使用countParams，不含LIMIT和OFFSET参数）
+      // 为计数查询单独执行（使用 countParams，不含 LIMIT 和 OFFSET 参数）
       const [countResult] = await connection.execute(countQuery, countParams);
 
       return {
@@ -393,7 +393,7 @@ class Order {
 
       query += ` ORDER BY created_at DESC`;
 
-      // 使用字符串拼接LIMIT和OFFSET以避免参数类型问题
+      // 使用字符串拼接 LIMIT 和 OFFSET 以避免参数类型问题
       if (options.limit) {
         const limit = Math.max(1, Math.min(100, parseInt(options.limit) || 10));
         const offset = Math.max(0, parseInt(options.offset) || 0);
@@ -414,7 +414,7 @@ class Order {
     const pool = getTenantConnection(tenantCode);
     const connection = await pool.getConnection();
     try {
-      // 首先获取租户ID
+      // 首先获取租户 ID
       const [tenants] = await connection.execute(
         'SELECT id FROM tenants WHERE tenant_code = ?',
         [tenantCode]
@@ -431,7 +431,7 @@ class Order {
 
       query += ` ORDER BY created_at DESC`;
 
-      // 使用字符串拼接LIMIT和OFFSET以避免参数类型问题
+      // 使用字符串拼接 LIMIT 和 OFFSET 以避免参数类型问题
       if (options.limit) {
         const limit = Math.max(1, Math.min(100, parseInt(options.limit) || 10));
         const offset = Math.max(0, parseInt(options.offset) || 0);
@@ -464,15 +464,15 @@ class Order {
       const values = [];
 
       Object.keys(updateData).forEach(key => {
-        if (key !== 'id' && key !== 'order_no') {  // 不允许更新ID和订单号
+        if (key !== 'id' && key !== 'order_no') {  // 不允许更新 ID 和订单号
           fields.push(`${key} = ?`);
-          // 确保值是正确的类型，避免undefined值
+          // 确保值是正确的类型，避免 undefined 值
           const value = updateData[key];
           values.push(value !== undefined ? value : null);
         }
       });
 
-      values.push(orderId);  // WHERE子句参数
+      values.push(orderId);  // WHERE 子句参数
 
       await connection.execute(
         `UPDATE ${this.tableName} SET ${fields.join(', ')} WHERE id = ?`,
@@ -481,6 +481,236 @@ class Order {
 
       // 返回更新后的订单
       return await this.findById(orderId, tenantCode);
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * 根据租户 ID 和日期范围统计订单数量
+   */
+  static async countByTenantAndDateRange(tenantId, tenantCode, startDate, endDate) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.execute(
+        `SELECT COUNT(*) as count FROM ${this.tableName} 
+         WHERE tenant_id = ? AND created_at BETWEEN ? AND ?`,
+        [tenantId, startDate, endDate]
+      );
+      return { count: rows[0].count || 0 };
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * 根据租户 ID 和状态统计订单数量
+   */
+  static async countByTenantAndStatus(tenantId, status, tenantCode) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.execute(
+        `SELECT COUNT(*) as count FROM ${this.tableName} 
+         WHERE tenant_id = ? AND status = ?`,
+        [tenantId, status]
+      );
+      return { count: rows[0].count || 0 };
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * 获取租户下的订单（带限制）
+   */
+  static async findByTenantWithLimit(tenantId, tenantCode, limit = 5) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.execute(
+        `SELECT * FROM ${this.tableName} 
+         WHERE tenant_id = ? 
+         ORDER BY created_at DESC 
+         LIMIT ?`,
+        [tenantId, limit]
+      );
+      return rows.map(row => new Order(row));
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * 根据筛选条件获取租户订单（支持分页）
+   */
+  static async findByTenantWithFilters(tenantId, tenantCode, options = {}) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      let query = `SELECT * FROM ${this.tableName} WHERE tenant_id = ?`;
+      const params = [tenantId];
+
+      if (options.status) {
+        query += ` AND status = ?`;
+        params.push(options.status);
+      }
+
+      if (options.start_date) {
+        query += ` AND created_at >= ?`;
+        params.push(options.start_date);
+      }
+
+      if (options.end_date) {
+        query += ` AND created_at <= ?`;
+        params.push(options.end_date);
+      }
+
+      if (options.search) {
+        query += ` AND (order_no LIKE ? OR title LIKE ?)`;
+        const searchPattern = `%${options.search}%`;
+        params.push(searchPattern, searchPattern);
+      }
+
+      // 获取总数
+      const countQuery = query.replace('SELECT *', 'SELECT COUNT(*) as total');
+      const [countResult] = await connection.execute(countQuery, params);
+      const total = countResult[0].total;
+
+      // 添加分页和排序
+      query += ` ORDER BY created_at DESC`;
+      
+      if (options.limit) {
+        const offset = (options.page - 1) * options.limit;
+        query += ` LIMIT ? OFFSET ?`;
+        params.push(options.limit, offset);
+      }
+
+      const [rows] = await connection.execute(query, params);
+      return {
+        orders: rows.map(row => new Order(row)),
+        total
+      };
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * 获取订单月度趋势
+   */
+  static async getMonthlyTrend(tenantId, tenantCode, months = 12) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.execute(
+        `SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count 
+         FROM ${this.tableName} 
+         WHERE tenant_id = ? 
+         GROUP BY DATE_FORMAT(created_at, '%Y-%m') 
+         ORDER BY month DESC 
+         LIMIT ?`,
+        [tenantId, months]
+      );
+      
+      // 反转数组以按时间顺序显示
+      return rows.reverse().map(row => row.count);
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * 获取订单状态分布
+   */
+  static async getStatusDistribution(tenantId, tenantCode) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.execute(
+        `SELECT status, COUNT(*) as count 
+         FROM ${this.tableName} 
+         WHERE tenant_id = ? 
+         GROUP BY status`,
+        [tenantId]
+      );
+      
+      // 返回状态分布数组
+      const statusMap = { 'pending': 0, 'assigned': 0, 'in_progress': 0, 'completed': 0, 'cancelled': 0 };
+      rows.forEach(row => {
+        statusMap[row.status] = row.count;
+      });
+      
+      return Object.values(statusMap);
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * 按日期范围和状态统计订单金额总和
+   */
+  static async sumAmountByDateRange(tenantId, startDate, endDate, status, tenantCode) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.execute(
+        `SELECT COALESCE(SUM(amount), 0) as amount 
+         FROM ${this.tableName} 
+         WHERE tenant_id = ? 
+         AND created_at BETWEEN ? AND ?
+         AND status = ?`,
+        [tenantId, startDate, endDate, status]
+      );
+      return { amount: rows[0].amount || 0 };
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * 按状态统计订单金额总和
+   */
+  static async sumAmountByStatus(tenantId, status, tenantCode) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.execute(
+        `SELECT COALESCE(SUM(amount), 0) as amount 
+         FROM ${this.tableName} 
+         WHERE tenant_id = ? AND status = ?`,
+        [tenantId, status]
+      );
+      return { amount: rows[0].amount || 0 };
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * 统计已提现金额
+   */
+  static async sumWithdrawnAmount(tenantId, tenantCode) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      // 这里简化处理，实际应该从提现表中统计
+      return { amount: 0 };
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * 统计账户余额
+   */
+  static async sumAccountBalance(tenantId, tenantCode) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      // 这里简化处理，实际应该从账户表中统计
+      return { amount: 0 };
     } finally {
       connection.release();
     }

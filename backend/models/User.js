@@ -209,6 +209,81 @@ class User {
       connection.release();
     }
   }
+
+  /**
+   * 根据筛选条件获取租户下的用户（支持分页）
+   */
+  static async findByTenantWithFilters(tenantId, tenantCode, options = {}) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      let query = `SELECT * FROM ${this.tableName} WHERE tenant_id = ?`;
+      const params = [tenantId];
+
+      if (options.role) {
+        query += ` AND role = ?`;
+        params.push(options.role);
+      }
+
+      if (options.status !== undefined) {
+        query += ` AND status = ?`;
+        params.push(options.status);
+      }
+
+      if (options.search) {
+        query += ` AND (username LIKE ? OR phone LIKE ? OR real_name LIKE ?)`;
+        const searchPattern = `%${options.search}%`;
+        params.push(searchPattern, searchPattern, searchPattern);
+      }
+
+      // 获取总数
+      const countQuery = query.replace('SELECT *', 'SELECT COUNT(*) as total');
+      const [countResult] = await connection.execute(countQuery, params);
+      const total = countResult[0].total;
+
+      // 添加分页和排序
+      query += ` ORDER BY created_at DESC`;
+
+      if (options.limit) {
+        const offset = (options.page - 1) * options.limit;
+        query += ` LIMIT ? OFFSET ?`;
+        params.push(options.limit, offset);
+      }
+
+      const [rows] = await connection.execute(query, params);
+      return {
+        users: rows.map(row => new User(row)),
+        total
+      };
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * 统计活跃接单员数量（最近 7 天有接单记录）
+   */
+  static async countActiveWorkers(tenantId, tenantCode) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+      const [rows] = await connection.execute(
+        `SELECT COUNT(DISTINCT u.id) as count
+         FROM ${this.tableName} u
+         LEFT JOIN orders o ON u.id = o.worker_id
+         WHERE u.tenant_id = ? AND u.role = 'worker' AND u.status = 1
+         AND o.created_at >= ?`,
+        [tenantId, sevenDaysAgo]
+      );
+
+      return { count: rows[0].count || 0 };
+    } finally {
+      connection.release();
+    }
+  }
 }
 
 module.exports = User;

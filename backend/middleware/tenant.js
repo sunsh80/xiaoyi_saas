@@ -3,6 +3,9 @@
 const mysql = require('mysql2/promise');
 const Tenant = require('../models/Tenant');
 
+// 确保加载环境变量
+require('dotenv').config({ path: './backend/.env' });
+
 // 连接池缓存（按租户 code 缓存）
 const pools = {};
 
@@ -29,8 +32,13 @@ function getTenantConnection(tenantCode) {
  * 租户中间件（Express 兼容）
  */
 async function tenantMiddleware(req, res, next) {
-  // 跳过 /auth、/images 和 /payments/callback 路由
+  // 跳过 /auth、/admin、/images 和 /payments/callback 路由
+  // /auth: 认证相关不需要租户验证
+  // /admin: 总后台管理，使用自己的认证体系
+  // /images: 静态资源
+  // /payments/callback: 支付回调
   if (req.originalUrl.startsWith('/auth/') ||
+      req.originalUrl.startsWith('/admin/') ||
       req.originalUrl.startsWith('/images/') ||
       req.originalUrl === '/payments/callback') {
     return next();

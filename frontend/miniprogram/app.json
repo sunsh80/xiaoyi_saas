@@ -10,7 +10,10 @@
     "pages/referral/detail",
     "pages/referral/share",
     "pages/settings/range",
-    "pages/map/address-selector"
+    "pages/map/address-selector",
+    "pages/auth/register-type/register-type",
+    "pages/auth/tenant-register/tenant-register",
+    "pages/auth/worker-register/worker-register"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -1,0 +1,44 @@
+<!--pages/auth/register-type/register-type.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">选择注册类型</text>
+    <text class="subtitle">请选择您的身份类型</text>
+  </view>
+
+  <view class="type-cards">
+    <!-- 租户注册卡片 -->
+    <view class="type-card tenant-card" bind:tap="selectType" data-type="tenant">
+      <view class="card-icon">
+        <text class="iconfont">🏢</text>
+      </view>
+      <view class="card-title">我是租户</view>
+      <view class="card-desc">企业/商户入驻，发布订单管理工人</view>
+      <view class="card-tag">
+        <text class="tag-text">需审批</text>
+      </view>
+    </view>
+
+    <!-- 工人注册卡片 -->
+    <view class="type-card worker-card" bind:tap="selectType" data-type="worker">
+      <view class="card-icon">
+        <text class="iconfont">👷</text>
+      </view>
+      <view class="card-title">我是工人</view>
+      <view class="card-desc">个人入驻，接单赚钱</view>
+      <view class="card-tag">
+        <text class="tag-text free">免审批</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="tips">
+    <view class="tip-item">
+      <text class="tip-icon">ℹ️</text>
+      <text class="tip-text">租户注册后需等待总后台审批，审批通过后方可使用</text>
+    </view>
+    <view class="tip-item">
+      <text class="tip-icon">ℹ️</text>
+      <text class="tip-text">工人入驻无需审批，注册成功后即可接单</text>
+    </view>
+  </view>
+</view>

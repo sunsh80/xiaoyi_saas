@@ -1,0 +1,185 @@
+<!-- 租户管理页面 -->
+<div id="tenants" class="page">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">租户管理</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <button type="button" class="btn btn-sm btn-primary">
+        <i class="fas fa-plus me-1"></i>新增租户
+      </button>
+      <button type="button" class="btn btn-sm btn-warning ms-2" onclick="showPendingTenants()">
+        <i class="fas fa-clock me-1"></i>待审批 <span class="badge bg-white text-warning" id="pendingCount">0</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 筛选器 -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3 mb-2">
+          <label class="form-label">状态筛选</label>
+          <select class="form-select" id="tenantStatusFilter" onchange="loadTenants()">
+            <option value="">全部</option>
+            <option value="1">启用</option>
+            <option value="0">待审批</option>
+            <option value="2">已禁用</option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-2">
+          <label class="form-label">搜索</label>
+          <input type="text" class="form-control" id="tenantSearch" placeholder="租户名称/联系人/电话">
+        </div>
+        <div class="col-md-2 mb-2">
+          <label class="form-label">&nbsp;</label>
+          <button class="btn btn-primary w-100" onclick="loadTenants()">
+            <i class="fas fa-search me-1"></i>查询
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 租户列表 -->
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>租户编码</th>
+              <th>租户名称</th>
+              <th>联系人</th>
+              <th>联系电话</th>
+              <th>邮箱</th>
+              <th>状态</th>
+              <th>创建时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="tenantsTableBody">
+            <tr>
+              <td colspan="8" class="text-center text-muted">
+                <i class="fas fa-spinner fa-spin"></i> 加载中...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分页 -->
+  <nav aria-label="租户分页">
+    <ul class="pagination justify-content-center" id="tenantsPagination"></ul>
+  </nav>
+</div>
+
+<!-- 租户详情模态框 -->
+<div class="modal fade" id="tenantDetailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">租户详情</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">租户编码</label>
+            <p class="mb-0" id="detailTenantCode">-</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">租户名称</label>
+            <p class="mb-0" id="detailTenantName">-</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">联系人</label>
+            <p class="mb-0" id="detailContactPerson">-</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">联系电话</label>
+            <p class="mb-0" id="detailContactPhone">-</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">联系邮箱</label>
+            <p class="mb-0" id="detailContactEmail">-</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">地址</label>
+            <p class="mb-0" id="detailAddress">-</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">状态</label>
+            <p class="mb-0" id="detailStatus">-</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">创建时间</label>
+            <p class="mb-0" id="detailCreatedAt">-</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">用户数</label>
+            <p class="mb-0" id="detailUserCount">-</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">订单数</label>
+            <p class="mb-0" id="detailOrderCount">-</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" id="tenantDetailFooter">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 审批模态框 -->
+<div class="modal fade" id="approveModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">审批租户</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">租户名称</label>
+          <p class="mb-2" id="approveTenantName">-</p>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">当前租户编码</label>
+          <p class="mb-2" id="approveTenantCode">-</p>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">自定义租户编码（可选）</label>
+          <input type="text" class="form-control" id="customTenantCode" placeholder="留空使用系统生成的编码">
+          <small class="text-muted">格式：TN + 日期 + 随机数，例如 TN202602171234</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-danger" onclick="rejectTenant()">拒绝</button>
+        <button type="button" class="btn btn-success" onclick="approveTenant()">通过</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 拒绝原因模态框 -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">拒绝原因</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <textarea class="form-control" id="rejectReason" rows="3" placeholder="请输入拒绝原因（选填）"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-danger" onclick="confirmReject()">确认拒绝</button>
+      </div>
+    </div>
+  </div>
+</div>

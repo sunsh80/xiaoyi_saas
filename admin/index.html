@@ -31,6 +31,16 @@
           </a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="#finance">
+            <i class="fas fa-coins me-2"></i>财务管理
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#commission">
+            <i class="fas fa-percent me-2"></i>抽佣配置
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="#tenants">
             <i class="fas fa-building me-2"></i>租户管理
           </a>
@@ -66,12 +76,13 @@
           <button class="btn btn-outline-secondary me-3 d-md-none" id="sidebarToggle">
             <i class="fas fa-bars"></i>
           </button>
-          
-          <form class="d-flex me-auto">
+
+          <!-- 搜索框移到导航项一行 -->
+          <form class="d-flex flex-grow-1 ms-2 me-auto">
             <input class="form-control me-2" type="search" placeholder="搜索订单、租户..." aria-label="Search">
             <button class="btn btn-outline-success" type="submit">搜索</button>
           </form>
-          
+
           <div class="dropdown">
             <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
               <i class="fas fa-user-circle me-1"></i>管理员
@@ -185,6 +196,267 @@
           </div>
         </div>
 
+        <!-- 财务管理页面 -->
+        <div id="finance" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">财务管理</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+                <i class="fas fa-download me-1"></i>导出报表
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-sync-alt me-1"></i>刷新数据
+              </button>
+            </div>
+          </div>
+
+          <!-- GMV 指标卡片 -->
+          <div class="row mb-4">
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-primary h-100">
+                <div class="card-body">
+                  <h6 class="card-title">昨日成交金额</h6>
+                  <h3 class="mb-0">¥<span id="yesterday-gmv">0.00</span></h3>
+                  <small class="card-text">昨日完成订单总额</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-success h-100">
+                <div class="card-body">
+                  <h6 class="card-title">月度累计成交</h6>
+                  <h3 class="mb-0">¥<span id="month-gmv">0.00</span></h3>
+                  <small class="card-text">本月完成订单总额</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-info h-100">
+                <div class="card-body">
+                  <h6 class="card-title">年度累计成交</h6>
+                  <h3 class="mb-0">¥<span id="year-gmv">0.00</span></h3>
+                  <small class="card-text">本年完成订单总额</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-warning h-100">
+                <div class="card-body">
+                  <h6 class="card-title">平台服务费收入</h6>
+                  <h3 class="mb-0">¥<span id="platform-service-fee">0.00</span></h3>
+                  <small class="card-text">累计服务费收入</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-danger h-100">
+                <div class="card-body">
+                  <h6 class="card-title">提现金额</h6>
+                  <h3 class="mb-0">¥<span id="withdrawal-amount">0.00</span></h3>
+                  <small class="card-text">已完成提现总额</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-secondary h-100">
+                <div class="card-body">
+                  <h6 class="card-title">平台结余</h6>
+                  <h3 class="mb-0">¥<span id="platform-balance">0.00</span></h3>
+                  <small class="card-text">平台账户余额</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 数据公式说明 -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-calculator me-2"></i>数据计算公式
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <p><strong>昨日成交金额:</strong> SUM(orders.amount) WHERE DATE(complete_time) = 昨日日期 AND status="completed"</p>
+                  <p><strong>月度累计成交:</strong> SUM(orders.amount) WHERE MONTH(complete_time) = 本月 AND status="completed"</p>
+                  <p><strong>年度累计成交:</strong> SUM(orders.amount) WHERE YEAR(complete_time) = 本年 AND status="completed"</p>
+                </div>
+                <div class="col-md-6">
+                  <p><strong>平台服务费收入:</strong> SUM(order_fees.service_fee) WHERE status="completed"</p>
+                  <p><strong>提现金额:</strong> SUM(withdrawals.amount) WHERE status="completed"</p>
+                  <p><strong>平台结余:</strong> SUM(accounts.balance) WHERE account_type="platform"</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 抽佣配置页面 -->
+        <div id="commission" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">抽佣配置</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2" id="resetCommission">
+                <i class="fas fa-undo me-1"></i>重置
+              </button>
+              <button type="button" class="btn btn-sm btn-primary" id="saveCommission">
+                <i class="fas fa-save me-1"></i>保存配置
+              </button>
+            </div>
+          </div>
+
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-cog me-2"></i>基础配置
+            </div>
+            <div class="card-body">
+              <form id="commissionForm">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">
+                      <i class="fas fa-percent me-1"></i>抽佣比例
+                    </label>
+                    <div class="input-group">
+                      <input type="number" class="form-control" id="commission_rate" step="0.0001" min="0" max="1" value="0.1000">
+                      <span class="input-group-text">%</span>
+                    </div>
+                    <small class="text-muted">平台从每笔订单中抽取的佣金比例，例如 10% 即 0.1000</small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">
+                      <i class="fas fa-percent me-1"></i>服务费比例
+                    </label>
+                    <div class="input-group">
+                      <input type="number" class="form-control" id="service_fee_rate" step="0.0001" min="0" max="1" value="0.0500">
+                      <span class="input-group-text">%</span>
+                    </div>
+                    <small class="text-muted">平台收取的服务费比例，例如 5% 即 0.0500</small>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">
+                      <i class="fas fa-yen-sign me-1"></i>最低服务费
+                    </label>
+                    <div class="input-group">
+                      <input type="number" class="form-control" id="service_fee_min" step="0.01" min="0" value="5.00">
+                      <span class="input-group-text">元</span>
+                    </div>
+                    <small class="text-muted">每笔订单收取的最低服务费</small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">
+                      <i class="fas fa-yen-sign me-1"></i>最高服务费
+                    </label>
+                    <div class="input-group">
+                      <input type="number" class="form-control" id="service_fee_max" step="0.01" min="0" value="100.00">
+                      <span class="input-group-text">元</span>
+                    </div>
+                    <small class="text-muted">每笔订单收取的最高服务费</small>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">
+                      <i class="fas fa-info-circle me-1"></i>信息费
+                    </label>
+                    <div class="input-group">
+                      <input type="number" class="form-control" id="information_fee" step="0.01" min="0" value="2.00">
+                      <span class="input-group-text">元</span>
+                    </div>
+                    <small class="text-muted">每笔订单固定收取的信息费</small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">
+                      <i class="fas fa-shield-alt me-1"></i>保险费比例
+                    </label>
+                    <div class="input-group">
+                      <input type="number" class="form-control" id="insurance_fee_rate" step="0.0001" min="0" max="1" value="0.0100">
+                      <span class="input-group-text">%</span>
+                    </div>
+                    <small class="text-muted">订单保险费用比例，例如 1% 即 0.0100</small>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">
+                      <i class="fas fa-yen-sign me-1"></i>最低保险费
+                    </label>
+                    <div class="input-group">
+                      <input type="number" class="form-control" id="insurance_fee_min" step="0.01" min="0" value="1.00">
+                      <span class="input-group-text">元</span>
+                    </div>
+                    <small class="text-muted">每笔订单收取的最低保险费</small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">
+                      <i class="fas fa-yen-sign me-1"></i>最高保险费
+                    </label>
+                    <div class="input-group">
+                      <input type="number" class="form-control" id="insurance_fee_max" step="0.01" min="0" value="50.00">
+                      <span class="input-group-text">元</span>
+                    </div>
+                    <small class="text-muted">每笔订单收取的最高保险费</small>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- 计算示例 -->
+          <div class="card">
+            <div class="card-header">
+              <i class="fas fa-calculator me-2"></i>计算示例
+            </div>
+            <div class="card-body">
+              <h5>订单金额：500 元</h5>
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>费用项</th>
+                    <th>计算公式</th>
+                    <th>金额</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>佣金</td>
+                    <td>500 × 10%</td>
+                    <td>50.00 元</td>
+                  </tr>
+                  <tr>
+                    <td>服务费</td>
+                    <td>max(500 × 5%, 5)</td>
+                    <td>25.00 元</td>
+                  </tr>
+                  <tr>
+                    <td>信息费</td>
+                    <td>固定</td>
+                    <td>2.00 元</td>
+                  </tr>
+                  <tr>
+                    <td>保险费</td>
+                    <td>max(500 × 1%, 1)</td>
+                    <td>5.00 元</td>
+                  </tr>
+                  <tr class="table-primary">
+                    <td><strong>平台总收入</strong></td>
+                    <td>佣金 + 服务费 + 信息费 + 保险费</td>
+                    <td><strong>84.00 元</strong></td>
+                  </tr>
+                  <tr class="table-success">
+                    <td><strong>工人收入</strong></td>
+                    <td>订单金额 - 平台总收入</td>
+                    <td><strong>416.00 元</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <!-- 订单管理页面 -->
         <div id="orders" class="page">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -272,6 +544,186 @@
           </nav>
         </div>
 
+        <!-- 接单人员管理页面 -->
+        <div id="workers" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">接单人员管理</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+                <i class="fas fa-download me-1"></i>导出
+              </button>
+              <button type="button" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus me-1"></i>新增接单员
+              </button>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <select class="form-select" id="workerStatusFilter">
+                <option value="">全部状态</option>
+                <option value="active">工作中</option>
+                <option value="rest">休息中</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <input type="text" class="form-control" placeholder="搜索接单员...">
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>姓名</th>
+                  <th>手机号</th>
+                  <th>所属租户</th>
+                  <th>工作状态</th>
+                  <th>已完成订单</th>
+                  <th>总收入</th>
+                  <th>注册时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>张三</td>
+                  <td>13800138001</td>
+                  <td>租户一</td>
+                  <td><span class="badge bg-success">工作中</span></td>
+                  <td>156</td>
+                  <td>¥12,580</td>
+                  <td>2024-01-15</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary me-1">编辑</button>
+                    <button class="btn btn-sm btn-outline-info">详情</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>李四</td>
+                  <td>13800138002</td>
+                  <td>租户二</td>
+                  <td><span class="badge bg-warning">休息中</span></td>
+                  <td>89</td>
+                  <td>¥7,650</td>
+                  <td>2024-02-20</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary me-1">编辑</button>
+                    <button class="btn btn-sm btn-outline-info">详情</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>王五</td>
+                  <td>13800138003</td>
+                  <td>租户三</td>
+                  <td><span class="badge bg-success">工作中</span></td>
+                  <td>234</td>
+                  <td>¥18,920</td>
+                  <td>2023-11-10</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary me-1">编辑</button>
+                    <button class="btn btn-sm btn-outline-info">详情</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 用户管理页面 -->
+        <div id="users" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">用户管理</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+                <i class="fas fa-download me-1"></i>导出
+              </button>
+              <button type="button" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus me-1"></i>新增用户
+              </button>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <select class="form-select" id="userRoleFilter">
+                <option value="">全部角色</option>
+                <option value="tenant_admin">租户管理员</option>
+                <option value="tenant_user">普通用户</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <input type="text" class="form-control" placeholder="搜索用户...">
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>用户名</th>
+                  <th>真实姓名</th>
+                  <th>手机号</th>
+                  <th>角色</th>
+                  <th>所属租户</th>
+                  <th>订单数</th>
+                  <th>注册时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>zhangsan</td>
+                  <td>张三</td>
+                  <td>13800138001</td>
+                  <td><span class="badge bg-primary">租户管理员</span></td>
+                  <td>租户一</td>
+                  <td>45</td>
+                  <td>2024-01-10</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary me-1">编辑</button>
+                    <button class="btn btn-sm btn-outline-danger">禁用</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>lisi</td>
+                  <td>李四</td>
+                  <td>13800138002</td>
+                  <td><span class="badge bg-secondary">普通用户</span></td>
+                  <td>租户二</td>
+                  <td>23</td>
+                  <td>2024-02-15</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary me-1">编辑</button>
+                    <button class="btn btn-sm btn-outline-danger">禁用</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>wangwu</td>
+                  <td>王五</td>
+                  <td>13800138003</td>
+                  <td><span class="badge bg-secondary">普通用户</span></td>
+                  <td>租户三</td>
+                  <td>67</td>
+                  <td>2023-12-20</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary me-1">编辑</button>
+                    <button class="btn btn-sm btn-outline-success">启用</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- 租户管理页面 -->
         <div id="tenants" class="page">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -354,6 +806,237 @@
             </table>
           </div>
         </div>
+
+        <!-- 报表统计页面 -->
+        <div id="reports" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">报表统计</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+                <i class="fas fa-download me-1"></i>导出报表
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-sync-alt me-1"></i>刷新数据
+              </button>
+            </div>
+          </div>
+
+          <!-- 时间筛选 -->
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label class="form-label">开始日期</label>
+              <input type="date" class="form-control" id="startDate">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">结束日期</label>
+              <input type="date" class="form-control" id="endDate">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+              <button class="btn btn-primary me-2">
+                <i class="fas fa-search me-1"></i>查询
+              </button>
+              <button class="btn btn-outline-secondary">
+                <i class="fas fa-redo me-1"></i>重置
+              </button>
+            </div>
+          </div>
+
+          <!-- 统计卡片 -->
+          <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-primary h-100">
+                <div class="card-body">
+                  <h6 class="card-title">订单总数</h6>
+                  <h3 class="mb-0">1,234</h3>
+                  <small class="card-text">较上月 +15.3%</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-success h-100">
+                <div class="card-body">
+                  <h6 class="card-title">成交总额</h6>
+                  <h3 class="mb-0">¥98,765</h3>
+                  <small class="card-text">较上月 +12.8%</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-info h-100">
+                <div class="card-body">
+                  <h6 class="card-title">活跃用户</h6>
+                  <h3 class="mb-0">567</h3>
+                  <small class="card-text">较上月 +8.5%</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-warning h-100">
+                <div class="card-body">
+                  <h6 class="card-title">活跃接单员</h6>
+                  <h3 class="mb-0">89</h3>
+                  <small class="card-text">较上月 +5.2%</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 图表区域 -->
+          <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+              <div class="card">
+                <div class="card-header">
+                  <i class="fas fa-chart-line me-2"></i>订单趋势
+                </div>
+                <div class="card-body">
+                  <canvas id="orderTrendChart" height="200"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="card">
+                <div class="card-header">
+                  <i class="fas fa-chart-pie me-2"></i>订单状态分布
+                </div>
+                <div class="card-body">
+                  <canvas id="orderStatusChart" height="200"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 租户排行 -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-trophy me-2"></i>租户订单排行
+            </div>
+            <div class="card-body">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>排名</th>
+                    <th>租户</th>
+                    <th>订单数</th>
+                    <th>成交金额</th>
+                    <th>完成率</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="badge bg-warning">1</span></td>
+                    <td>租户一</td>
+                    <td>456</td>
+                    <td>¥35,678</td>
+                    <td>98.5%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-secondary">2</span></td>
+                    <td>租户二</td>
+                    <td>389</td>
+                    <td>¥28,456</td>
+                    <td>97.2%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-danger">3</span></td>
+                    <td>租户三</td>
+                    <td>267</td>
+                    <td>¥21,345</td>
+                    <td>96.8%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 系统设置页面 -->
+        <div id="settings" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">系统设置</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-primary">
+                <i class="fas fa-save me-1"></i>保存设置
+              </button>
+            </div>
+          </div>
+
+          <!-- 基础设置 -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-cog me-2"></i>基础设置
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">平台名称</label>
+                    <input type="text" class="form-control" value="小蚁搬运">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">客服电话</label>
+                    <input type="text" class="form-control" value="400-888-8888">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">平台公告</label>
+                  <textarea class="form-control" rows="3">欢迎来到小蚁搬运平台！</textarea>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- 订单设置 -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-box me-2"></i>订单设置
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">默认订单有效期（小时）</label>
+                    <input type="number" class="form-control" value="24">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">自动确认收货时间（小时）</label>
+                    <input type="number" class="form-control" value="72">
+                  </div>
+                </div>
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="autoAssign" checked>
+                  <label class="form-check-label" for="autoAssign">
+                    启用自动派单功能
+                  </label>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- 安全设置 -->
+          <div class="card">
+            <div class="card-header">
+              <i class="fas fa-shield-alt me-2"></i>安全设置
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="mb-3">
+                  <label class="form-label">管理员密码</label>
+                  <input type="password" class="form-control" placeholder="留空则不修改">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">确认密码</label>
+                  <input type="password" class="form-control" placeholder="留空则不修改">
+                </div>
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="twoFactor">
+                  <label class="form-check-label" for="twoFactor">
+                    启用双重验证
+                  </label>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -361,5 +1044,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="/assets/js/admin.js"></script>
+  <script src="/assets/js/tenant-manager.js"></script>
 </body>
 </html>

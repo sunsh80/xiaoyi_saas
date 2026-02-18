@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === 'development') {
         scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+        connectSrc: ["'self'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "http://localhost:*", "http://127.0.0.1:*"],
         fontSrc: ["'self'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
         objectSrc: ["'none'"],
         upgradeInsecureRequests: []
@@ -71,6 +71,12 @@ app.use('/admin', express.static(path.join(__dirname, '../admin')));
 // 提供管理后台资源文件服务（CSS、JS 等）
 app.use('/assets', express.static(path.join(__dirname, '../admin/assets')));
 
+// 提供租户管理后台静态文件服务
+app.use('/tenant-admin', express.static(path.join(__dirname, '../tenant-admin')));
+
+// 提供租户管理后台资源文件服务（CSS、JS 等）
+app.use('/tenant-admin/assets', express.static(path.join(__dirname, '../tenant-admin/assets')));
+
 // 解析 JSON 请求体
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -109,6 +115,10 @@ app.use('/api', apiRoutes);
 // 管理后台路由
 app.use('/api', adminRoutes);
 
+// 租户管理后台路由
+const tenantRoutes = require('./routes/tenant');
+app.use('/api', tenantRoutes);
+
 // 错误处理中间件
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -142,7 +152,8 @@ process.on('unhandledRejection', (reason, promise) => {
 app.listen(PORT, () => {
   console.log(`小蚁搬运后端服务启动在端口 ${PORT}`);
   console.log(`API 文档地址：http://localhost:${PORT}/api-docs`);
-  console.log(`管理后台地址：http://localhost:${PORT}/admin/login.html`);
+  console.log(`总后台管理地址：http://localhost:${PORT}/admin/login.html`);
+  console.log(`租户管理后台地址：http://localhost:${PORT}/tenant-admin/login.html`);
   console.log(`CORS 配置：允许 localhost 和 127.0.0.1 的所有端口`);
 });
 

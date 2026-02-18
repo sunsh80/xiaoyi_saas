@@ -114,8 +114,9 @@ Page({
 
   // 跳转到注册页面
   goToRegister: function () {
+    // 跳转到注册类型选择页面
     wx.navigateTo({
-      url: '/pages/auth/register'
+      url: '/pages/auth/register-type/register-type'
     });
   }
 });

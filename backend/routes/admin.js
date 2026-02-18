@@ -2,6 +2,21 @@ const express = require('express');
 const router = express.Router();
 const AdminFinanceController = require('../controllers/AdminFinanceController');
 const AdminReferralController = require('../controllers/AdminReferralController');
+const AdminReportController = require('../controllers/AdminReportController');
+const AdminTenantController = require('../controllers/AdminTenantController');
+
+// 租户管理路由
+router.get('/admin/tenants', AdminTenantController.getTenantList);
+router.get('/admin/tenants/pending', AdminTenantController.getPendingTenants);
+router.get('/admin/tenants/:id', AdminTenantController.getTenantDetail);
+router.put('/admin/tenants/:id/approve', AdminTenantController.approveTenant);
+router.put('/admin/tenants/:id/reject', AdminTenantController.rejectTenant);
+router.put('/admin/tenants/:id', AdminTenantController.updateTenant);
+router.delete('/admin/tenants/:id', AdminTenantController.deleteTenant);
+router.put('/admin/tenants/:id/toggle-status', AdminTenantController.toggleTenantStatus);
+
+// 报表统计路由
+router.get('/admin/reports/statistics', AdminReportController.getStatistics);
 
 // 财务管理路由
 router.get('/admin/finance/overview', AdminFinanceController.getFinanceOverview);

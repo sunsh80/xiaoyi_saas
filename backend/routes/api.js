@@ -22,8 +22,19 @@ console.log('[DEBUG] OrderController.list:', typeof OrderController.list);
 console.log('[DEBUG] OrderController.assignOrder:', typeof OrderController.assignOrder);
 // ... 其他方法
 
-// 应用租户中间件到所有路由（除支付回调外）
-router.use(tenantMiddleware);
+// 应用租户中间件到所有路由（除支付回调和 admin 路由外）
+// 注意：admin 路由有自己独立的认证体系，不需要租户验证
+router.use((req, res, next) => {
+  // 跳过 /admin 路由
+  if (req.path.startsWith('/admin/')) {
+    return next();
+  }
+  // 跳过支付回调
+  if (req.path === '/payments/callback') {
+    return next();
+  }
+  tenantMiddleware(req, res, next);
+});
 
 // ======================
 // 认证相关 API

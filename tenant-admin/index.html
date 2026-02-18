@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小蚁搬运 - 租户管理后台</title>
+  <!-- 先加载 Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <!-- 后加载自定义 CSS，确保覆盖 Bootstrap 样式 -->
+  <link rel="stylesheet" href="/tenant-admin/assets/css/tenant-admin.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+      <div class="logo-container p-3">
+        <h3><i class="fas fa-dolly-flatbed me-2"></i>小蚁搬运</h3>
+        <p class="text-muted">租户管理后台</p>
+        <div class="tenant-info mt-3 p-2 rounded">
+          <small class="text-white-50">当前租户</small>
+          <div class="tenant-name text-white fw-bold" id="tenantName">加载中...</div>
+        </div>
+      </div>
+
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link active" href="#dashboard">
+            <i class="fas fa-tachometer-alt me-2"></i>仪表盘
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#orders">
+            <i class="fas fa-box-open me-2"></i>订单管理
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#workers">
+            <i class="fas fa-hard-hat me-2"></i>接单人员管理
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#users">
+            <i class="fas fa-users me-2"></i>用户管理
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#finance">
+            <i class="fas fa-coins me-2"></i>财务管理
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#reports">
+            <i class="fas fa-chart-bar me-2"></i>报表统计
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#settings">
+            <i class="fas fa-cog me-2"></i>租户设置
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-panel">
+      <!-- 顶部导航 -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <button class="btn btn-outline-secondary me-3 d-md-none" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+
+          <!-- 搜索框移到导航项一行 -->
+          <form class="d-flex flex-grow-1 ms-2 me-auto">
+            <input class="form-control me-2" type="search" placeholder="搜索订单、用户..." aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">搜索</button>
+          </form>
+
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+              <i class="fas fa-user-circle me-1"></i><span id="adminUsername">管理员</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>个人资料</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>设置</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>退出登录</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- 页面内容 -->
+      <div class="content">
+        <!-- 仪表盘 -->
+        <div id="dashboard" class="page active">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">仪表盘</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+                <i class="fas fa-sync-alt me-1"></i>刷新数据
+              </button>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-primary">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h4 class="card-title">本月订单数</h4>
+                      <p class="card-text" id="monthOrders">0</p>
+                    </div>
+                    <div class="align-self-center">
+                      <i class="fas fa-box-open fa-2x"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-success">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h4 class="card-title">已完成</h4>
+                      <p class="card-text" id="completedOrders">0</p>
+                    </div>
+                    <div class="align-self-center">
+                      <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-warning">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h4 class="card-title">进行中</h4>
+                      <p class="card-text" id="inProgressOrders">0</p>
+                    </div>
+                    <div class="align-self-center">
+                      <i class="fas fa-spinner fa-2x"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-info">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h4 class="card-title">活跃接单员</h4>
+                      <p class="card-text" id="activeWorkers">0</p>
+                    </div>
+                    <div class="align-self-center">
+                      <i class="fas fa-hard-hat fa-2x"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title mb-0">订单趋势</h5>
+                </div>
+                <div class="card-body">
+                  <canvas id="orderChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title mb-0">订单状态分布</h5>
+                </div>
+                <div class="card-body">
+                  <canvas id="orderStatusChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 最近订单 -->
+          <div class="card mt-4">
+            <div class="card-header">
+              <h5 class="card-title mb-0">最近订单</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>订单号</th>
+                      <th>标题</th>
+                      <th>金额</th>
+                      <th>状态</th>
+                      <th>创建时间</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentOrdersTable">
+                    <tr>
+                      <td colspan="5" class="text-center text-muted">暂无数据</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 订单管理页面 -->
+        <div id="orders" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">订单管理</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+                <i class="fas fa-download me-1"></i>导出
+              </button>
+              <button type="button" class="btn btn-sm btn-primary" onclick="createOrder()">
+                <i class="fas fa-plus me-1"></i>新增订单
+              </button>
+            </div>
+          </div>
+
+          <!-- 筛选器 -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3 mb-2">
+                  <label class="form-label">订单状态</label>
+                  <select class="form-select" id="orderStatusFilter">
+                    <option value="">全部</option>
+                    <option value="pending">待分配</option>
+                    <option value="assigned">已分配</option>
+                    <option value="in_progress">进行中</option>
+                    <option value="completed">已完成</option>
+                    <option value="cancelled">已取消</option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <label class="form-label">开始日期</label>
+                  <input type="date" class="form-control" id="orderStartDate">
+                </div>
+                <div class="col-md-3 mb-2">
+                  <label class="form-label">结束日期</label>
+                  <input type="date" class="form-control" id="orderEndDate">
+                </div>
+                <div class="col-md-3 mb-2">
+                  <label class="form-label">搜索</label>
+                  <input type="text" class="form-control" id="orderSearch" placeholder="订单号/标题">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 订单列表 -->
+          <div class="card">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th>订单号</th>
+                      <th>标题</th>
+                      <th>取货地址</th>
+                      <th>送货地址</th>
+                      <th>金额</th>
+                      <th>状态</th>
+                      <th>接单员</th>
+                      <th>创建时间</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ordersTableBody">
+                    <tr>
+                      <td colspan="9" class="text-center text-muted">暂无数据</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分页 -->
+          <nav aria-label="订单分页">
+            <ul class="pagination justify-content-center" id="ordersPagination">
+            </ul>
+          </nav>
+        </div>
+
+        <!-- 接单人员管理页面 -->
+        <div id="workers" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">接单人员管理</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+                <i class="fas fa-download me-1"></i>导出
+              </button>
+              <button type="button" class="btn btn-sm btn-primary" onclick="addWorker()">
+                <i class="fas fa-plus me-1"></i>新增接单员
+              </button>
+            </div>
+          </div>
+
+          <!-- 筛选器 -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3 mb-2">
+                  <label class="form-label">工作状态</label>
+                  <select class="form-select" id="workerStatusFilter">
+                    <option value="">全部</option>
+                    <option value="active">工作中</option>
+                    <option value="rest">休息中</option>
+                    <option value="inactive">禁用</option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <label class="form-label">搜索</label>
+                  <input type="text" class="form-control" id="workerSearch" placeholder="姓名/手机号">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 接单员列表 -->
+          <div class="card">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>姓名</th>
+                      <th>手机号</th>
+                      <th>工作状态</th>
+                      <th>已完成订单</th>
+                      <th>总收入</th>
+                      <th>注册时间</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="workersTableBody">
+                    <tr>
+                      <td colspan="8" class="text-center text-muted">暂无数据</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分页 -->
+          <nav aria-label="接单员分页">
+            <ul class="pagination justify-content-center" id="workersPagination">
+            </ul>
+          </nav>
+        </div>
+
+        <!-- 用户管理页面 -->
+        <div id="users" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">用户管理</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+                <i class="fas fa-download me-1"></i>导出
+              </button>
+              <button type="button" class="btn btn-sm btn-primary" onclick="addUser()">
+                <i class="fas fa-plus me-1"></i>新增用户
+              </button>
+            </div>
+          </div>
+
+          <!-- 筛选器 -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3 mb-2">
+                  <label class="form-label">角色</label>
+                  <select class="form-select" id="userRoleFilter">
+                    <option value="">全部</option>
+                    <option value="tenant_admin">租户管理员</option>
+                    <option value="tenant_user">普通用户</option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <label class="form-label">搜索</label>
+                  <input type="text" class="form-control" id="userSearch" placeholder="用户名/手机号">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 用户列表 -->
+          <div class="card">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>用户名</th>
+                      <th>真实姓名</th>
+                      <th>手机号</th>
+                      <th>角色</th>
+                      <th>订单数</th>
+                      <th>注册时间</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersTableBody">
+                    <tr>
+                      <td colspan="8" class="text-center text-muted">暂无数据</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分页 -->
+          <nav aria-label="用户分页">
+            <ul class="pagination justify-content-center" id="usersPagination">
+            </ul>
+          </nav>
+        </div>
+
+        <!-- 财务管理页面 -->
+        <div id="finance" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">财务管理</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+                <i class="fas fa-download me-1"></i>导出报表
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-sync-alt me-1"></i>刷新数据
+              </button>
+            </div>
+          </div>
+
+          <!-- 财务指标卡片 -->
+          <div class="row mb-4">
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-primary h-100">
+                <div class="card-body">
+                  <h6 class="card-title">昨日成交金额</h6>
+                  <h3 class="mb-0">¥<span id="yesterday-gmv">0.00</span></h3>
+                  <small class="card-text">昨日完成订单总额</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-success h-100">
+                <div class="card-body">
+                  <h6 class="card-title">月度累计成交</h6>
+                  <h3 class="mb-0">¥<span id="month-gmv">0.00</span></h3>
+                  <small class="card-text">本月完成订单总额</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-info h-100">
+                <div class="card-body">
+                  <h6 class="card-title">年度累计成交</h6>
+                  <h3 class="mb-0">¥<span id="year-gmv">0.00</span></h3>
+                  <small class="card-text">本年完成订单总额</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-warning h-100">
+                <div class="card-body">
+                  <h6 class="card-title">待结算金额</h6>
+                  <h3 class="mb-0">¥<span id="pending-settlement">0.00</span></h3>
+                  <small class="card-text">待结算订单金额</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-danger h-100">
+                <div class="card-body">
+                  <h6 class="card-title">已提现金额</h6>
+                  <h3 class="mb-0">¥<span id="withdrawn-amount">0.00</span></h3>
+                  <small class="card-text">已成功提现总额</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mb-3">
+              <div class="card text-white bg-secondary h-100">
+                <div class="card-body">
+                  <h6 class="card-title">账户余额</h6>
+                  <h3 class="mb-0">¥<span id="account-balance">0.00</span></h3>
+                  <small class="card-text">当前账户余额</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 提现申请 -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-money-bill-wave me-2"></i>提现申请
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>提现单号</th>
+                      <th>金额</th>
+                      <th>手续费</th>
+                      <th>实收金额</th>
+                      <th>状态</th>
+                      <th>申请时间</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="withdrawalsTableBody">
+                    <tr>
+                      <td colspan="7" class="text-center text-muted">暂无数据</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 收支明细 -->
+          <div class="card">
+            <div class="card-header">
+              <i class="fas fa-list-alt me-2"></i>收支明细
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>流水号</th>
+                      <th>类型</th>
+                      <th>金额</th>
+                      <th>关联订单</th>
+                      <th>说明</th>
+                      <th>时间</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transactionsTableBody">
+                    <tr>
+                      <td colspan="6" class="text-center text-muted">暂无数据</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 报表统计页面 -->
+        <div id="reports" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">报表统计</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+                <i class="fas fa-download me-1"></i>导出报表
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-sync-alt me-1"></i>刷新数据
+              </button>
+            </div>
+          </div>
+
+          <!-- 时间筛选 -->
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label class="form-label">开始日期</label>
+              <input type="date" class="form-control" id="reportStartDate">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">结束日期</label>
+              <input type="date" class="form-control" id="reportEndDate">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+              <button class="btn btn-primary me-2" onclick="loadReportData()">
+                <i class="fas fa-search me-1"></i>查询
+              </button>
+              <button class="btn btn-outline-secondary" onclick="resetReportFilter()">
+                <i class="fas fa-redo me-1"></i>重置
+              </button>
+            </div>
+          </div>
+
+          <!-- 统计卡片 -->
+          <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-primary h-100">
+                <div class="card-body">
+                  <h6 class="card-title">订单总数</h6>
+                  <h3 class="mb-0" id="reportTotalOrders">0</h3>
+                  <small class="card-text">较上期 <span id="reportOrdersChange">0%</span></small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-success h-100">
+                <div class="card-body">
+                  <h6 class="card-title">成交总额</h6>
+                  <h3 class="mb-0">¥<span id="reportTotalGmv">0.00</span></h3>
+                  <small class="card-text">较上期 <span id="reportGmvChange">0%</span></small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-info h-100">
+                <div class="card-body">
+                  <h6 class="card-title">活跃用户</h6>
+                  <h3 class="mb-0" id="reportActiveUsers">0</h3>
+                  <small class="card-text">较上期 <span id="reportUsersChange">0%</span></small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card text-white bg-warning h-100">
+                <div class="card-body">
+                  <h6 class="card-title">活跃接单员</h6>
+                  <h3 class="mb-0" id="reportActiveWorkers">0</h3>
+                  <small class="card-text">较上期 <span id="reportWorkersChange">0%</span></small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 图表区域 -->
+          <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+              <div class="card">
+                <div class="card-header">
+                  <i class="fas fa-chart-line me-2"></i>订单趋势
+                </div>
+                <div class="card-body">
+                  <canvas id="reportOrderTrendChart" height="200"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="card">
+                <div class="card-header">
+                  <i class="fas fa-chart-pie me-2"></i>订单状态分布
+                </div>
+                <div class="card-body">
+                  <canvas id="reportOrderStatusChart" height="200"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 接单员排行 -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-trophy me-2"></i>接单员排行
+            </div>
+            <div class="card-body">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>排名</th>
+                    <th>姓名</th>
+                    <th>完成订单</th>
+                    <th>总收入</th>
+                    <th>好评率</th>
+                  </tr>
+                </thead>
+                <tbody id="workerRankingTable">
+                  <tr>
+                    <td colspan="5" class="text-center text-muted">暂无数据</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 租户设置页面 -->
+        <div id="settings" class="page">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">租户设置</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button type="button" class="btn btn-sm btn-primary" onclick="saveTenantSettings()">
+                <i class="fas fa-save me-1"></i>保存设置
+              </button>
+            </div>
+          </div>
+
+          <!-- 基本信息 -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-building me-2"></i>基本信息
+            </div>
+            <div class="card-body">
+              <form id="tenantSettingsForm">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">租户名称</label>
+                    <input type="text" class="form-control" id="tenantNameInput" readonly>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">租户编码</label>
+                    <input type="text" class="form-control" id="tenantCodeInput" readonly>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">联系人</label>
+                    <input type="text" class="form-control" id="contactPerson">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">联系电话</label>
+                    <input type="text" class="form-control" id="contactPhone">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">邮箱</label>
+                  <input type="email" class="form-control" id="contactEmail">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">地址</label>
+                  <textarea class="form-control" id="tenantAddress" rows="2"></textarea>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- 订单设置 -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-box me-2"></i>订单设置
+            </div>
+            <div class="card-body">
+              <form id="orderSettingsForm">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">默认订单有效期（小时）</label>
+                    <input type="number" class="form-control" id="orderValidityHours" value="24">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">自动确认收货时间（小时）</label>
+                    <input type="number" class="form-control" id="autoConfirmHours" value="72">
+                  </div>
+                </div>
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="autoAssignEnabled">
+                  <label class="form-check-label" for="autoAssignEnabled">
+                    启用自动派单功能
+                  </label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="allowWorkerSelectEnabled">
+                  <label class="form-check-label" for="allowWorkerSelectEnabled">
+                    允许用户选择接单员
+                  </label>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- 通知设置 -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-bell me-2"></i>通知设置
+            </div>
+            <div class="card-body">
+              <form id="notificationSettingsForm">
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="notifyNewOrder" checked>
+                  <label class="form-check-label" for="notifyNewOrder">
+                    新订单通知
+                  </label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="notifyOrderStatusChange" checked>
+                  <label class="form-check-label" for="notifyOrderStatusChange">
+                    订单状态变更通知
+                  </label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="notifyWithdrawal">
+                  <label class="form-check-label" for="notifyWithdrawal">
+                    提现申请通知
+                  </label>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- 安全设置 -->
+          <div class="card">
+            <div class="card-header">
+              <i class="fas fa-shield-alt me-2"></i>安全设置
+            </div>
+            <div class="card-body">
+              <form id="securitySettingsForm">
+                <div class="mb-3">
+                  <label class="form-label">修改密码</label>
+                  <input type="password" class="form-control" id="newPassword" placeholder="留空则不修改">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">确认密码</label>
+                  <input type="password" class="form-control" id="confirmPassword" placeholder="留空则不修改">
+                </div>
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="twoFactorEnabled">
+                  <label class="form-check-label" for="twoFactorEnabled">
+                    启用双重验证
+                  </label>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/tenant-admin/assets/js/tenant-admin.js"></script>
+</body>
+</html>

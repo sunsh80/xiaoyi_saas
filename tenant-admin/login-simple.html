@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小蚁搬运 - 租户管理后台登录</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2e7d32;
+      --primary-hover: #1b5e20;
+    }
+    body {
+      background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 50%, #4caf50 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 2rem;
+    }
+    .login-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    .login-header {
+      background: linear-gradient(135deg, var(--primary-color), #4caf50);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    .login-header i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .login-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0;
+    }
+    .login-header p {
+      margin: 0.5rem 0 0;
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
+    .login-body {
+      padding: 2rem;
+    }
+    .form-floating {
+      margin-bottom: 1rem;
+    }
+    .form-floating input {
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s ease;
+    }
+    .form-floating input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+    }
+    .form-floating label {
+      padding-left: 1rem;
+      color: #6c757d;
+    }
+    .btn-login {
+      background: linear-gradient(135deg, var(--primary-color), #4caf50);
+      border: none;
+      color: white;
+      padding: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      width: 100%;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+    .btn-login:hover {
+      background: linear-gradient(135deg, var(--primary-hover), #388e3c);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+    }
+    .btn-login:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    .back-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .alert {
+      border-radius: 8px;
+      border: none;
+      padding: 12px 16px;
+      margin-bottom: 1rem;
+    }
+    .alert-danger {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .input-icon {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+    .input-icon i {
+      position: absolute;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+      z-index: 10;
+      font-size: 1rem;
+    }
+    .input-icon .form-control {
+      padding-left: 3rem;
+    }
+    .input-icon .form-floating label {
+      left: 3rem;
+      padding-left: 0.5rem;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    .shake {
+      animation: shake 0.5s;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card" id="loginCard">
+      <div class="login-header">
+        <i class="fas fa-dolly-flatbed"></i>
+        <h2>小蚁搬运</h2>
+        <p>租户管理后台</p>
+      </div>
+
+      <div class="login-body">
+        <div id="alertContainer"></div>
+
+        <form id="loginForm">
+          <div class="input-icon">
+            <i class="fas fa-building"></i>
+            <div class="form-floating">
+              <input type="text" class="form-control" id="tenantCode" placeholder="租户编码" value="TEST_TENANT" required>
+              <label for="tenantCode">租户编码</label>
+            </div>
+          </div>
+
+          <div class="input-icon">
+            <i class="fas fa-user"></i>
+            <div class="form-floating">
+              <input type="text" class="form-control" id="username" placeholder="用户名" value="test_admin" required>
+              <label for="username">用户名</label>
+            </div>
+          </div>
+
+          <div class="input-icon">
+            <i class="fas fa-lock"></i>
+            <div class="form-floating">
+              <input type="password" class="form-control" id="password" placeholder="密码" value="password123" required>
+              <label for="password">密码</label>
+            </div>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="rememberMe">
+            <label class="form-check-label" for="rememberMe">
+              记住我
+            </label>
+          </div>
+
+          <button type="submit" class="btn-login" id="loginBtn">
+            <i class="fas fa-sign-in-alt me-2"></i>登录
+          </button>
+        </form>
+
+        <div class="back-link">
+          <a href="/">
+            <i class="fas fa-arrow-left me-1"></i>返回首页
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    console.log('=== 脚本开始加载 ===');
+
+    // 处理登录表单提交 - 直接在脚本中绑定，不等待 DOMContentLoaded
+    const loginForm = document.getElementById('loginForm');
+    console.log('loginForm 元素:', loginForm);
+
+    if (loginForm) {
+      loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        console.log('=== 表单提交事件触发 ===');
+
+        const tenantCode = document.getElementById('tenantCode').value.trim();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
+
+        console.log('登录信息:', { tenantCode, username, password: '***' });
+
+        if (!tenantCode || !username || !password) {
+          showAlert('请填写完整的登录信息', 'danger');
+          return;
+        }
+
+        const loginBtn = document.getElementById('loginBtn');
+        console.log('loginBtn 元素:', loginBtn);
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>登录中...';
+
+        try {
+          console.log('发送登录请求到 /api/auth/tenant-login');
+
+          const response = await fetch('/api/auth/tenant-login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-tenant-code': tenantCode
+            },
+            body: JSON.stringify({ username, password })
+          });
+
+          console.log('响应状态:', response.status);
+          const data = await response.json();
+          console.log('响应数据:', data);
+
+          if (response.ok && data.success) {
+            console.log('登录成功');
+
+            localStorage.setItem('tenant_admin_token', data.data.token);
+            localStorage.setItem('tenant_code', tenantCode);
+
+            if (data.data.user) {
+              localStorage.setItem('tenant_user_info', JSON.stringify(data.data.user));
+            }
+
+            if (rememberMe) {
+              localStorage.setItem('saved_tenant_code', tenantCode);
+              localStorage.setItem('saved_username', username);
+            }
+
+            showAlert('登录成功，正在跳转...', 'success');
+
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 1000);
+          } else {
+            console.log('登录失败:', data.message);
+            showAlert(data.message || '登录失败，请检查用户名和密码', 'danger');
+            resetLoginButton();
+            document.getElementById('loginCard').classList.add('shake');
+            setTimeout(() => {
+              document.getElementById('loginCard').classList.remove('shake');
+            }, 500);
+          }
+        } catch (error) {
+          console.error('登录错误:', error);
+          showAlert('网络错误，请稍后重试', 'danger');
+          resetLoginButton();
+        }
+      });
+      console.log('表单事件监听器已绑定');
+    } else {
+      console.error('loginForm 元素未找到!');
+    }
+
+    // 检查是否已登录
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('=== DOMContentLoaded ===');
+
+      const token = localStorage.getItem('tenant_admin_token');
+      const tenantCode = localStorage.getItem('tenant_code');
+
+      console.log('localStorage 中的 token:', token ? '存在' : '不存在');
+      console.log('localStorage 中的 tenantCode:', tenantCode);
+
+      if (token && tenantCode) {
+        console.log('已登录，跳转到管理后台');
+        window.location.href = 'index.html';
+      }
+
+      // 加载记住的登录信息
+      const savedTenantCode = localStorage.getItem('saved_tenant_code');
+      const savedUsername = localStorage.getItem('saved_username');
+
+      if (savedTenantCode) {
+        document.getElementById('tenantCode').value = savedTenantCode;
+      }
+      if (savedUsername) {
+        document.getElementById('username').value = savedUsername;
+        document.getElementById('rememberMe').checked = true;
+      }
+
+      console.log('初始化完成');
+    });
+
+    function resetLoginButton() {
+      const loginBtn = document.getElementById('loginBtn');
+      loginBtn.disabled = false;
+      loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>登录';
+    }
+
+    function showAlert(message, type) {
+      const alertContainer = document.getElementById('alertContainer');
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.textContent = message;
+      alertContainer.innerHTML = '';
+      alertContainer.appendChild(alertDiv);
+
+      setTimeout(() => {
+        if (alertDiv.parentNode) {
+          alertDiv.parentNode.removeChild(alertDiv);
+        }
+      }, 3000);
+    }
+
+    console.log('=== 脚本加载完成 ===');
+  </script>
+</body>
+</html>

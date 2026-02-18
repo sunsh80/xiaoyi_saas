@@ -1,153 +1,130 @@
 # 小蚁搬运平台
 
-## 项目概述
-小蚁搬运是一个SaaS架构的多租户跑腿装卸平台，支持货物的装卸搬运工作，包含完整的支付、提现、推荐拉新和抽佣功能。
+> SaaS 架构的多租户跑腿装卸平台 | 完整部署指南见 [deployment/FULL_DEPLOYMENT_GUIDE.md](deployment/FULL_DEPLOYMENT_GUIDE.md)
 
-此项目已修复以下问题：
-1. 订单统计API 500错误
-2. 图片加载错误
-3. 数据库连接问题
+## 快速开始
 
-## 修复内容
-
-### 1. 订单统计API问题
-- **问题**：前端小程序在获取订单统计数据时遇到500服务器内部错误
-- **原因**：Order模型中缺少list方法，导致OrderController调用时出错
-- **修复**：实现了完整的Order.list方法，处理租户隔离、分页和统计功能
-
-### 2. 图片加载错误
-- **问题**：前端小程序无法加载本地图像资源
-- **原因**：图片文件名前导空格和静态文件服务配置问题
-- **修复**：重命名文件去除前导空格，修正静态文件服务配置
-
-### 3. 数据库连接问题
-- **问题**：数据库连接管理不当，导致连接池问题
-- **原因**：在多个模型文件中，代码错误地调用了getTenantConnection获取连接池，然后直接调用其release()方法
-- **修复**：修正了ReferralCampaign.js、Referral.js和ReferralReward.js中的数据库连接管理
-
-## 技术栈
-- **后端**：Node.js + Express + MySQL
-- **前端**：微信小程序
-- **数据库**：MySQL
-- **API文档**：Swagger/OpenAPI
-
-## 项目结构
-```
-xiaoyi-banyun-platform/
-├── backend/              # 后端服务
-│   ├── controllers/      # 控制器
-│   ├── middleware/       # 中间件
-│   ├── models/          # 数据模型
-│   └── routes/          # 路由
-├── frontend/             # 前端小程序
-│   └── miniprogram/     # 小程序代码
-├── admin/               # 管理后台
-├── test/                # 测试文件
-├── deployment/          # 部署配置
-└── scripts/             # 脚本文件
-```
-
-## 安装和启动
-
-### 环境要求
-- Node.js 14+
-- MySQL 8.0+
-- npm
-
-### 安装步骤
 ```bash
-# 1. 安装依赖
-npm install
+# 1. 克隆项目
+git clone git@github.com:sunsh80/xiaoyi_saas.git
+cd xiaoyi_saas
 
-# 2. 进入后端目录并安装依赖
-cd backend
+# 2. 安装依赖
 npm install
-cd ..
+cd backend && npm install && cd ..
 
-# 3. 配置环境变量
+# 3. 配置环境
 cp backend/.env.example backend/.env
-# 编辑 backend/.env 文件，配置数据库连接信息
+# 编辑 backend/.env 文件，配置数据库连接
 
 # 4. 初始化数据库
 npm run init-db
 
-# 5. 启动服务
+# 5. 创建测试数据
+node create-test-users.js
+
+# 6. 启动服务
 npm run dev
 ```
 
+访问地址：
+- **API 服务**: http://localhost:4000
+- **API 文档**: http://localhost:4000/api-docs
+- **总后台**: http://localhost:4000/admin/login.html
+- **租户后台**: http://localhost:4000/tenant-admin/login.html
+
 ## 测试账户
-系统预置了四个测试账户，方便进行不同角色的功能测试：
-- **管理员账户**: `test_admin` / `password123` (角色: 租户管理员, 手机号: 13800138001)
-- **工人账户**: `test_worker` / `password123` (角色: 工人, 手机号: 13800138002)
-- **普通用户账户**: `dev_user` / `password123` (角色: 租户用户, 手机号: 13900139001)
-- **开发管理员账户**: `dev_admin` / `password123` (角色: 租户管理员, 手机号: 13900139002)
 
-## API文档
-启动服务后，可在以下地址查看API文档：
-- http://localhost:4000/api-docs (或您配置的BACKEND_PORT端口)
+| 角色 | 租户编码 | 用户名 | 密码 |
+|------|---------|-------|------|
+| 总后台管理员 | - | `admin` | `admin123` |
+| 租户管理员 | `TEST_TENANT` | `test_admin` | `password123` |
+| 租户管理员 | `DEV_TENANT` | `dev_admin` | `password123` |
+| 租户用户 | `TEST_TENANT` | `dev_user` | `password123` |
+| 公共工人 | - | `test_worker` | `password123` |
 
-## 项目版本
+## 核心功能
 
-系统维护两个版本：
-- **完整版**: 包含所有文件和依赖（1.4GB），适合完整部署和开发
-- **精简版**: 移除了大型依赖和资源文件（1.5MB），便于快速部署和开发
+- ✅ **多租户架构** - 支持多个租户独立运营，数据严格隔离
+- ✅ **租户注册审批** - 租户注册需总后台审批，自动生成租户编码
+- ✅ **工人入驻** - 工人免审批入驻，归属公共工人池，跨租户接单
+- ✅ **订单管理** - 完整的订单创建、分配、执行流程
+- ✅ **财务系统** - 支付、结算、提现、佣金计算
+- ✅ **推荐拉新** - 推荐活动管理和奖励机制
+- ✅ **总后台管理** - 租户审批、财务管理、数据统计
+- ✅ **租户后台** - 租户独立管理订单、工人、用户、财务
 
-精简版位于 `/Users/sunsh80/Downloads/易工到项目/小蚁搬运-精简版` 目录。
+## 技术栈
 
-## 仓库优化
+- **后端**: Node.js + Express + MySQL
+- **前端**: 微信小程序
+- **管理后台**: HTML5 + Bootstrap 5
+- **API 文档**: Swagger/OpenAPI
+- **认证**: JWT
 
-为了提高效率和降低存储成本，我们已对远程仓库进行了优化：
-- 移除了大型依赖文件（如node_modules）
-- 优化了仓库大小（从1.4GB减少到约1.5MB）
-- 保留了所有核心功能和修复
-- 本地开发仍可使用完整版，远程仓库使用精简版
+## 项目结构
 
-## 服务管理
-
-### 启动服务
-```bash
-# 启动平台服务
-./start-platform.sh
+```
+xiaoyi-banyun/
+├── backend/                 # 后端服务
+│   ├── controllers/         # 控制器
+│   ├── middleware/          # 中间件
+│   ├── models/              # 数据模型
+│   └── routes/              # 路由
+├── frontend/                # 前端小程序
+│   └── miniprogram/         # 小程序代码
+├── admin/                   # 总后台管理
+├── tenant-admin/            # 租户管理后台
+├── deployment/              # 部署配置
+├── docs/                    # 文档
+├── scripts/                 # 脚本
+└── test/                    # 测试
 ```
 
-### 停止服务
+## 详细文档
+
+### 部署指南
+完整的生产环境部署说明，包括服务器配置、Nginx 配置、HTTPS 配置等。
+👉 [deployment/FULL_DEPLOYMENT_GUIDE.md](deployment/FULL_DEPLOYMENT_GUIDE.md)
+
+### 租户注册与审批
+详细的租户注册、审批流程说明，包括 API 接口、状态管理等。
+👉 [docs/租户注册审批系统说明.md](docs/租户注册审批系统说明.md)
+
+## 常用命令
+
 ```bash
-# 停止平台服务
-./stop-platform.sh
+# 开发环境
+npm run dev              # 启动开发服务
+npm run init-db          # 初始化数据库
+node create-test-users.js  # 创建测试数据
+
+# 生产环境（使用 PM2）
+pm2 start backend/server.js --name xiaoyi-banyun
+pm2 stop xiaoyi-banyun
+pm2 restart xiaoyi-banyun
+pm2 logs xiaoyi-banyun
+
+# Git 操作
+git pull origin main     # 拉取最新代码
+git add .                # 添加文件
+git commit -m "message"  # 提交
+git push origin main     # 推送
 ```
 
-### 重启服务
-```bash
-# 重启平台服务
-./restart-platform.sh
-```
+## 环境要求
 
-## 图片资源说明
-
-### "我的订单"与"帮助"功能图片
-- **"我的订单"图标** - 使用 `/images/order-icon.png` (在 profile.wxml 第60行引用)
-- **"帮助"图标** - 使用 `/images/help-icon.png` (在 profile.wxml 第72行引用)
-- 这两个是**不同的图片文件**，分别用于不同的功能模块
-
-### 其他图片资源
-- **默认头像** - `/images/default-avatar.png` (在 profile.wxml 第6行引用)
-- **位置图标** - `/images/location-icon.png` (在 profile.wxml 第68行引用)
-- **Logo图标** - `/images/logo.png` (在 login.wxml 中引用)
-- **二维码占位符** - `/images/qr-placeholder.png` (在 referral/share.wxml 中引用)
-- **微信好友图标** - `/images/wechat-friends.png` (在 referral/share.wxml 中引用)
-- **微信朋友圈图标** - `/images/wechat-moments.png` (在 referral/share.wxml 中引用)
-- **链接图标** - `/images/link-icon.png` (在 referral/share.wxml 中引用)
-
-## 部署
-参见 `deployment/FULL_DEPLOYMENT_GUIDE.md` 文件获取详细的部署说明。
-
-## 性能优化
-
-### API响应优化
-- 优化了数据库查询性能
-- 添加了分页限制，防止恶意请求
-- 添加了性能监控日志
-- 减少了API响应时间
+- **Node.js**: 14+ (推荐 16+)
+- **MySQL**: 8.0+
+- **npm**: 6+
+- **Git**: 2.0+
 
 ## 许可证
+
 MIT License
+
+---
+
+**项目仓库**: https://github.com/sunsh80/xiaoyi_saas  
+**文档版本**: v2.0  
+**最后更新**: 2026-02-17

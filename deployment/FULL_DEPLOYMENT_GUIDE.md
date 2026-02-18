@@ -1,744 +1,767 @@
-# 小蚁搬运本地化测试与灰度部署完整指南
+# 小蚁搬运平台 - 完整部署与使用指南
+
+> 版本：v2.0 | 更新时间：2026-02-17
 
 ## 目录
-1. [本地开发环境搭建](#本地开发环境搭建)
-2. [本地测试流程](#本地测试流程)
-3. [灰度部署策略](#灰度部署策略)
-4. [生产环境部署](#生产环境部署)
-5. [监控与回滚](#监控与回滚)
-6. [故障排除](#故障排除)
 
-## 本地开发环境搭建
+1. [项目概述](#项目概述)
+2. [系统架构](#系统架构)
+3. [快速开始](#快速开始)
+4. [环境配置](#环境配置)
+5. [安装步骤](#安装步骤)
+6. [功能模块](#功能模块)
+7. [租户注册与审批](#租户注册与审批)
+8. [工人入驻](#工人入驻)
+9. [测试账户](#测试账户)
+10. [API 文档](#api 文档)
+11. [生产环境部署](#生产环境部署)
+12. [常见问题](#常见问题)
 
-### 1. 系统要求
-- **操作系统**: macOS Monterey (您的系统)
-- **处理器**: Intel Core i5 2.7GHz (双核) - 完全兼容
-- **内存**: 8GB+ RAM (推荐 16GB)
-- **存储**: 2GB+ 可用空间
-- **软件**: Node.js 14+, MySQL 8.0.31+, Docker (可选)
+---
+
+## 项目概述
+
+小蚁搬运是一个**SaaS 架构的多租户跑腿装卸平台**，支持货物的装卸搬运工作，包含完整的支付、提现、推荐拉新和抽佣功能。
+
+### 核心特性
+
+- ✅ **多租户架构** - 支持多个租户（商户）独立运营
+- ✅ **租户隔离** - 数据按租户严格隔离，保障安全
+- ✅ **工人管理** - 支持租户自有工人和公共工人池
+- ✅ **订单管理** - 完整的订单创建、分配、执行流程
+- ✅ **财务系统** - 支付、结算、提现、佣金计算
+- ✅ **推荐拉新** - 推荐活动管理和奖励机制
+- ✅ **总后台管理** - 租户审批、财务管理、数据统计
+- ✅ **租户后台** - 租户独立管理订单、工人、用户
+
+### 技术栈
+
+| 模块 | 技术 |
+|------|------|
+| **后端** | Node.js + Express |
+| **数据库** | MySQL 8.0+ |
+| **前端** | 微信小程序 |
+| **管理后台** | HTML5 + Bootstrap 5 |
+| **API 文档** | Swagger/OpenAPI |
+| **认证** | JWT |
+
+---
+
+## 系统架构
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     小蚁搬运平台                              │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
+│  │   小程序端   │    │  总后台管理  │    │  租户管理后台│     │
+│  │             │    │             │    │             │     │
+│  │ - 用户登录   │    │ - 租户审批   │    │ - 订单管理   │     │
+│  │ - 租户注册   │    │ - 租户管理   │    │ - 工人管理   │     │
+│  │ - 工人入驻   │    │ - 财务管理   │    │ - 用户管理   │     │
+│  │ - 订单下单   │    │ - 报表统计   │    │ - 财务报表   │     │
+│  └─────────────┘    └─────────────┘    └─────────────┘     │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│                     后端 API 服务                             │
+│  - 认证服务（登录、注册、JWT）                                │
+│  - 租户服务（注册、审批、管理）                               │
+│  - 订单服务（创建、分配、完成）                               │
+│  - 工人服务（入驻、接单、位置）                               │
+│  - 财务服务（支付、结算、提现、佣金）                         │
+│  - 推荐服务（活动、奖励、统计）                               │
+├─────────────────────────────────────────────────────────────┤
+│                     MySQL 数据库                             │
+│  - tenants 表（租户信息）                                    │
+│  - users 表（用户信息）                                      │
+│  - orders 表（订单信息）                                     │
+│  - workers 表（工人信息）                                    │
+│  - 财务相关表（支付、佣金、提现）                             │
+│  - 推荐相关表（活动、奖励）                                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 快速开始
+
+### 1. 克隆项目
+
+```bash
+git clone git@github.com:sunsh80/xiaoyi_saas.git
+cd xiaoyi_saas
+```
 
 ### 2. 安装依赖
 
-#### 2.1 安装 Homebrew
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-#### 2.2 安装 Node.js
-```bash
-brew install node
-```
-
-#### 2.3 安装和配置 MySQL
-如果您已经安装了 MySQL Workbench，通常 MySQL 服务器也已经安装。请按以下步骤操作：
-
-##### 2.3.1 启动 MySQL 服务
-```bash
-# 如果您使用 MySQL Workbench：
-# 1. 打开 MySQL Workbench
-# 2. 点击菜单 Server -> Start Server
-#
-# 或者通过系统偏好设置启动 MySQL 服务：
-# 1. 打开系统偏好设置
-# 2. 找到 MySQL 图标并点击
-# 3. 点击 "Start MySQL Server" 按钮
-```
-
-##### 2.3.2 配置数据库连接
-```bash
-# 如果您使用 MySQL Workbench，需要确保以下配置正确：
-# 1. 打开 MySQL Workbench
-# 2. 点击 "Local Instance 3306" 或类似的连接
-# 3. 输入 root 用户的密码
-# 4. 确认服务器正在运行且端口为 3306
-```
-
-#### 2.4 安装 Docker (可选，用于容器化开发)
-```bash
-# 下载 Docker Desktop for Mac
-# https://www.docker.com/products/docker-desktop
-```
-
-### 3. 项目初始化
-
-#### 3.1 克隆项目
-```bash
-cd /Users/sunsh80/Downloads/易工到项目/
-git clone <repository-url>
-cd xiaoyi-banyun
-```
-
-#### 3.2 安装依赖
-```bash
-# 主项目依赖
+# 安装主项目依赖
 npm install
 
-# 后端依赖
+# 安装后端依赖
 cd backend
 npm install
 cd ..
-
-# 开发工具
-npm install -g nodemon concurrently
 ```
 
-#### 3.3 环境配置
-创建 `.env.local` 文件：
-```bash
+### 3. 配置环境
+
+编辑 `backend/.env` 文件：
+
+```env
+# 环境配置
 NODE_ENV=development
-PORT=3000
-BACKEND_PORT=3000  # 后端服务端口，优先级高于PORT
+BACKEND_PORT=4000
 
 # 数据库配置
 DB_HOST=localhost
 DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=Ssh19800219
-DB_NAME=xiaoyi_banyun_dev
+DB_USER=xiaoyi_app
+DB_PASSWORD=xiaoyi_pass_2023
+DB_NAME=XIAOYI
 
-# JWT配置
-JWT_SECRET=local_dev_secret_key
+# JWT 配置
+JWT_SECRET=your-super-secret-jwt-key-for-xiaoyi-banyun-platform
 
-# 其他配置
-ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080
-LOG_LEVEL=debug
+# CORS 配置
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000,http://localhost:8080
 ```
 
-### 4. 数据库初始化
+### 4. 初始化数据库
+
 ```bash
-# 确保 MySQL 服务正在运行后，执行：
 npm run init-db
 ```
 
-如果遇到数据库连接错误，请确认：
-1. MySQL 服务已在 MySQL Workbench 或系统偏好设置中启动
-2. backend/.env 文件中的数据库配置正确
-3. MySQL 用户具有适当的权限
+### 5. 创建测试数据
 
-### 5. 创建测试用户
 ```bash
-# 确保数据库初始化完成后，创建测试用户（包括管理员和工人账户）
 node create-test-users.js
 ```
 
-测试账户信息：
-- **管理员账户**: `test_admin` / `password123` (角色: 租户管理员, 手机号: 13800138001)
-- **工人账户**: `test_worker` / `password123` (角色: 工人, 手机号: 13800138002)
-- **普通用户账户**: `dev_user` / `password123` (角色: 租户用户, 手机号: 13900139001)
-- **开发管理员账户**: `dev_admin` / `password123` (角色: 租户管理员, 手机号: 13900139002)
+### 6. 启动服务
 
-注意：如果在创建测试用户时遇到数据库连接错误，请确保 MySQL 服务正在运行且数据库配置正确。
-
-## 本地测试流程
-
-### 1. 运行测试套件
 ```bash
-# 完整测试
-npm run test
-
-# 单项测试
-npm run test-connectivity    # 连通性测试
-npm run test-login         # 登录流程测试
-npm run test-api          # API功能测试
-```
-
-### 2. 本地开发服务器
-```bash
-# 启动开发服务器
-npm run dev
-
-# 或使用启动脚本
-./start-macos.sh
-```
-
-### 3. 创建和测试用户
-```bash
-# 创建测试用户（如果尚未创建）
-node create-test-users.js
-
-# 测试登录功能
-node test-login.js
-```
-
-### 4. 手动登录测试
-使用以下测试账户进行登录验证：
-
-#### 4.1 管理员账户
-```bash
-# 使用默认端口4000（可通过BACKEND_PORT环境变量修改）
-curl -X POST http://localhost:4000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -H "x-tenant-code: TEST_TENANT" \
-  -d '{"username": "test_admin", "password": "password123"}'
-```
-
-#### 4.2 工人账户
-```bash
-# 使用默认端口4000（可通过BACKEND_PORT环境变量修改）
-curl -X POST http://localhost:4000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -H "x-tenant-code: TEST_TENANT" \
-  -d '{"username": "test_worker", "password": "password123"}'
-```
-
-成功登录后，您将收到包含用户信息和JWT令牌的响应，可用于后续API调用的身份验证。
-
-### 7. API测试
-```bash
-# API文档 (默认端口4000，可通过BACKEND_PORT环境变量修改)
-http://localhost:4000/api-docs
-
-# 偰护检查
-curl http://localhost:4000/health
-
-# 认证测试
-curl -H "x-tenant-code: test_tenant" http://localhost:4000/api/auth/me
-```
-
-### 8. 小程序测试
-- 打开微信开发者工具
-- 项目路径: `frontend/miniprogram`
-- AppID: 使用测试号或体验版
-
-## 灰度部署策略
-
-### 1. 灰度发布准备
-
-#### 1.1 创建灰度分支
-```bash
-git checkout -b gray-release-v1.0
-```
-
-#### 1.2 灰度配置
-创建 `config/gray-deploy.js`:
-```javascript
-module.exports = {
-  grayDeploy: {
-    version: 'v1.0-gray',
-    trafficPercentage: 10, // 10%流量
-    userRules: {
-      userIdRange: { start: 1000, end: 1050 },
-      tenantIds: ['gray_tenant_001', 'gray_tenant_002'],
-      geoLocations: ['北京', '上海', '深圳']
-    },
-    featureFlags: {
-      newPaymentMethod: true,
-      enhancedReferral: true,
-      advancedAnalytics: false
-    },
-    monitoring: {
-      metrics: ['response_time', 'error_rate', 'user_satisfaction'],
-      alerts: {
-        responseTime: '>2000ms',
-        errorRate: '>5%'
-      }
-    }
-  }
-};
-```
-
-### 2. 灰度发布流程
-
-#### 2.1 构建灰度版本
-```bash
-# 设置灰度环境变量
-export NODE_ENV=gray
-export GRAY_VERSION=v1.0-gray
-
-# 构建应用
-npm run build
-```
-
-#### 2.2 部署到灰度环境
-```bash
-# 使用Docker部署
-docker build -t xiaoyi-banyun:gray-v1.0 .
-docker run -d --name xiaoyi-banyun-gray \
-  -p 3001:3000 \
-  -e NODE_ENV=gray \
-  -e DB_HOST=gray-db \
-  xiaoyi-banyun:gray-v1.0
-```
-
-#### 2.3 流量切换策略
-```bash
-# 渐进式流量切换
-# 1. 5% 流量 -> 灰度环境 (5分钟观察)
-# 2. 10% 流量 -> 灰度环境 (10分钟观察)
-# 3. 25% 流量 -> 灰度环境 (15分钟观察)
-# 4. 50% 流量 -> 灰度环境 (30分钟观察)
-# 5. 100% 流量 -> 灰度环境 (60分钟观察)
-```
-
-### 3. 灰度监控
-
-#### 3.1 关键指标监控
-```bash
-# 响应时间监控
-curl -w "@curl-format.txt" -o /dev/null -s "http://gray.xiaoyibanyun.com/api/health"
-
-# 错误率监控
-tail -f /var/log/app.log | grep ERROR
-
-# 性能监控
-npm run test-api -- --monitor
-```
-
-#### 3.2 自动告警
-```javascript
-// 监控脚本示例
-const monitor = {
-  checkHealth: async () => {
-    const response = await fetch('http://gray.xiaoyibanyun.com/health');
-    if (response.status !== 200) {
-      sendAlert('Gray deployment health check failed');
-    }
-  },
-  
-  checkPerformance: async () => {
-    const start = Date.now();
-    await fetch('http://gray.xiaoyibanyun.com/api/orders');
-    const duration = Date.now() - start;
-    
-    if (duration > 2000) { // 超过2秒
-      sendAlert(`High response time: ${duration}ms`);
-    }
-  }
-};
-```
-
-## 生产环境部署
-
-### 1. 生产环境配置
-
-#### 1.1 生产环境变量
-```bash
-# .env.production
-NODE_ENV=production
-PORT=3000
-
-# 数据库
-DB_HOST=prod-mysql.cluster.region.rds.amazonaws.com
-DB_PORT=3306
-DB_USER=prod_user
-DB_PASSWORD=secure_password
-DB_NAME=xiaoyi_banyun_prod
-
-# JWT
-JWT_SECRET=production_jwt_secret_key
-
-# 安全
-ALLOWED_ORIGINS=https://xiaoyibanyun.com,https://www.xiaoyibanyun.com
-TRUST_PROXY=true
-
-# 性能
-MAX_CONNECTIONS=100
-POOL_MIN=10
-POOL_MAX=50
-```
-
-### 2. CI/CD 配置
-
-#### 2.1 GitHub Actions 示例
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to Production
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v2
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
-        
-    - name: Install dependencies
-      run: |
-        npm ci
-        
-    - name: Run tests
-      run: npm test
-      
-    - name: Build
-      run: npm run build
-      
-    - name: Deploy to production
-      run: |
-        # 部署逻辑
-        echo "Deploying to production..."
-```
-
-## 监控与回滚
-
-### 1. 监控系统
-
-#### 1.1 应用监控
-```javascript
-// 监控中间件
-app.use((req, res, next) => {
-  const start = Date.now();
-  
-  res.on('finish', () => {
-    const duration = Date.now() - start;
-    const log = {
-      timestamp: new Date().toISOString(),
-      method: req.method,
-      url: req.url,
-      status: res.statusCode,
-      duration: duration,
-      ip: req.ip
-    };
-    
-    // 记录到监控系统
-    monitor.logRequest(log);
-    
-    // 检查性能阈值
-    if (duration > 2000) {
-      monitor.alertSlowResponse(log);
-    }
-  });
-  
-  next();
-});
-```
-
-#### 1.2 偰护端点
-```javascript
-// 偰护检查端点
-app.get('/health', (req, res) => {
-  const healthCheck = {
-    status: 'ok',
-    service: 'xiaoyi-banyun',
-    version: process.env.npm_package_version,
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    memory: process.memoryUsage(),
-    connections: Object.keys(require('http').globalAgent.sockets).length
-  };
-  
-  // 检查数据库连接
-  try {
-    // 数据库连接检查
-    healthCheck.database = 'connected';
-  } catch (err) {
-    healthCheck.database = 'disconnected';
-    healthCheck.status = 'error';
-  }
-  
-  res.status(healthCheck.status === 'ok' ? 200 : 503).json(healthCheck);
-});
-```
-
-### 2. 自动回滚机制
-
-#### 2.1 回滚条件
-```javascript
-const rollbackConditions = {
-  errorRate: 0.05,    // 错误率 > 5%
-  responseTime: 2000, // 响应时间 > 2秒
-  availability: 0.95, // 可用性 < 95%
-  cpuUsage: 0.85,     // CPU使用率 > 85%
-  memoryUsage: 0.90   // 内存使用率 > 90%
-};
-```
-
-#### 2.2 回滚脚本
-```bash
-#!/bin/bash
-# rollback.sh
-
-# 检查是否需要回滚
-check_rollback_needed() {
-  # 检查错误率
-  error_rate=$(curl -s http://localhost:3000/metrics | jq '.errorRate')
-  if (( $(echo "$error_rate > 0.05" | bc -l) )); then
-    echo "Error rate too high: $error_rate"
-    return 0
-  fi
-  
-  # 检查响应时间
-  response_time=$(curl -s -w "%{time_total}" -o /dev/null http://localhost:3000/health)
-  if (( $(echo "$response_time > 2.0" | bc -l) )); then
-    echo "Response time too high: $response_time"
-    return 0
-  fi
-  
-  return 1
-}
-
-# 执行回滚
-perform_rollback() {
-  echo "🔄 执行回滚..."
-  
-  # 停止当前版本
-  docker stop xiaoyi-banyun-current
-  
-  # 启动上一个稳定版本
-  docker run -d --name xiaoyi-banyun-current \
-    -p 4000:4000 \
-    xiaoyi-banyun:stable-latest
-  
-  echo "✅ 回滚完成"
-}
-```
-
-## 故障排除
-
-### 1. 常见问题
-
-#### 1.1 端口冲突
-```bash
-# 检查端口占用
-lsof -i :3000
-
-# 杀死占用进程
-kill -9 $(lsof -t -i:3000)
-```
-
-#### 1.2 数据库连接问题
-```bash
-# 如果您使用 MySQL Workbench：
-# 1. 打开 MySQL Workbench
-# 2. 检查连接是否处于活动状态
-# 3. 点击 Server -> Status 查看服务器状态
-
-# 如果需要重启MySQL服务：
-# 通过 MySQL Workbench:
-# 1. 点击 Server -> Stop Server
-# 2. 然后点击 Server -> Start Server
-#
-# 或者通过系统偏好设置:
-# 1. 打开系统偏好设置
-# 2. 点击 MySQL 图标
-# 3. 点击 "Stop MySQL Server" 然后 "Start MySQL Server"
-
-# 测试连接
-# 如果安装了命令行工具:
-mysql -u root -p
-
-# 或者在 MySQL Workbench 中:
-# 1. 点击 "+" 创建新连接
-# 2. 使用 localhost:3306 连接
-# 3. 用户名 root，输入密码
-```
-
-#### 1.3 依赖安装问题
-```bash
-# 清理缓存
-npm cache clean --force
-
-# 重新安装
-rm -rf node_modules package-lock.json
-npm install
-```
-
-#### 1.4 用户模型连接池问题
-如果遇到 `connection.release is not a function` 错误，请确保 User.js 模型正确使用连接池：
-
-```javascript
-// 在 User.js 模型中，确保使用以下模式：
-static async findById(userId, tenantCode) {
-  const pool = getTenantConnection(tenantCode);  // 获取连接池
-  const connection = await pool.getConnection(); // 从池中获取连接
-  try {
-    // 执行数据库操作
-    const [rows] = await connection.execute(/* ... */);
-    return rows.length > 0 ? new User(rows[0]) : null;
-  } finally {
-    connection.release(); // 释放连接回池
-  }
-}
-```
-
-#### 1.5 租户中间件模块导出问题
-如果遇到 `getTenantConnection is not a function` 错误，请确保 tenant.js 正确导出函数：
-
-```javascript
-// backend/middleware/tenant.js
-// 导出中间件函数和连接函数
-module.exports = tenantMiddleware;
-module.exports.getTenantConnection = getTenantConnection;
-```
-
-### 2. 调试技巧
-
-#### 2.1 启用详细日志
-```bash
-# 设置日志级别
-export LOG_LEVEL=debug
-
-# 启动应用
 npm run dev
 ```
 
-#### 2.2 数据库调试
+访问地址：
+- **API 服务**: http://localhost:4000
+- **API 文档**: http://localhost:4000/api-docs
+- **总后台**: http://localhost:4000/admin/login.html
+- **租户后台**: http://localhost:4000/tenant-admin/login.html
+
+---
+
+## 环境配置
+
+### 系统要求
+
+| 组件 | 版本要求 | 说明 |
+|------|---------|------|
+| **Node.js** | 14+ | 推荐 16+ |
+| **MySQL** | 8.0+ | 需要支持 UTF8MB4 |
+| **npm** | 6+ | 随 Node.js 安装 |
+| **Git** | 2.0+ | 版本控制 |
+
+### 数据库配置
+
+1. **创建数据库用户**（如果不存在）：
+
 ```sql
--- 检查数据库连接
-SHOW PROCESSLIST;
-
--- 检查表结构
-DESCRIBE orders;
-
--- 检查数据
-SELECT COUNT(*) FROM users;
+CREATE USER 'xiaoyi_app'@'localhost' IDENTIFIED BY 'xiaoyi_pass_2023';
+GRANT ALL PRIVILEGES ON *.* TO 'xiaoyi_app'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
-### 3. 性能优化
+2. **创建数据库**：
 
-#### 3.1 数据库优化
 ```sql
--- 添加索引
-CREATE INDEX idx_orders_status_created ON orders(status, created_at);
-CREATE INDEX idx_users_tenant_role ON users(tenant_id, role);
+CREATE DATABASE XIAOYI CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-#### 3.2 缓存策略
-```javascript
-// Redis缓存示例
-const cache = {
-  get: async (key) => {
-    return await redis.get(key);
-  },
-  
-  set: async (key, value, ttl = 3600) => {
-    await redis.setex(key, ttl, JSON.stringify(value));
-  }
-};
-```
+3. **验证连接**：
 
-## 部署脚本
-
-### 1. 一键部署脚本
 ```bash
-#!/bin/bash
-# deploy.sh
+mysql -u xiaoyi_app -p
+```
 
-echo "🚀 开始部署小蚁搬运平台..."
+### 环境变量说明
 
-# 检查环境
-echo "🔍 检查环境..."
-if ! command -v node &> /dev/null; then
-    echo "❌ Node.js 未安装"
-    exit 1
-fi
+| 变量名 | 说明 | 默认值 |
+|-------|------|-------|
+| `NODE_ENV` | 运行环境 | `development` |
+| `BACKEND_PORT` | 后端服务端口 | `4000` |
+| `DB_HOST` | 数据库主机 | `localhost` |
+| `DB_PORT` | 数据库端口 | `3306` |
+| `DB_USER` | 数据库用户 | `root` |
+| `DB_PASSWORD` | 数据库密码 | - |
+| `DB_NAME` | 数据库名称 | `XIAOYI` |
+| `JWT_SECRET` | JWT 密钥 | - |
+| `ALLOWED_ORIGINS` | CORS 允许的来源 | `localhost` 相关 |
 
-if ! command -v npm &> /dev/null; then
-    echo "❌ npm 未安装"
-    exit 1
-fi
+---
 
-# 拉取最新代码
-echo "📥 拉取最新代码..."
-git pull origin main
+## 安装步骤
 
-# 安装依赖
-echo "📦 安装依赖..."
+### 完整安装（本地开发）
+
+```bash
+# 1. 克隆项目
+git clone git@github.com:sunsh80/xiaoyi_saas.git
+cd xiaoyi_saas
+
+# 2. 安装依赖
 npm install
 cd backend && npm install && cd ..
 
-# 构建应用
-echo "🔨 构建应用..."
-npm run build
+# 3. 配置环境
+cp backend/.env.example backend/.env
+# 编辑 backend/.env 文件
 
-# 数据库迁移
-echo "🗄️  数据库迁移..."
-npm run migrate
+# 4. 初始化数据库
+npm run init-db
 
-# 初始化测试用户（可选）
-echo "👥 创建测试用户..."
+# 5. 创建测试数据
 node create-test-users.js
 
+# 6. 启动服务
+npm run dev
+```
+
+### 快速安装（生产环境）
+
+```bash
+# 1. 克隆项目（精简版）
+git clone git@github.com:sunsh80/xiaoyi_saas.git
+cd xiaoyi_saas
+
+# 2. 安装依赖
+npm install
+cd backend && npm install && cd ..
+
+# 3. 配置环境
+# 编辑 backend/.env 文件，配置生产环境数据库
+
+# 4. 初始化数据库
+npm run init-db
+
+# 5. 使用 PM2 启动（生产环境）
+npm install -g pm2
+pm2 start backend/server.js --name xiaoyi-banyun
+pm2 save
+pm2 startup
+```
+
+---
+
+## 功能模块
+
+### 1. 用户认证系统
+
+- 用户注册（租户用户、工人）
+- 用户登录（JWT 认证）
+- 租户管理员登录
+- 公共工人登录
+- 密码修改
+
+### 2. 租户管理系统
+
+- 租户注册（需审批）
+- 租户审批（总后台）
+- 租户编码自动生成
+- 租户数据隔离
+- 租户设置管理
+
+### 3. 订单管理系统
+
+- 订单创建
+- 订单分配
+- 订单状态跟踪
+- 订单完成确认
+- 订单取消
+
+### 4. 工人管理系统
+
+- 工人入驻（免审批）
+- 工人状态管理
+- 工人位置服务
+- 工人收入统计
+- 公共工人池
+
+### 5. 财务管理系统
+
+- 订单支付
+- 佣金计算
+- 提现申请
+- 提现审批
+- 财务报表
+
+### 6. 推荐拉新系统
+
+- 推荐活动管理
+- 推荐码生成
+- 推荐关系绑定
+- 推荐奖励计算
+- 推荐统计
+
+### 7. 总后台管理
+
+- 租户审批
+- 租户管理
+- 财务管理
+- 报表统计
+- 系统设置
+
+### 8. 租户后台管理
+
+- 订单管理
+- 工人管理
+- 用户管理
+- 财务报表
+- 租户设置
+
+---
+
+## 租户注册与审批
+
+### 注册流程
+
+```
+小程序端 → 选择"我是租户" → 填写企业信息 → 提交审批 → 等待总后台审批
+```
+
+### 注册表单
+
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| 企业名称 | ✅ | 公司全称 |
+| 企业地址 | ❌ | 详细地址 |
+| 联系人姓名 | ✅ | 联系人 |
+| 联系电话 | ✅ | 手机号（唯一） |
+| 联系邮箱 | ❌ | 电子邮箱 |
+| 管理员用户名 | ✅ | 登录用户名 |
+| 管理员密码 | ✅ | 登录密码 |
+
+### 审批流程（总后台）
+
+1. 登录总后台：http://localhost:4000/admin/login.html
+2. 点击"租户管理"
+3. 点击"待审批"查看待审批列表
+4. 点击"审批"按钮
+5. 可选择自定义租户编码（留空使用系统自动生成）
+6. 点击"通过"或"拒绝"
+
+### 租户编码规则
+
+**格式**: `TN + YYYYMMDD + 4 位随机数`
+
+**示例**:
+- `TN202602171234` - 2026 年 2 月 17 日生成
+- `TN202602180001` - 2026 年 2 月 18 日生成
+
+**自定义编码建议**:
+- 公司简称：`XIAOMI`、`TENCENT`
+- 品牌名：`SF_EXPRESS`、`JD_LOGISTICS`
+
+### 状态说明
+
+| 状态码 | 租户状态 | 用户状态 | 说明 |
+|-------|---------|---------|------|
+| 0 | 待审批 | 待激活 | 刚注册，等待审批 |
+| 1 | 已启用 | 已激活 | 审批通过，可使用 |
+| 2 | 已禁用 | 已禁用 | 审批拒绝或违规 |
+
+---
+
+## 工人入驻
+
+### 入驻流程
+
+```
+小程序端 → 选择"我是工人" → 填写个人信息 → 选择技能标签 → 直接入驻
+```
+
+### 入驻表单
+
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| 真实姓名 | ✅ | 身份证姓名 |
+| 手机号 | ✅ | 登录账号 |
+| 身份证号 | ❌ | 实名认证用 |
+| 用户名 | ✅ | 登录用户名 |
+| 密码 | ✅ | 登录密码 |
+| 技能标签 | ❌ | 搬运、装卸、配送等 |
+
+### 工人特点
+
+- ✅ **无需审批** - 提交后直接激活
+- ✅ **公共工人池** - 归属公共池，无租户编码
+- ✅ **跨租户接单** - 可接任何租户的订单
+- ✅ **立即登录** - 入驻成功后可立即登录
+
+---
+
+## 测试账户
+
+系统预置了以下测试账户：
+
+### 总后台管理员
+
+| 用户名 | 密码 | 角色 | 说明 |
+|-------|------|------|------|
+| `admin` | `admin123` | 平台管理员 | 总后台登录 |
+
+### 租户管理员
+
+| 租户编码 | 用户名 | 密码 | 角色 | 手机号 |
+|---------|-------|------|------|-------|
+| `TEST_TENANT` | `test_admin` | `password123` | 租户管理员 | 13800138001 |
+| `DEV_TENANT` | `dev_admin` | `password123` | 租户管理员 | 13900139002 |
+
+### 租户普通用户
+
+| 租户编码 | 用户名 | 密码 | 角色 | 手机号 |
+|---------|-------|------|------|-------|
+| `TEST_TENANT` | `dev_user` | `password123` | 租户用户 | 13900139001 |
+
+### 公共工人
+
+| 用户名 | 密码 | 角色 | 手机号 | 说明 |
+|-------|------|------|-------|------|
+| `test_worker` | `password123` | 工人 | 13800138002 | 公共工人池 |
+
+---
+
+## API 文档
+
+### 访问地址
+
+启动服务后访问：**http://localhost:4000/api-docs**
+
+### 认证相关 API
+
+| 接口 | 方法 | 权限 | 说明 |
+|------|------|------|------|
+| `/api/auth/tenant-register` | POST | 公开 | 租户注册 |
+| `/api/auth/worker-register` | POST | 公开 | 工人入驻 |
+| `/api/auth/tenant-login` | POST | 公开 | 租户管理员登录 |
+| `/api/auth/worker-login` | POST | 公开 | 公共工人登录 |
+| `/api/auth/login` | POST | 公开 | 租户用户登录 |
+| `/api/auth/register` | POST | 认证用户 | 租户下用户注册 |
+| `/api/auth/me` | GET | 认证用户 | 获取当前用户信息 |
+| `/api/auth/change-password` | PUT | 认证用户 | 修改密码 |
+
+### 租户管理 API（总后台）
+
+| 接口 | 方法 | 权限 | 说明 |
+|------|------|------|------|
+| `/api/admin/tenants` | GET | 总后台 | 获取租户列表 |
+| `/api/admin/tenants/pending` | GET | 总后台 | 获取待审批租户 |
+| `/api/admin/tenants/:id` | GET | 总后台 | 获取租户详情 |
+| `/api/admin/tenants/:id/approve` | PUT | 总后台 | 审批通过 |
+| `/api/admin/tenants/:id/reject` | PUT | 总后台 | 审批拒绝 |
+| `/api/admin/tenants/:id` | PUT | 总后台 | 更新租户 |
+| `/api/admin/tenants/:id` | DELETE | 总后台 | 删除租户 |
+
+### 租户管理 API（租户后台）
+
+| 接口 | 方法 | 权限 | 说明 |
+|------|------|------|------|
+| `/api/tenant/info` | GET | 租户管理员 | 获取租户信息 |
+| `/api/tenant/dashboard` | GET | 租户管理员 | 获取仪表盘数据 |
+| `/api/tenant/orders` | GET | 租户管理员 | 获取订单列表 |
+| `/api/tenant/workers` | GET | 租户管理员 | 获取工人列表 |
+| `/api/tenant/users` | GET | 租户管理员 | 获取用户列表 |
+| `/api/tenant/finance/overview` | GET | 租户管理员 | 获取财务总览 |
+| `/api/tenant/settings` | PUT | 租户管理员 | 更新租户设置 |
+
+### 订单管理 API
+
+| 接口 | 方法 | 权限 | 说明 |
+|------|------|------|------|
+| `/api/orders` | POST | 认证用户 | 创建订单 |
+| `/api/orders/:id` | GET | 认证用户 | 获取订单详情 |
+| `/api/orders` | GET | 认证用户 | 获取订单列表 |
+| `/api/orders/:id/assign` | PUT | 租户管理员 | 分配订单 |
+| `/api/orders/:id/start` | PUT | 工人 | 开始订单 |
+| `/api/orders/:id/complete` | PUT | 工人 | 完成订单 |
+| `/api/orders/:id/cancel` | PUT | 创建人 | 取消订单 |
+
+---
+
+## 生产环境部署
+
+### 1. 服务器要求
+
+| 配置 | 要求 | 说明 |
+|------|------|------|
+| **CPU** | 2 核 + | 推荐 4 核 + |
+| **内存** | 4GB+ | 推荐 8GB+ |
+| **存储** | 20GB+ | SSD 推荐 |
+| **系统** | Linux | Ubuntu/CentOS |
+
+### 2. 安装 Node.js
+
+```bash
+# Ubuntu/Debian
+curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# CentOS/RHEL
+curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -
+sudo yum install -y nodejs
+```
+
+### 3. 安装 MySQL
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install -y mysql-server
+
+# CentOS/RHEL
+sudo yum install -y mysql-server
+```
+
+### 4. 部署项目
+
+```bash
+# 克隆项目
+git clone git@github.com:sunsh80/xiaoyi_saas.git
+cd xiaoyi_saas
+
+# 安装依赖
+npm install
+cd backend && npm install && cd ..
+
+# 配置生产环境
+cp backend/.env.example backend/.env
+# 编辑 backend/.env，配置生产数据库
+
+# 初始化数据库
+npm run init-db
+
+# 安装 PM2
+sudo npm install -g pm2
+
+# 启动服务
+pm2 start backend/server.js --name xiaoyi-banyun
+
+# 设置开机自启
+pm2 save
+pm2 startup
+```
+
+### 5. Nginx 配置
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    location / {
+        proxy_pass http://localhost:4000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+### 6. HTTPS 配置（推荐）
+
+```bash
+# 使用 Let's Encrypt
+sudo apt-get install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d your-domain.com
+```
+
+---
+
+## 常见问题
+
+### 1. 数据库连接失败
+
+**问题**: `Error: connect ECONNREFUSED`
+
+**解决**:
+```bash
+# 检查 MySQL 服务状态
+sudo systemctl status mysql
+
+# 启动 MySQL 服务
+sudo systemctl start mysql
+
+# 检查数据库配置
+cat backend/.env
+```
+
+### 2. 端口被占用
+
+**问题**: `Error: listen EADDRINUSE: address already in use :::4000`
+
+**解决**:
+```bash
+# 查找占用端口的进程
+lsof -i :4000
+
+# 杀死占用进程
+kill -9 <PID>
+
+# 或修改端口
+# 编辑 backend/.env，修改 BACKEND_PORT=4001
+```
+
+### 3. 租户注册失败
+
+**问题**: "该联系电话已被注册"
+
+**原因**: 同一个联系电话只能注册一个租户
+
+**解决**: 更换联系电话或使用其他手机号
+
+### 4. 租户无法登录
+
+**问题**: "账户待审批"
+
+**原因**: 租户状态为 0（待审批）
+
+**解决**: 联系总后台管理员进行审批
+
+### 5. 图片加载失败
+
+**问题**: 小程序图片无法加载
+
+**解决**:
+```bash
+# 检查图片文件是否存在
+ls -la frontend/miniprogram/images/
+
+# 检查静态文件服务配置
+# 确认 backend/server.js 中配置了正确的静态文件路径
+```
+
+### 6. JWT Token 失效
+
+**问题**: "Token 已过期"
+
+**原因**: Token 默认 24 小时有效期
+
+**解决**: 重新登录获取新 Token
+
+### 7. 跨域问题
+
+**问题**: CORS 错误
+
+**解决**:
+```bash
+# 编辑 backend/.env
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000,your-domain.com
+
 # 重启服务
-echo "🔄 重启服务..."
-pm2 restart xiaoyi-banyun || pm2 start ecosystem.config.js
-
-echo "✅ 部署完成！"
-echo "应用查看: http://localhost:4000 (或您配置的BACKEND_PORT端口)"
-echo "🧪 测试账户: test_admin / password123"
-echo "(worker账户: test_worker / password123)"
+npm run dev
 ```
 
-### 2. 数据库健康检查与修复脚本
-我们还提供了一个自动化脚本来检查和修复常见的数据库连接问题：
+---
+
+## 附录
+
+### A. 项目结构
+
+```
+xiaoyi-banyun/
+├── backend/                 # 后端服务
+│   ├── controllers/         # 控制器
+│   ├── middleware/          # 中间件
+│   ├── models/              # 数据模型
+│   ├── routes/              # 路由
+│   ├── utils/               # 工具
+│   ├── server.js            # 主服务器
+│   └── .env                 # 环境配置
+├── frontend/                # 前端小程序
+│   └── miniprogram/         # 小程序代码
+├── admin/                   # 总后台管理
+├── tenant-admin/            # 租户管理后台
+├── deployment/              # 部署配置
+├── docs/                    # 文档
+├── scripts/                 # 脚本
+├── test/                    # 测试
+├── create-test-users.js     # 测试数据脚本
+├── init-db.js               # 数据库初始化
+└── package.json             # 项目配置
+```
+
+### B. 常用命令
 
 ```bash
-# 运行数据库健康检查和修复
-./scripts/fix-db-connection.sh
+# 开发环境
+npm run dev              # 启动开发服务
+npm run init-db          # 初始化数据库
+node create-test-users.js  # 创建测试数据
+
+# 生产环境
+pm2 start backend/server.js --name xiaoyi-banyun
+pm2 stop xiaoyi-banyun
+pm2 restart xiaoyi-banyun
+pm2 logs xiaoyi-banyun
+pm2 delete xiaoyi-banyun
+
+# Git 操作
+git pull origin main     # 拉取最新代码
+git status               # 查看状态
+git add .                # 添加文件
+git commit -m "message"  # 提交
+git push origin main     # 推送
 ```
 
-该脚本会自动执行以下操作：
-1. 检查MySQL服务是否运行
-2. 检查数据库连接是否正常
-3. 验证数据库和关键表是否存在
-4. 如有问题则自动修复
-5. 重启后端服务以应用修复
+### C. 数据库表结构
 
-此外，还有一个Node.js版本的健康检查脚本：
-```bash
-# 运行Node.js版本的数据库健康检查
-node scripts/db-health-check.js
-```
+主要数据表：
 
-### 2. PM2 配置
-```javascript
-// ecosystem.config.js
-module.exports = {
-  apps: [{
-    name: 'xiaoyi-banyun',
-    script: './backend/server.js',
-    instances: 'max',
-    exec_mode: 'cluster',
-    env: {
-      NODE_ENV: 'production',
-      PORT: 4000,
-      BACKEND_PORT: 4000  // 优先使用 BACKEND_PORT
-    },
-    env_development: {
-      NODE_ENV: 'development',
-      PORT: 4000,
-      BACKEND_PORT: 4000  // 优先使用 BACKEND_PORT
-    },
-    error_file: './logs/err.log',
-    out_file: './logs/out.log',
-    log_file: './logs/combined.log',
-    time: true
-  }]
-};
-```
+- `tenants` - 租户信息
+- `users` - 用户信息
+- `orders` - 订单信息
+- `payments` - 支付信息
+- `commissions` - 佣金信息
+- `withdrawals` - 提现信息
+- `referral_campaigns` - 推荐活动
+- `referrals` - 推荐关系
+- `referral_rewards` - 推荐奖励
 
-## 补充说明
+### D. 相关链接
 
-### 测试用户管理
-系统预置了四个测试用户，方便进行不同角色的功能测试：
-- `test_admin` (租户管理员, 手机号: 13800138001) - 用于测试管理功能
-- `test_worker` (工人, 手机号: 13800138002) - 用于测试工人端功能
-- `dev_user` (租户用户, 手机号: 13900139001) - 用于测试普通用户功能
-- `dev_admin` (开发管理员, 手机号: 13900139002) - 用于开发环境管理
+- **GitHub**: https://github.com/sunsh80/xiaoyi_saas
+- **API 文档**: http://localhost:4000/api-docs
+- **总后台**: http://localhost:4000/admin/login.html
+- **租户后台**: http://localhost:4000/tenant-admin/login.html
 
-### 常见问题修复
-1. **数据库连接问题**：确保 MySQL 服务已启动且配置正确（通过 MySQL Workbench 或系统偏好设置）
-2. **用户模型连接池问题**：确保 User.js 模型正确使用连接池获取和释放连接
-3. **租户中间件导出问题**：确保 tenant.js 正确导出 getTenantConnection 函数
-4. **登录失败问题**：检查租户代码和用户状态是否正确
-5. **MySQL Workbench 连接问题**：确认 MySQL Workbench 中的连接设置与项目配置一致
-6. **数据库连接释放问题**：在模型中使用 `const pool = getTenantConnection(...)` 获取连接池，然后使用 `const connection = await pool.getConnection()` 获取连接，并在 finally 块中调用 `connection.release()` 释放连接
+---
 
-### 端口配置
-- 默认后端端口: 4000 (可通过 BACKEND_PORT 环境变量修改)
-- 环境变量优先级: BACKEND_PORT > PORT > 默认值 4000
+## 更新日志
 
-### 安全建议
-- 在生产环境中使用强密码替换默认密码
-- 定期轮换 JWT 密钥
-- 限制数据库访问权限
-- 启用 HTTPS 加密传输
+### v2.0 (2026-02-17)
 
-这个完整的本地化测试与灰度部署方案涵盖了从小规模本地开发到大规模生产部署的所有关键环节，特别针对您的macOS系统进行了优化配置。
+- ✅ 新增租户注册审批系统
+- ✅ 新增工人入驻功能
+- ✅ 新增总后台租户审批功能
+- ✅ 新增租户管理后台
+- ✅ 新增小程序注册页面
+- ✅ 修复模型连接池问题
+- ✅ 优化 API 响应性能
+
+### v1.0 (2026-02-16)
+
+- ✅ 基础订单管理功能
+- ✅ 用户认证系统
+- ✅ 财务管理系统
+- ✅ 推荐拉新系统
+- ✅ 总后台管理功能
+
+---
+
+**文档版本**: v2.0  
+**最后更新**: 2026-02-17  
+**维护者**: 小蚁搬运团队

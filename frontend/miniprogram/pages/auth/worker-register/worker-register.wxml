@@ -60,7 +60,7 @@
         <view class="tag {{skills.includes('配送') ? 'selected' : ''}}" bind:tap="toggleSkill" data-skill="配送">
           <text>配送</text>
         </view>
-        <view class="tag {{skills.includes '打包') ? 'selected' : ''}}" bind:tap="toggleSkill" data-skill="打包">
+        <view class="tag {{skills.includes('打包') ? 'selected' : ''}}" bind:tap="toggleSkill" data-skill="打包">
           <text>打包</text>
         </view>
         <view class="tag {{skills.includes('整理') ? 'selected' : ''}}" bind:tap="toggleSkill" data-skill="整理">

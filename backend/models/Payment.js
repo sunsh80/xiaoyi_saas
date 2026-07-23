@@ -194,17 +194,35 @@ class Payment {
       const params = [];
       const conditions = [];
 
+      // 处理 $or 条件
+      if (filters.$or && Array.isArray(filters.$or)) {
+        const orConditions = [];
+        for (const condition of filters.$or) {
+          if (condition.payer_id) {
+            orConditions.push('payer_id = ?');
+            params.push(condition.payer_id);
+          }
+          if (condition.payee_id) {
+            orConditions.push('payee_id = ?');
+            params.push(condition.payee_id);
+          }
+        }
+        if (orConditions.length > 0) {
+          conditions.push(`(${orConditions.join(' OR ')})`);
+        }
+      }
+
       if (filters.order_id) {
         conditions.push('order_id = ?');
         params.push(filters.order_id);
       }
 
-      if (filters.payer_id) {
+      if (filters.payer_id && !filters.$or) {
         conditions.push('payer_id = ?');
         params.push(filters.payer_id);
       }
 
-      if (filters.payee_id) {
+      if (filters.payee_id && !filters.$or) {
         conditions.push('payee_id = ?');
         params.push(filters.payee_id);
       }
@@ -226,12 +244,12 @@ class Payment {
       query += ` ORDER BY created_at DESC`;
 
       if (options.limit) {
-        query += ` LIMIT ?`;
-        params.push(options.limit);
+        const limit = parseInt(options.limit);
+        query += ` LIMIT ${limit}`;
 
         if (options.offset) {
-          query += ` OFFSET ?`;
-          params.push(options.offset);
+          const offset = parseInt(options.offset);
+          query += ` OFFSET ${offset}`;
         }
       }
 

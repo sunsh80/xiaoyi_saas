@@ -68,12 +68,12 @@ class ReferralReward {
       query += ` ORDER BY created_at DESC`;
 
       if (options.limit) {
-        query += ` LIMIT ?`;
-        params.push(options.limit);
+        const limit = parseInt(options.limit);
+        query += ` LIMIT ${limit}`;
 
         if (options.offset) {
-          query += ` OFFSET ?`;
-          params.push(options.offset);
+          const offset = parseInt(options.offset);
+          query += ` OFFSET ${offset}`;
         }
       }
 

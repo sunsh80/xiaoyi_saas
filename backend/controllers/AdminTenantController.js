@@ -43,11 +43,11 @@ class AdminTenantController {
 
         // 添加排序和分页
         query += ` ORDER BY created_at DESC`;
-        
+
         if (limit) {
-          const offset = (page - 1) * limit;
-          query += ` LIMIT ? OFFSET ?`;
-          params.push(parseInt(limit), offset);
+          const limitNum = parseInt(limit);
+          const offsetNum = (parseInt(page) - 1) * limitNum;
+          query += ` LIMIT ${limitNum} OFFSET ${offsetNum}`;
         }
 
         const [rows] = await connection.execute(query, params);

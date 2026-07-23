@@ -7,9 +7,12 @@ class Withdrawal {
     this.id = data.id;
     this.user_id = data.user_id;
     this.amount = parseFloat(data.amount) || 0.00;
-    this.account_info = data.account_info ? JSON.parse(data.account_info) : {};
     this.status = data.status;
+    this.bank_name = data.bank_name;
+    this.bank_account = data.bank_account;
+    this.account_name = data.account_name;
     this.remark = data.remark;
+    this.rejection_reason = data.rejection_reason;
     this.processed_by = data.processed_by;
     this.processed_at = data.processed_at;
     this.created_at = data.created_at;
@@ -54,12 +57,12 @@ class Withdrawal {
       query += ` ORDER BY created_at DESC`;
 
       if (options.limit) {
-        query += ` LIMIT ?`;
-        params.push(options.limit);
+        const limit = parseInt(options.limit);
+        query += ` LIMIT ${limit}`;
 
         if (options.offset) {
-          query += ` OFFSET ?`;
-          params.push(options.offset);
+          const offset = parseInt(options.offset);
+          query += ` OFFSET ${offset}`;
         }
       }
 

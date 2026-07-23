@@ -159,7 +159,7 @@ class ReferralController {
    * 获取用户的推荐奖励记录（别名方法，用于路由）
    */
   static async getRewardHistory(req, res) {
-    return this.getReferralRewards(req, res);
+    return ReferralController.getReferralRewards(req, res);
   }
 
   /**

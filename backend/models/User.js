@@ -109,9 +109,9 @@ class User {
           userData.username,
           userData.password_hash,
           userData.phone,
-          userData.email,
-          userData.real_name,
-          userData.avatar_url,
+          userData.email || null,
+          userData.real_name || null,
+          userData.avatar_url || null,
           userData.role,
           userData.status || 1
         ]

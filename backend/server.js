@@ -4,11 +4,12 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 const apiRoutes = require('./routes/api');
 const adminRoutes = require('./routes/admin');
 const { swaggerUi, specs } = require('./utils/swagger');
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 3000; // 优先使用 BACKEND_PORT，其次 PORT，最后默认 3000
@@ -62,8 +63,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // 提供静态文件服务 (例如，图片)
-const path = require('path');
-app.use('/images', express.static(path.join(__dirname, '../frontend/miniprogram/images'))); // 使用绝对路径
+app.use('/images', express.static(path.join(__dirname, '../frontend/miniprogram/images')));
 
 // 提供管理后台静态文件服务
 app.use('/admin', express.static(path.join(__dirname, '../admin')));
@@ -83,25 +83,25 @@ app.use(express.urlencoded({ extended: true }));
 
 // JWT 认证中间件
 app.use((req, res, next) => {
-  console.log('[DEBUG] JWT Middleware called for path:', req.path, 'method:', req.method);
   const authHeader = req.headers.authorization;
-  console.log('[DEBUG] Authorization header:', authHeader);
 
   if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.substring(7); // 移除 "Bearer " 前缀
-    console.log('[DEBUG] Extracted token:', token);
+    const token = authHeader.substring(7);
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error('[FATAL] JWT_SECRET environment variable is not set');
+      return res.status(500).json({ success: false, message: '服务器配置错误' });
+    }
 
-    jwt.verify(token, process.env.JWT_SECRET || 'xiaoyi_banyun_secret_key', (err, decoded) => {
+    jwt.verify(token, secret, (err, decoded) => {
       if (err) {
-        console.log('[DEBUG] JWT Verification failed:', err.message);
-        return next(); // 如果 token 无效，继续执行但不解码用户信息
+        // token 无效，继续执行但不解码用户信息
+        return next();
       }
-      console.log('[DEBUG] JWT Verification succeeded, decoded:', decoded);
       req.user = decoded;
       next();
     });
   } else {
-    console.log('[DEBUG] No Authorization header or not Bearer, calling next()');
     next();
   }
 });

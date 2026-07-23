@@ -31,7 +31,8 @@ class AdminReferralController {
         const limitValue = parseInt(limit);
         const offsetValue = (parseInt(page) - 1) * limitValue;
 
-        query += ` LIMIT ${limitValue} OFFSET ${offsetValue}`;
+        query += ` LIMIT ? OFFSET ?`;
+        params.push(limitValue, offsetValue);
 
         const [rows] = await connection.execute(query, params);
         const campaigns = rows.map(row => new ReferralCampaign(row));

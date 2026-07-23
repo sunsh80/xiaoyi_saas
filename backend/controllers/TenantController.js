@@ -55,14 +55,10 @@ class TenantController {
       const tenantId = req.currentTenant.id;
       const tenantCode = req.tenantCode;
 
-      console.log('获取仪表盘数据:', { tenantId, tenantCode });
-
       // 获取当前月份的起止日期
       const now = new Date();
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
       const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-      console.log('月份范围:', monthStart, monthEnd);
 
       // 统计数据 - 使用简化版本
       const pool = require('../middleware/tenant').getTenantConnection(tenantCode);
@@ -113,6 +109,9 @@ class TenantController {
           statusMap[row.status] = row.count;
         });
 
+        // 订单月度趋势（从 Model 获取真实数据）
+        const orderTrend = await Order.getMonthlyTrend(tenantId, tenantCode, 12);
+
         res.json({
           success: true,
           data: {
@@ -127,7 +126,7 @@ class TenantController {
               status: row.status,
               created_at: row.created_at
             })),
-            order_trend: [12, 19, 8, 15, 22, 18, 14, 20, 25, 16, 10, 8],
+            order_trend: orderTrend,
             order_status: Object.values(statusMap)
           }
         });

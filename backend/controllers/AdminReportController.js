@@ -150,10 +150,11 @@ class AdminReportController {
   static async getWorkerStatistics(conn, startDate, endDate) {
     const [rows] = await conn.execute(
       `SELECT
-        COUNT(DISTINCT w.id) as total_workers,
-        COUNT(DISTINCT CASE WHEN w.work_status = 1 THEN w.id END) as active_workers,
-        COUNT(DISTINCT CASE WHEN w.work_status = 0 THEN w.id END) as resting_workers
-      FROM workers w`
+        COUNT(DISTINCT id) as total_workers,
+        COUNT(DISTINCT CASE WHEN status = 1 THEN id END) as active_workers,
+        COUNT(DISTINCT CASE WHEN status != 1 THEN id END) as inactive_workers
+      FROM users
+      WHERE role = 'worker' AND tenant_id IS NULL`
     );
 
     const stats = rows[0];

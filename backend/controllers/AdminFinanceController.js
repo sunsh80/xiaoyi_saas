@@ -6,6 +6,7 @@ const OrderFinance = require('../models/OrderFinance');
 const Order = require('../models/Order');
 const WithdrawalFinance = require('../models/WithdrawalFinance');
 const AccountFinance = require('../models/AccountFinance');
+const Withdrawal = require('../models/Withdrawal');
 
 class AdminFinanceController {
   /**
@@ -304,37 +305,119 @@ class AdminFinanceController {
   }
 
   /**
-   * 获取提现列表（占位实现）
+   * 获取提现列表
    */
   static async getWithdrawalList(req, res) {
-    res.json({
-      success: true,
-      data: {
-        withdrawals: [],
-        pagination: { page: 1, limit: 10, total: 0, pages: 0 }
+    try {
+      const { status, user_id, page = 1, limit = 20 } = req.query;
+      const filters = {};
+      if (status) filters.status = status;
+      if (user_id) filters.user_id = user_id;
+
+      const options = {
+        limit: parseInt(limit),
+        offset: (parseInt(page) - 1) * parseInt(limit)
+      };
+
+      const withdrawals = await Withdrawal.getList(filters, options);
+
+      // 获取总数
+      const pool = require('../middleware/tenant').getTenantConnection('global');
+      const connection = await pool.getConnection();
+      try {
+        let countQuery = `SELECT COUNT(*) as count FROM ${Withdrawal.tableName} WHERE 1=1`;
+        const countParams = [];
+        if (status) { countQuery += ` AND status = ?`; countParams.push(status); }
+        if (user_id) { countQuery += ` AND user_id = ?`; countParams.push(user_id); }
+        const [countResult] = await connection.execute(countQuery, countParams);
+        const total = countResult[0].count;
+
+        res.json({
+          success: true,
+          data: {
+            withdrawals: withdrawals.map(w => w.toJSON()),
+            pagination: {
+              page: parseInt(page),
+              limit: parseInt(limit),
+              total,
+              pages: Math.ceil(total / parseInt(limit))
+            }
+          }
+        });
+      } finally {
+        connection.release();
       }
-    });
+    } catch (error) {
+      console.error('获取提现列表错误:', error);
+      res.status(500).json({ success: false, message: '服务器内部错误' });
+    }
   }
 
   /**
-   * 批准提现（占位实现）
+   * 批准提现
    */
   static async approveWithdrawal(req, res) {
-    res.json({ success: true, message: '提现申请已批准' });
+    try {
+      const { id } = req.params;
+      const adminUserId = req.user.userId;
+
+      const withdrawal = await Withdrawal.findById(parseInt(id));
+      if (!withdrawal) {
+        return res.status(404).json({ success: false, message: '提现记录不存在' });
+      }
+
+      await withdrawal.approve(adminUserId);
+
+      res.json({ success: true, message: '提现申请已批准' });
+    } catch (error) {
+      console.error('批准提现错误:', error);
+      res.status(500).json({ success: false, message: error.message || '服务器内部错误' });
+    }
   }
 
   /**
-   * 拒绝提现（占位实现）
+   * 拒绝提现
    */
   static async rejectWithdrawal(req, res) {
-    res.json({ success: true, message: '提现申请已拒绝' });
+    try {
+      const { id } = req.params;
+      const { remark } = req.body;
+      const adminUserId = req.user.userId;
+
+      const withdrawal = await Withdrawal.findById(parseInt(id));
+      if (!withdrawal) {
+        return res.status(404).json({ success: false, message: '提现记录不存在' });
+      }
+
+      await withdrawal.reject(remark || '管理员拒绝', adminUserId);
+
+      res.json({ success: true, message: '提现申请已拒绝' });
+    } catch (error) {
+      console.error('拒绝提现错误:', error);
+      res.status(500).json({ success: false, message: error.message || '服务器内部错误' });
+    }
   }
 
   /**
-   * 设置提现为处理中（占位实现）
+   * 设置提现为处理中
    */
   static async processingWithdrawal(req, res) {
-    res.json({ success: true, message: '提现申请已设置为处理中' });
+    try {
+      const { id } = req.params;
+      const adminUserId = req.user.userId;
+
+      const withdrawal = await Withdrawal.findById(parseInt(id));
+      if (!withdrawal) {
+        return res.status(404).json({ success: false, message: '提现记录不存在' });
+      }
+
+      await withdrawal.processing(adminUserId);
+
+      res.json({ success: true, message: '提现申请已设置为处理中' });
+    } catch (error) {
+      console.error('设置提现处理中错误:', error);
+      res.status(500).json({ success: false, message: error.message || '服务器内部错误' });
+    }
   }
 
   /**

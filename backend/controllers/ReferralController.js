@@ -117,7 +117,8 @@ class ReferralController {
       const rewards = await ReferralReward.findByUserId(userId, options);
 
       // 获取总数
-      const connection = await require('../middleware/tenant').getTenantConnection('global');
+      const pool = require('../middleware/tenant').getTenantConnection(req.tenantCode || 'global');
+      const connection = await pool.getConnection();
       try {
         let countQuery = `SELECT COUNT(*) as count FROM ${ReferralReward.tableName} WHERE user_id = ?`;
         const countParams = [userId];
@@ -202,8 +203,10 @@ class ReferralController {
         });
       }
 
-      // 生成唯一的推荐码（可以使用用户ID和时间戳等信息生成）
-      const referralCode = `REF_${userId}_${Date.now()}`;
+      // 生成唯一的推荐码（使用 crypto 保证唯一性）
+      const crypto = require('crypto');
+      const randomSuffix = crypto.randomBytes(4).toString('hex');
+      const referralCode = `REF_${userId}_${Date.now()}_${randomSuffix}`;
 
       // 这里可以生成实际的推荐链接或二维码
       const referralLink = `${process.env.FRONTEND_URL || 'https://xiaoyibanyun.com'}/register?ref=${referralCode}&campaign=${campaignId}`;

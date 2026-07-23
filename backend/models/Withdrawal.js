@@ -16,11 +16,16 @@ class Withdrawal {
     this.updated_at = data.updated_at;
   }
 
+  static async _getConn() {
+    const pool = getTenantConnection('global');
+    return await pool.getConnection();
+  }
+
   /**
    * 根据ID查找提现记录
    */
   static async findById(withdrawalId) {
-    const connection = await getTenantConnection('global'); // 提现记录是全局的
+    const connection = await this._getConn();
     try {
       const [rows] = await connection.execute(
         `SELECT * FROM ${this.tableName} WHERE id = ?`,
@@ -36,7 +41,7 @@ class Withdrawal {
    * 根据用户ID获取提现记录
    */
   static async getByUserId(userId, options = {}) {
-    const connection = await getTenantConnection('global'); // 提现记录是全局的
+    const connection = await this._getConn();
     try {
       let query = `SELECT * FROM ${this.tableName} WHERE user_id = ?`;
       const params = [userId];
@@ -66,14 +71,17 @@ class Withdrawal {
   }
 
   /**
-   * 创建提现申请
+   * 创建提现申请（事务保证冻结+插入的原子性）
    */
   static async create(withdrawalData) {
-    const connection = await getTenantConnection('global'); // 提现记录是全局的
+    const connection = await this._getConn();
     try {
+      await connection.beginTransaction();
+
       // 验证最小提现金额
       const minWithdrawalAmount = await this.getMinWithdrawalAmount();
       if (withdrawalData.amount < minWithdrawalAmount) {
+        await connection.rollback();
         throw new Error(`最低提现金额为 ¥${minWithdrawalAmount}`);
       }
 
@@ -81,10 +89,12 @@ class Withdrawal {
       const Account = require('./Account');
       const userAccount = await Account.getByUserId(withdrawalData.user_id);
       if (!userAccount) {
+        await connection.rollback();
         throw new Error('用户账户不存在');
       }
 
       if (userAccount.balance < withdrawalData.amount) {
+        await connection.rollback();
         throw new Error('账户余额不足');
       }
 
@@ -92,26 +102,22 @@ class Withdrawal {
       await userAccount.freezeAmount(withdrawalData.amount);
 
       const [result] = await connection.execute(
-        `INSERT INTO ${this.tableName} 
-        (user_id, amount, account_info, status, remark) 
+        `INSERT INTO ${this.tableName}
+        (user_id, amount, account_info, status, remark)
         VALUES (?, ?, ?, ?, ?)`,
         [
           withdrawalData.user_id,
           withdrawalData.amount,
           JSON.stringify(withdrawalData.account_info),
-          'pending', // 默认为待处理
+          'pending',
           withdrawalData.remark || null
         ]
       );
 
+      await connection.commit();
       return await this.findById(result.insertId);
     } catch (error) {
-      // 如果创建失败，需要解冻金额
-      const Account = require('./Account');
-      const userAccount = await Account.getByUserId(withdrawalData.user_id);
-      if (userAccount) {
-        await userAccount.unfreezeAmount(withdrawalData.amount);
-      }
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -135,29 +141,24 @@ class Withdrawal {
       throw new Error('提现申请状态异常');
     }
 
-    const connection = await getTenantConnection('global'); // 提现记录是全局的
+    const connection = await Withdrawal._getConn();
     try {
-      // 更新提现记录状态
       await connection.execute(
-        `UPDATE ${Withdrawal.tableName} 
-         SET status = 'completed', processed_by = ?, processed_at = NOW(), updated_at = NOW() 
+        `UPDATE ${Withdrawal.tableName}
+         SET status = 'completed', processed_by = ?, processed_at = NOW(), updated_at = NOW()
          WHERE id = ?`,
         [adminUserId, this.id]
       );
 
-      // 从用户账户中扣除相应金额
       const Account = require('./Account');
       const userAccount = await Account.getByUserId(this.user_id);
       if (userAccount) {
-        // 由于之前已冻结金额，这里直接扣除
         await userAccount.decreaseBalance(this.amount);
       }
 
       this.status = 'completed';
       this.processed_by = adminUserId;
       this.processed_at = new Date();
-
-      console.log(`提现申请已通过: 用户ID ${this.user_id}, 金额 ${this.amount}`);
     } finally {
       connection.release();
     }
@@ -171,17 +172,15 @@ class Withdrawal {
       throw new Error('提现申请状态异常');
     }
 
-    const connection = await getTenantConnection('global'); // 提现记录是全局的
+    const connection = await Withdrawal._getConn();
     try {
-      // 更新提现记录状态
       await connection.execute(
-        `UPDATE ${Withdrawal.tableName} 
-         SET status = 'rejected', remark = ?, processed_by = ?, processed_at = NOW(), updated_at = NOW() 
+        `UPDATE ${Withdrawal.tableName}
+         SET status = 'rejected', remark = ?, processed_by = ?, processed_at = NOW(), updated_at = NOW()
          WHERE id = ?`,
         [remark, adminUserId, this.id]
       );
 
-      // 解冻用户账户中的金额
       const Account = require('./Account');
       const userAccount = await Account.getByUserId(this.user_id);
       if (userAccount) {
@@ -192,8 +191,6 @@ class Withdrawal {
       this.remark = remark;
       this.processed_by = adminUserId;
       this.processed_at = new Date();
-
-      console.log(`提现申请已被拒绝: 用户ID ${this.user_id}, 金额 ${this.amount}`);
     } finally {
       connection.release();
     }
@@ -207,11 +204,11 @@ class Withdrawal {
       throw new Error('提现申请状态异常');
     }
 
-    const connection = await getTenantConnection('global'); // 提现记录是全局的
+    const connection = await Withdrawal._getConn();
     try {
       await connection.execute(
-        `UPDATE ${Withdrawal.tableName} 
-         SET status = 'processing', processed_by = ?, processed_at = NOW(), updated_at = NOW() 
+        `UPDATE ${Withdrawal.tableName}
+         SET status = 'processing', processed_by = ?, processed_at = NOW(), updated_at = NOW()
          WHERE id = ?`,
         [adminUserId, this.id]
       );
@@ -219,8 +216,6 @@ class Withdrawal {
       this.status = 'processing';
       this.processed_by = adminUserId;
       this.processed_at = new Date();
-
-      console.log(`提现申请正在处理中: 用户ID ${this.user_id}, 金额 ${this.amount}`);
     } finally {
       connection.release();
     }
@@ -230,7 +225,7 @@ class Withdrawal {
    * 获取提现申请列表
    */
   static async getList(filters = {}, options = {}) {
-    const connection = await getTenantConnection('global'); // 提现记录是全局的
+    const connection = await this._getConn();
     try {
       let query = `SELECT * FROM ${this.tableName}`;
       const params = [];

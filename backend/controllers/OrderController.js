@@ -65,66 +65,41 @@ class OrderController {
   // 订单列表（分页）
   static async list(req, res) {
     try {
-      // 添加性能日志
-      const startTime = Date.now();
-      console.log('[PERFORMANCE] 开始获取订单列表...', {
-        query: req.query,
-        user: req.user,
-        currentTenant: req.currentTenant
-      });
-
       const { page = 1, limit = 10, status } = req.query;
       const tenantCode = req.tenantCode;
 
-      // 限制最大分页数量，防止恶意请求
       const pageNum = Math.max(1, parseInt(page));
-      const limitNum = Math.min(100, Math.max(1, parseInt(limit))); // 限制每页最多100条
+      const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
       const offset = (pageNum - 1) * limitNum;
 
-      // 根据用户角色过滤订单 - 实现C2C众包平台逻辑
       let conditions = {};
 
       if (req.user && req.user.role === 'worker') {
         if (status === 'pending') {
-          // 工人查看待处理订单 - 可以看到其他租户的待处理订单（但不能看自己租户的）
           conditions = {
             status: 'pending',
-            tenant_id_not: req.currentTenant.id  // 排除自己租户的订单
+            tenant_id_not: req.currentTenant.id
           };
-          console.log('[DEBUG] 工人查询其他租户的待处理订单');
         } else if (!status) {
-          // 工人查看所有订单 - 只看分配给自己的订单
           conditions = {
             assignee_user_id: req.user.userId
           };
-          console.log('[DEBUG] 工人查询分配给自己的所有订单');
         } else {
-          // 工人查看特定状态订单 - 只看分配给自己的订单
           conditions = {
             status: status,
             assignee_user_id: req.user.userId
           };
-          console.log('[DEBUG] 工人查询分配给自己的特定状态订单');
         }
       } else if (req.user && (req.user.role === 'admin' || req.user.role === 'platform_admin')) {
-        // 平台管理员 - 可以看到所有订单
         if (status) {
           conditions.status = status;
         }
-        console.log('[DEBUG] 平台管理员查询订单');
       } else {
-        // 租户管理员 - 只看自己租户的订单
         conditions = { tenant_id: req.currentTenant.id };
         if (status) conditions.status = status;
-        console.log('[DEBUG] 租户用户查询自己租户的订单');
       }
 
-      // 执行查询
-      console.log('[DEBUG] 执行查询逻辑，条件:', conditions);
       const { rows, total } = await Order.list(conditions, { limit: limitNum, offset }, tenantCode);
-
-      const endTime = Date.now();
-      console.log(`[PERFORMANCE] 获取订单列表完成，耗时: ${endTime - startTime}ms，返回 ${rows.length} 条记录`);
 
       res.json({
         success: true,
@@ -134,13 +109,12 @@ class OrderController {
             current: pageNum,
             pageSize: limitNum,
             total,
-            pages: Math.ceil(total / limitNum)  // 添加总页数
+            pages: Math.ceil(total / limitNum)
           }
         }
       });
     } catch (error) {
       console.error('查询订单列表失败:', error);
-      console.error('错误堆栈:', error.stack);
       res.status(500).json({ success: false, message: '服务器内部错误' });
     }
   }

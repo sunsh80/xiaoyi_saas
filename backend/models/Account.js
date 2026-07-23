@@ -14,11 +14,16 @@ class Account {
     this.updated_at = data.updated_at;
   }
 
+  static async _getConn() {
+    const pool = getTenantConnection('global');
+    return await pool.getConnection();
+  }
+
   /**
    * 根据用户ID获取账户
    */
   static async getByUserId(userId) {
-    const connection = await getTenantConnection('global'); // 账户信息是全局的
+    const connection = await this._getConn();
     try {
       const [rows] = await connection.execute(
         `SELECT * FROM ${this.tableName} WHERE user_id = ?`,
@@ -34,7 +39,7 @@ class Account {
    * 根据租户ID获取账户
    */
   static async getByTenantId(tenantId) {
-    const connection = await getTenantConnection('global'); // 账户信息是全局的
+    const connection = await this._getConn();
     try {
       const [rows] = await connection.execute(
         `SELECT * FROM ${this.tableName} WHERE tenant_id = ?`,
@@ -50,7 +55,7 @@ class Account {
    * 获取平台账户
    */
   static async getPlatformAccount() {
-    const connection = await getTenantConnection('global'); // 账户信息是全局的
+    const connection = await this._getConn();
     try {
       const [rows] = await connection.execute(
         `SELECT * FROM ${this.tableName} WHERE account_type = 'platform' LIMIT 1`
@@ -65,9 +70,8 @@ class Account {
    * 创建账户
    */
   static async create(accountData) {
-    const connection = await getTenantConnection('global'); // 账户信息是全局的
+    const connection = await this._getConn();
     try {
-      // 检查是否已存在对应类型的账户
       let checkQuery = `SELECT id FROM ${this.tableName} WHERE `;
       const checkParams = [];
 
@@ -87,8 +91,8 @@ class Account {
       }
 
       const [result] = await connection.execute(
-        `INSERT INTO ${this.tableName} 
-        (user_id, tenant_id, account_type, balance, frozen_amount) 
+        `INSERT INTO ${this.tableName}
+        (user_id, tenant_id, account_type, balance, frozen_amount)
         VALUES (?, ?, ?, ?, ?)`,
         [
           accountData.user_id || null,
@@ -109,7 +113,7 @@ class Account {
    * 根据ID获取账户
    */
   static async getById(id) {
-    const connection = await getTenantConnection('global'); // 账户信息是全局的
+    const connection = await this._getConn();
     try {
       const [rows] = await connection.execute(
         `SELECT * FROM ${this.tableName} WHERE id = ?`,
@@ -124,8 +128,8 @@ class Account {
   /**
    * 更新账户余额
    */
-  async updateBalance(newBalance, tenantCode) {
-    const connection = await getTenantConnection('global'); // 账户信息是全局的
+  async updateBalance(newBalance) {
+    const connection = await Account._getConn();
     try {
       await connection.execute(
         `UPDATE ${Account.tableName} SET balance = ?, updated_at = NOW() WHERE id = ?`,
@@ -140,12 +144,12 @@ class Account {
   /**
    * 增加余额
    */
-  async increaseBalance(amount, tenantCode) {
+  async increaseBalance(amount) {
     if (amount <= 0) {
       throw new Error('增加金额必须大于0');
     }
 
-    const connection = await getTenantConnection('global'); // 账户信息是全局的
+    const connection = await Account._getConn();
     try {
       await connection.execute(
         `UPDATE ${Account.tableName} SET balance = balance + ?, updated_at = NOW() WHERE id = ?`,
@@ -160,7 +164,7 @@ class Account {
   /**
    * 减少余额
    */
-  async decreaseBalance(amount, tenantCode) {
+  async decreaseBalance(amount) {
     if (amount <= 0) {
       throw new Error('减少金额必须大于0');
     }
@@ -169,7 +173,7 @@ class Account {
       throw new Error('余额不足');
     }
 
-    const connection = await getTenantConnection('global'); // 账户信息是全局的
+    const connection = await Account._getConn();
     try {
       await connection.execute(
         `UPDATE ${Account.tableName} SET balance = balance - ?, updated_at = NOW() WHERE id = ?`,
@@ -184,7 +188,7 @@ class Account {
   /**
    * 冻结金额
    */
-  async freezeAmount(amount, tenantCode) {
+  async freezeAmount(amount) {
     if (amount <= 0) {
       throw new Error('冻结金额必须大于0');
     }
@@ -193,7 +197,7 @@ class Account {
       throw new Error('可用余额不足');
     }
 
-    const connection = await getTenantConnection('global'); // 账户信息是全局的
+    const connection = await Account._getConn();
     try {
       await connection.execute(
         `UPDATE ${Account.tableName} SET balance = balance - ?, frozen_amount = frozen_amount + ?, updated_at = NOW() WHERE id = ?`,
@@ -209,7 +213,7 @@ class Account {
   /**
    * 解冻金额
    */
-  async unfreezeAmount(amount, tenantCode) {
+  async unfreezeAmount(amount) {
     if (amount <= 0) {
       throw new Error('解冻金额必须大于0');
     }
@@ -218,7 +222,7 @@ class Account {
       throw new Error('冻结金额不足');
     }
 
-    const connection = await getTenantConnection('global'); // 账户信息是全局的
+    const connection = await Account._getConn();
     try {
       await connection.execute(
         `UPDATE ${Account.tableName} SET balance = balance + ?, frozen_amount = frozen_amount - ?, updated_at = NOW() WHERE id = ?`,

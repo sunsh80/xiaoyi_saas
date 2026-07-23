@@ -18,7 +18,8 @@ class Commission {
    * 根据ID查找佣金记录
    */
   static async findById(commissionId) {
-    const connection = await getTenantConnection('global'); // 佣金记录是全局的
+    const pool = getTenantConnection('global');
+    const connection = await pool.getConnection();
     try {
       const [rows] = await connection.execute(
         `SELECT * FROM ${this.tableName} WHERE id = ?`,
@@ -34,7 +35,8 @@ class Commission {
    * 根据订单ID查找佣金记录
    */
   static async findByOrderId(orderId) {
-    const connection = await getTenantConnection('global'); // 佣金记录是全局的
+    const pool = getTenantConnection('global');
+    const connection = await pool.getConnection();
     try {
       const [rows] = await connection.execute(
         `SELECT * FROM ${this.tableName} WHERE order_id = ?`,
@@ -49,12 +51,14 @@ class Commission {
   /**
    * 计算并创建佣金记录
    */
-  static async calculateAndCreate(orderId, adminUserId, customRate = null) {
-    const connection = await getTenantConnection('global'); // 佣金记录是全局的
+  static async calculateAndCreate(orderId, adminUserId, customRate = null, tenantCode = null) {
+    const pool = getTenantConnection('global');
+    const connection = await pool.getConnection();
     try {
-      // 获取订单信息
+      // 获取订单信息 — 优先使用传入的 tenantCode，否则从 global 查找
       const Order = require('./Order');
-      const order = await Order.findById(orderId, 'global'); // 使用全局连接获取订单
+      const lookupCode = tenantCode || 'global';
+      const order = await Order.findById(orderId, lookupCode);
       if (!order) {
         throw new Error('订单不存在');
       }
@@ -145,7 +149,8 @@ class Commission {
    * 获取佣金记录列表
    */
   static async getList(filters = {}, options = {}) {
-    const connection = await getTenantConnection('global'); // 佣金记录是全局的
+    const pool = getTenantConnection('global');
+    const connection = await pool.getConnection();
     try {
       let query = `SELECT * FROM ${this.tableName}`;
       const params = [];
@@ -198,7 +203,8 @@ class Commission {
    * 获取佣金统计
    */
   static async getStatistics(startDate = null, endDate = null) {
-    const connection = await getTenantConnection('global'); // 佣金记录是全局的
+    const pool = getTenantConnection('global');
+    const connection = await pool.getConnection();
     try {
       let query = `SELECT 
         COUNT(*) as total_orders,

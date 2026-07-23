@@ -3,10 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Tenant = require('../models/Tenant');
 
-require('dotenv').config();
-
-const JWT_SECRET = process.env.JWT_SECRET || 'xiaoyi_banyun_secret_key';
-
 class AuthController {
   /**
    * 生成租户编码
@@ -212,7 +208,7 @@ class AuthController {
             username: username,
             role: 'worker'
           },
-          JWT_SECRET,
+          process.env.JWT_SECRET,
           { expiresIn: '24h' }
         );
 
@@ -314,7 +310,7 @@ class AuthController {
           username: newUser.username,
           role: newUser.role
         },
-        JWT_SECRET,
+        process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
 
@@ -396,7 +392,7 @@ class AuthController {
           username: user.username,
           role: user.role
         },
-        JWT_SECRET,
+        process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
 
@@ -574,7 +570,7 @@ class AuthController {
           username: user.username,
           role: user.role
         },
-        JWT_SECRET,
+        process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
 
@@ -664,7 +660,7 @@ class AuthController {
             username: user.username,
             role: 'worker'
           },
-          JWT_SECRET,
+          process.env.JWT_SECRET,
           { expiresIn: '24h' }
         );
 

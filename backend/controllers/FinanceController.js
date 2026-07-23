@@ -101,7 +101,8 @@ class FinanceController {
       const withdrawals = await Withdrawal.getByUserId(userId, options);
 
       // 获取总数
-      const connection = await require('../middleware/tenant').getTenantConnection('global');
+      const pool = require('../middleware/tenant').getTenantConnection(req.tenantCode || 'global');
+      const connection = await pool.getConnection();
       try {
         let countQuery = `SELECT COUNT(*) as count FROM ${Withdrawal.tableName} WHERE user_id = ?`;
         const countParams = [userId];
@@ -166,7 +167,8 @@ class FinanceController {
       const payments = await Payment.getList(filters, options);
 
       // 获取总数
-      const connection = await require('../middleware/tenant').getTenantConnection('global');
+      const pool = require('../middleware/tenant').getTenantConnection(req.tenantCode || 'global');
+      const connection = await pool.getConnection();
       try {
         let countQuery = `SELECT COUNT(*) as count FROM ${Payment.tableName} WHERE (payer_id = ? OR payee_id = ?)`;
         const countParams = [userId, userId];

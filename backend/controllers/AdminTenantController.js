@@ -368,11 +368,16 @@ class AdminTenantController {
       const connection = await pool.getConnection();
       
       try {
+        // 白名单：只允许更新以下字段
+        const allowedFields = [
+          'name', 'contact_person', 'contact_phone', 'contact_email',
+          'address', 'status', 'logo', 'description', 'business_license'
+        ];
         const fields = [];
         const values = [];
 
         Object.keys(updateData).forEach(key => {
-          if (key !== 'id' && key !== 'tenant_code') {
+          if (key !== 'id' && key !== 'tenant_code' && allowedFields.includes(key)) {
             fields.push(`${key} = ?`);
             values.push(updateData[key]);
           }

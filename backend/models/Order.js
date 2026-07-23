@@ -46,7 +46,8 @@ class Order {
    * 根据订单号查找订单
    */
   static async findByOrderNo(orderNo, tenantCode) {
-    const connection = await getTenantConnection(tenantCode);
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
     try {
       const [rows] = await connection.execute(
         `SELECT * FROM ${this.tableName} WHERE order_no = ?`,
@@ -120,7 +121,8 @@ class Order {
    * 分配订单给接单人员
    */
   async assignToWorker(workerUserId, tenantCode) {
-    const connection = await getTenantConnection(tenantCode);
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
     try {
       await connection.execute(
         `UPDATE ${this.tableName}
@@ -141,7 +143,8 @@ class Order {
    * 开始处理订单
    */
   async startProcessing(tenantCode) {
-    const connection = await getTenantConnection(tenantCode);
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
     try {
       await connection.execute(
         `UPDATE ${this.tableName} SET status = 'in_progress' WHERE id = ?`,
@@ -158,7 +161,8 @@ class Order {
    * 完成订单
    */
   async complete(tenantCode) {
-    const connection = await getTenantConnection(tenantCode);
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
     try {
       await connection.execute(
         `UPDATE ${this.tableName}
@@ -230,7 +234,8 @@ class Order {
    * 取消订单
    */
   async cancel(tenantCode) {
-    const connection = await getTenantConnection(tenantCode);
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
     try {
       await connection.execute(
         `UPDATE ${this.tableName} SET status = 'cancelled' WHERE id = ?`,
@@ -247,7 +252,8 @@ class Order {
    * 更新订单信息
    */
   async update(updateData, tenantCode) {
-    const connection = await getTenantConnection(tenantCode);
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
     try {
       const fields = [];
       const values = [];
@@ -277,7 +283,8 @@ class Order {
    * 获取租户下的订单列表
    */
   static async findAllByTenant(tenantId, tenantCode, options = {}) {
-    const connection = await getTenantConnection(tenantCode);
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
     try {
       let query = `SELECT * FROM ${this.tableName} WHERE tenant_id = ?`;
       const params = [tenantId];
@@ -381,7 +388,8 @@ class Order {
    * 获取接单人员的订单列表
    */
   static async findByWorker(userId, tenantCode, options = {}) {
-    const connection = await getTenantConnection(tenantCode);
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
     try {
       let query = `SELECT * FROM ${this.tableName} WHERE assignee_user_id = ?`;
       const params = [userId];
@@ -714,6 +722,33 @@ class Order {
     } finally {
       connection.release();
     }
+  }
+
+  /**
+   * 获取订单详情
+   */
+  toJSON() {
+    return {
+      id: this.id,
+      tenant_id: this.tenant_id,
+      order_no: this.order_no,
+      title: this.title,
+      description: this.description,
+      pickup_address: this.pickup_address,
+      delivery_address: this.delivery_address,
+      pickup_time: this.pickup_time,
+      delivery_time: this.delivery_time,
+      distance: this.distance,
+      weight: this.weight,
+      volume: this.volume,
+      amount: this.amount,
+      status: this.status,
+      assignee_user_id: this.assignee_user_id,
+      assign_time: this.assign_time,
+      complete_time: this.complete_time,
+      created_at: this.created_at,
+      updated_at: this.updated_at
+    };
   }
 }
 

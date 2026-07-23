@@ -260,7 +260,7 @@ class MapController {
         address: addressInfo ? addressInfo.address : '',
         accuracy: accuracy || 0,
         battery_level: req.body.battery_level || null
-      });
+      }, tenantCode);
 
       res.json({
         success: true,
@@ -342,8 +342,8 @@ class MapController {
   }
 
   // 辅助方法 - 保存位置信息到数据库
-  static async saveLocationToDB(locationData) {
-    const pool = getTenantConnection(req.tenantCode);
+  static async saveLocationToDB(locationData, tenantCode) {
+    const pool = getTenantConnection(tenantCode);
     const connection = await pool.getConnection();
 
     try {

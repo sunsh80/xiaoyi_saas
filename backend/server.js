@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const apiRoutes = require('./routes/api');
 const adminRoutes = require('./routes/admin');
+const v1Routes = require('./routes/v1');
 const { swaggerUi, specs } = require('./utils/swagger');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -52,7 +53,7 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-tenant-code']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-tenant-code', 'X-Api-Key']
 }));
 
 // 请求限制
@@ -80,6 +81,9 @@ app.use('/tenant-admin/assets', express.static(path.join(__dirname, '../tenant-a
 // 解析 JSON 请求体
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// 微信支付回调需要 raw body 解析（在 JSON 解析之后注册）
+app.use('/api/v1/payments/wechat/notify', express.text({ type: ['text/xml', 'application/xml'] }));
 
 // JWT 认证中间件
 app.use((req, res, next) => {
@@ -118,6 +122,9 @@ app.use('/api', adminRoutes);
 // 租户管理后台路由
 const tenantRoutes = require('./routes/tenant');
 app.use('/api', tenantRoutes);
+
+// 第三方 API v1 路由
+app.use('/api/v1', v1Routes);
 
 // 错误处理中间件
 app.use((err, req, res, next) => {

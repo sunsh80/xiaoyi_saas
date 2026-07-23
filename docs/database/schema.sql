@@ -57,6 +57,10 @@ CREATE TABLE orders (
     assignee_user_id BIGINT COMMENT '接单用户ID',
     assign_time DATETIME COMMENT '分配时间',
     complete_time DATETIME COMMENT '完成时间',
+    created_by BIGINT COMMENT '创建人ID',
+    source ENUM('app', 'third_party') DEFAULT 'app' COMMENT '订单来源: app-小程序, third_party-第三方',
+    third_party_order_no VARCHAR(100) COMMENT '第三方平台订单号',
+    callback_url VARCHAR(500) COMMENT '状态回调地址',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (tenant_id) REFERENCES tenants(id),
@@ -65,7 +69,9 @@ CREATE TABLE orders (
     INDEX idx_order_no (order_no),
     INDEX idx_status (status),
     INDEX idx_assignee_user_id (assignee_user_id),
-    INDEX idx_created_at (created_at)
+    INDEX idx_created_at (created_at),
+    INDEX idx_source (source),
+    INDEX idx_third_party_order_no (third_party_order_no)
 );
 
 -- 接单人员表 (Workers)
@@ -271,6 +277,42 @@ CREATE TABLE referral_rewards (
     INDEX idx_referral_id (referral_id),
     INDEX idx_user_id (user_id),
     INDEX idx_status (status)
+);
+
+-- 第三方平台配置表 (Third Party Platforms)
+CREATE TABLE third_party_platforms (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL COMMENT '平台名称',
+    code VARCHAR(50) UNIQUE NOT NULL COMMENT '平台编码',
+    api_key VARCHAR(100) UNIQUE NOT NULL COMMENT 'API Key',
+    api_secret VARCHAR(255) NOT NULL COMMENT 'API Secret (用于签名验证)',
+    callback_url VARCHAR(500) COMMENT '默认回调地址',
+    status TINYINT DEFAULT 1 COMMENT '状态: 0-禁用, 1-启用',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_code (code),
+    INDEX idx_api_key (api_key),
+    INDEX idx_status (status)
+);
+
+-- 订单回调日志表 (Order Callbacks)
+CREATE TABLE order_callbacks (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    order_id BIGINT NOT NULL COMMENT '订单ID',
+    callback_url VARCHAR(500) NOT NULL COMMENT '回调地址',
+    event_type VARCHAR(50) NOT NULL COMMENT '事件类型: status_change/payment/cancel',
+    payload JSON NOT NULL COMMENT '回调数据',
+    response_code INT COMMENT '响应状态码',
+    response_body TEXT COMMENT '响应内容',
+    status ENUM('pending', 'success', 'failed') DEFAULT 'pending' COMMENT '回调状态',
+    retry_count INT DEFAULT 0 COMMENT '重试次数',
+    next_retry_at TIMESTAMP NULL COMMENT '下次重试时间',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    INDEX idx_order_id (order_id),
+    INDEX idx_status (status),
+    INDEX idx_next_retry_at (next_retry_at)
 );
 
 -- 插入默认配置

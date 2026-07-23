@@ -21,6 +21,10 @@ class Order {
     this.assignee_user_id = data.assignee_user_id;
     this.assign_time = data.assign_time;
     this.complete_time = data.complete_time;
+    this.created_by = data.created_by;
+    this.source = data.source || 'app';
+    this.third_party_order_no = data.third_party_order_no;
+    this.callback_url = data.callback_url;
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;
   }
@@ -60,6 +64,23 @@ class Order {
   }
 
   /**
+   * 根据第三方订单号查找订单
+   */
+  static async findByThirdPartyOrderNo(thirdPartyOrderNo, tenantCode) {
+    const pool = getTenantConnection(tenantCode);
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.execute(
+        `SELECT * FROM ${this.tableName} WHERE third_party_order_no = ?`,
+        [thirdPartyOrderNo]
+      );
+      return rows.length > 0 ? new Order(rows[0]) : null;
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
    * 创建新订单
    */
   static async create(orderData, tenantCode) {
@@ -72,8 +93,8 @@ class Order {
       const [result] = await connection.execute(
         `INSERT INTO ${this.tableName}
         (tenant_id, order_no, customer_name, phone, address, title, description, pickup_address, delivery_address,
-         pickup_time, delivery_time, distance, weight, volume, amount, status, created_by)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         pickup_time, delivery_time, distance, weight, volume, amount, status, created_by, source, third_party_order_no, callback_url)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           orderData.tenant_id,
           orderNo,
@@ -91,7 +112,10 @@ class Order {
           orderData.volume || 0,
           orderData.amount || 0,
           orderData.status || 'pending',
-          orderData.created_by || null
+          orderData.created_by || null,
+          orderData.source || 'app',
+          orderData.third_party_order_no || null,
+          orderData.callback_url || null
         ]
       );
 
@@ -746,10 +770,54 @@ class Order {
       assignee_user_id: this.assignee_user_id,
       assign_time: this.assign_time,
       complete_time: this.complete_time,
+      created_by: this.created_by,
+      source: this.source,
+      third_party_order_no: this.third_party_order_no,
+      callback_url: this.callback_url,
       created_at: this.created_at,
       updated_at: this.updated_at
     };
   }
 }
+
+/**
+ * 按日期范围查询订单（用于对账）
+ */
+Order.findByDateRange = async function(startDate, endDate, tenantCode, options = {}) {
+  const pool = getTenantConnection(tenantCode);
+  const connection = await pool.getConnection();
+  try {
+    const limit = parseInt(options.limit) || 20;
+    const offset = parseInt(options.offset) || 0;
+
+    const [rows] = await connection.execute(
+      `SELECT * FROM ${this.tableName}
+       WHERE created_at >= ? AND created_at < ?
+       ORDER BY created_at DESC
+       LIMIT ${limit} OFFSET ${offset}`,
+      [startDate, endDate]
+    );
+
+    const [countResult] = await connection.execute(
+      `SELECT COUNT(*) as total FROM ${this.tableName}
+       WHERE created_at >= ? AND created_at < ?`,
+      [startDate, endDate]
+    );
+
+    const [sumResult] = await connection.execute(
+      `SELECT COALESCE(SUM(amount), 0) as total_amount FROM ${this.tableName}
+       WHERE created_at >= ? AND created_at < ?`,
+      [startDate, endDate]
+    );
+
+    return {
+      rows: rows.map(row => new Order(row)),
+      total: countResult[0].total,
+      totalAmount: sumResult[0].total_amount
+    };
+  } finally {
+    connection.release();
+  }
+};
 
 module.exports = Order;

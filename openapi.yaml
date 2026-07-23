@@ -1882,12 +1882,214 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  # ======================
+  # 第三方订单 API (v1)
+  # ======================
+  /v1/orders:
+    post:
+      summary: 第三方创建订单
+      description: 第三方平台通过 API Key 认证创建订单
+      tags:
+        - ThirdParty
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThirdPartyOrderCreate'
+      responses:
+        '201':
+          description: 订单创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThirdPartyOrderResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: API Key 无效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/orders/{order_no}:
+    get:
+      summary: 查询第三方订单状态
+      tags:
+        - ThirdParty
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: order_no
+          required: true
+          schema:
+            type: string
+          description: 订单编号
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThirdPartyOrderResponse'
+        '404':
+          description: 订单不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/orders/{order_no}/cancel:
+    post:
+      summary: 取消第三方订单
+      tags:
+        - ThirdParty
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: order_no
+          required: true
+          schema:
+            type: string
+          description: 订单编号
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: 取消原因
+      responses:
+        '200':
+          description: 取消成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThirdPartyOrderResponse'
+        '400':
+          description: 无法取消
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/orders/reconciliation:
+    get:
+      summary: 对账查询
+      description: 按日期范围查询订单列表，用于第三方对账
+      tags:
+        - ThirdParty
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: startDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - in: query
+          name: endDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconciliationResponse'
+
+  # ======================
+  # 微信支付回调
+  # ======================
+  /v1/payments/wechat/notify:
+    post:
+      summary: 微信支付回调通知
+      description: 微信支付结果通知回调接口
+      tags:
+        - Payments
+      requestBody:
+        required: true
+        content:
+          application/xml:
+            schema:
+              type: object
+              description: 微信支付回调数据（XML格式）
+      responses:
+        '200':
+          description: 处理成功
+          content:
+            application/xml:
+              schema:
+                type: string
+                example: "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>"
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+      description: 第三方平台 API Key
   schemas:
     UserRegistration:
       type: object
@@ -2998,3 +3200,178 @@ components:
         message:
           type: string
           example: "错误信息"
+
+    # ======================
+    # 第三方订单相关 Schema
+    # ======================
+    ThirdPartyOrderCreate:
+      type: object
+      required:
+        - customer_name
+        - phone
+        - address
+        - amount
+      properties:
+        third_party_order_no:
+          type: string
+          description: 第三方平台订单号
+          example: "TP202401230001"
+        customer_name:
+          type: string
+          description: 客户姓名
+          example: "张三"
+        phone:
+          type: string
+          description: 客户电话
+          example: "13800138000"
+        address:
+          type: string
+          description: 客户地址
+          example: "北京市朝阳区xxx大厦"
+        title:
+          type: string
+          description: 订单标题
+          example: "家庭搬迁"
+        description:
+          type: string
+          description: 订单描述
+        pickup_address:
+          type: string
+          description: 取货地址
+        delivery_address:
+          type: string
+          description: 送货地址
+        pickup_time:
+          type: string
+          format: date-time
+          description: 取货时间
+        delivery_time:
+          type: string
+          format: date-time
+          description: 送货时间
+        distance:
+          type: number
+          description: 距离(km)
+          example: 15.5
+        weight:
+          type: number
+          description: 重量(kg)
+          example: 150
+        volume:
+          type: number
+          description: 体积(m³)
+          example: 5.2
+        amount:
+          type: number
+          description: 订单金额
+          example: 280.00
+        items:
+          type: array
+          description: 物品列表
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              quantity:
+                type: integer
+        notes:
+          type: string
+          description: 备注
+        callback_url:
+          type: string
+          description: 状态回调地址
+          example: "https://third-party.com/callback/order"
+
+    ThirdPartyOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        order_no:
+          type: string
+          example: "ORD20240123000001"
+        third_party_order_no:
+          type: string
+          example: "TP202401230001"
+        source:
+          type: string
+          enum: [app, third_party]
+          example: "third_party"
+        customer_name:
+          type: string
+          example: "张三"
+        phone:
+          type: string
+          example: "13800138000"
+        address:
+          type: string
+          example: "北京市朝阳区xxx大厦"
+        amount:
+          type: number
+          example: 280.00
+        status:
+          type: string
+          enum: [pending, assigned, in_progress, completed, cancelled]
+          example: "pending"
+        callback_url:
+          type: string
+          example: "https://third-party.com/callback/order"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ThirdPartyOrderResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "订单创建成功"
+        data:
+          $ref: '#/components/schemas/ThirdPartyOrder'
+
+    ReconciliationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            orders:
+              type: array
+              items:
+                $ref: '#/components/schemas/ThirdPartyOrder'
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                pageSize:
+                  type: integer
+                  example: 20
+                total:
+                  type: integer
+                  example: 100
+                pages:
+                  type: integer
+                  example: 5
+            summary:
+              type: object
+              description: 汇总信息
+              properties:
+                total_amount:
+                  type: number
+                  example: 28000.00
+                order_count:
+                  type: integer
+                  example: 100

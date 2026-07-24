@@ -103,6 +103,9 @@ function showPage(pageId) {
       case 'reports':
         loadReportsData();
         break;
+      case 'third-party':
+        loadThirdPartyData();
+        break;
       case 'settings':
         loadSettingsData();
         break;
@@ -146,6 +149,66 @@ function loadUsersData() {
 function loadReportsData() {
   // 加载报表数据
   console.log('加载报表数据...');
+}
+
+function loadThirdPartyData() {
+  // 加载第三方接入数据
+  console.log('加载第三方接入数据...');
+  loadPlatformsList();
+}
+
+async function loadPlatformsList() {
+  try {
+    const response = await apiRequest('third-party/platforms', 'GET');
+    if (response && response.success) {
+      renderPlatformsTable(response.data);
+    }
+  } catch (error) {
+    console.error('加载平台列表失败:', error);
+  }
+}
+
+function renderPlatformsTable(platforms) {
+  const tbody = document.getElementById('platformsTableBody');
+  if (!tbody) return;
+
+  if (!platforms || platforms.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">暂无接入平台</td></tr>';
+    return;
+  }
+
+  const statusMap = {
+    'active': '<span class="badge bg-success">启用</span>',
+    'inactive': '<span class="badge bg-secondary">禁用</span>'
+  };
+
+  tbody.innerHTML = platforms.map(p => `
+    <tr>
+      <td>${p.code || '-'}</td>
+      <td>${p.name || '-'}</td>
+      <td><code>${p.api_key || '-'}</code></td>
+      <td>${p.callback_url || '-'}</td>
+      <td>${statusMap[p.status] || p.status}</td>
+      <td>${p.order_count || 0}</td>
+      <td>${formatDate(p.created_at)}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary me-1" onclick="editPlatform('${p.code}')">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-danger" onclick="togglePlatform('${p.code}')">
+          <i class="fas fa-ban"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function editPlatform(code) {
+  console.log('编辑平台:', code);
+}
+
+function togglePlatform(code) {
+  console.log('切换平台状态:', code);
 }
 
 function loadSettingsData() {

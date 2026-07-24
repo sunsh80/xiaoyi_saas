@@ -162,6 +162,9 @@ function loadPageData(pageId) {
     case 'reports':
       loadReportsData();
       break;
+    case 'third-party':
+      loadThirdPartyData();
+      break;
     case 'settings':
       loadSettingsData();
       break;
@@ -708,6 +711,61 @@ function loadWorkerRanking() {
       <td>${worker.rating}%</td>
     </tr>
   `).join('');
+}
+
+// ========== 第三方接入 ==========
+
+async function loadThirdPartyData() {
+  console.log('加载第三方接入数据...');
+  await loadPlatformsList();
+}
+
+async function loadPlatformsList() {
+  try {
+    const tenantCode = localStorage.getItem('tenant_code');
+    const response = await apiRequest('third-party/platforms', 'GET', null, tenantCode);
+    if (response && response.success) {
+      renderPlatformsTable(response.data);
+    }
+  } catch (error) {
+    console.error('加载平台列表失败:', error);
+  }
+}
+
+function renderPlatformsTable(platforms) {
+  const tbody = document.getElementById('platformsTableBody');
+  if (!tbody) return;
+
+  if (!platforms || platforms.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">暂无接入平台</td></tr>';
+    return;
+  }
+
+  const statusMap = {
+    'active': '<span class="badge bg-success">启用</span>',
+    'inactive': '<span class="badge bg-secondary">禁用</span>'
+  };
+
+  tbody.innerHTML = platforms.map(p => `
+    <tr>
+      <td>${p.code || '-'}</td>
+      <td>${p.name || '-'}</td>
+      <td><code>${p.api_key || '-'}</code></td>
+      <td>${p.callback_url || '-'}</td>
+      <td>${statusMap[p.status] || p.status}</td>
+      <td>${p.order_count || 0}</td>
+      <td>${formatDate(p.created_at)}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary me-1" onclick="viewPlatformDetail('${p.code}')">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function viewPlatformDetail(code) {
+  console.log('查看平台详情:', code);
 }
 
 // ========== 租户设置 ==========

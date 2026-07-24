@@ -29,18 +29,12 @@ npm run dev
 
 访问地址（本地开发环境，端口 4000）：
 
-| 页面 | 地址 |
-|------|------|
-| **API 服务** | http://localhost:4000 |
-| **Swagger API 文档** | http://localhost:4000/api-docs |
-| **总后台登录** | http://localhost:4000/admin/login.html |
-| **总后台首页** | http://localhost:4000/admin/index.html |
-| **总后台租户管理** | http://localhost:4000/admin/tenant-manager.html |
-| **总后台 API 文档页** | http://localhost:4000/admin/api-docs.html |
-| **租户后台登录** | http://localhost:4000/tenant-admin/login.html |
-| **租户后台登录(v2)** | http://localhost:4000/tenant-admin/login-v2.html |
-| **租户后台首页** | http://localhost:4000/tenant-admin/index.html |
-| **OpenAPI 规范文件** | http://localhost:4000/openapi.yaml |
+| 系统 | 入口地址 | 说明 |
+|------|---------|------|
+| **总后台** | http://localhost:4000/admin/ | 平台总后台管理系统 |
+| **租户后台** | http://localhost:4000/tenant-admin/ | 租户管理后台 |
+| **小程序** | 微信开发者工具 | 用户端微信小程序 |
+| **API 文档** | http://localhost:4000/api-docs | Swagger 接口文档 |
 
 ## 测试账户
 

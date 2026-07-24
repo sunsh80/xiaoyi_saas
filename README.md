@@ -27,11 +27,20 @@ node create-test-users.js
 npm run dev
 ```
 
-访问地址：
-- **API 服务**: http://localhost:4000
-- **API 文档**: http://localhost:4000/api-docs
-- **总后台**: http://localhost:4000/admin/login.html
-- **租户后台**: http://localhost:4000/tenant-admin/login.html
+访问地址（本地开发环境，端口 4000）：
+
+| 页面 | 地址 |
+|------|------|
+| **API 服务** | http://localhost:4000 |
+| **Swagger API 文档** | http://localhost:4000/api-docs |
+| **总后台登录** | http://localhost:4000/admin/login.html |
+| **总后台首页** | http://localhost:4000/admin/index.html |
+| **总后台租户管理** | http://localhost:4000/admin/tenant-manager.html |
+| **总后台 API 文档页** | http://localhost:4000/admin/api-docs.html |
+| **租户后台登录** | http://localhost:4000/tenant-admin/login.html |
+| **租户后台登录(v2)** | http://localhost:4000/tenant-admin/login-v2.html |
+| **租户后台首页** | http://localhost:4000/tenant-admin/index.html |
+| **OpenAPI 规范文件** | http://localhost:4000/openapi.yaml |
 
 ## 测试账户
 

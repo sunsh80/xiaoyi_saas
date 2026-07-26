@@ -2,6 +2,19 @@
 
 > 本文档是项目开发对齐的核心规范，所有新增代码、模块、接口必须严格遵循。
 
+**版本**: v2.0
+**最后更新**: 2026-07-26
+**主要变更**: OpenAPI 规范从单文件迁移至模块化目录结构
+
+---
+
+## 更新日志
+
+| 版本 | 日期 | 变更内容 |
+|------|------|---------|
+| v2.0 | 2026-07-26 | OpenAPI 模块化拆分：单文件 `openapi.yaml` → `openapi/` 目录结构；新增 $ref 引用规则、命名规则、骨架文件规范；更新 Tags 分类、安全定义、Checklist |
+| v1.0 | — | 初始版本 |
+
 ---
 
 ## 1. 项目结构规范
@@ -236,7 +249,7 @@ const pool = getTenantConnection(tenantCode);
 ### 4.3 Schema 变更
 
 - 数据库 DDL 变更必须同步更新 `docs/database/schema.sql`
-- 新增表必须同步更新 `openapi.yaml` 中的相关 schema
+- 新增表必须同步更新 `openapi/components/schemas/` 下对应模块的 schema
 - 禁止直接修改生产数据库，必须通过 SQL 脚本
 
 ---
@@ -296,22 +309,90 @@ openapi/
 | 响应用 `*Response` 后缀 | `OrderResponse`、`OrderListResponse` |
 | 合并后统一命名 | `OrderPayload`（合并 CreateOrder + UpdateOrder） |
 
-### 5.3 Tags 分类
+### 5.4 $ref 引用规则
 
-| Tag | 范围 |
-|-----|------|
-| `Authentication` | `/auth/*` |
-| `Orders` | `/orders/*` |
-| `Finance` | `/finance/*` |
-| `Referral` | `/referral/*` |
-| `Map` | `/map/*` |
-| `Admin - Tenants` | `/admin/tenants/*` |
-| `Admin - Finance` | `/admin/finance/*`, `/admin/commission/*`, `/admin/withdrawals/*` |
-| `Admin - Referral` | `/admin/referral/*` |
-| `Admin - Reports` | `/admin/reports/*` |
-| `Tenant` | `/tenant/*` |
+**路径文件内引用 Schema（相对路径）**：
+```yaml
+# openapi/paths/orders.yaml 内部
+responses:
+  '200':
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/order.yaml#/OrderResponse'
+```
 
-### 5.4 响应格式
+**主入口引用路径和 Schema（./ 前缀）**：
+```yaml
+# openapi/openapi.yaml
+paths:
+  /orders:
+    $ref: './paths/orders.yaml#/paths/~1orders'
+components:
+  schemas:
+    Order:
+      $ref: './components/schemas/order.yaml#/Order'
+```
+
+**JSON Pointer 转义规则**：
+- 路径中的 `/` 转义为 `~1`
+- `~` 转义为 `~0`
+- 示例：`/auth/register` → `~1auth~1register`
+
+### 5.5 Schema 合并规则
+
+为避免重复定义，以下 Schema 已合并：
+
+| 合并前 | 合并后 | 说明 |
+|--------|--------|------|
+| `CreateOrder` + `UpdateOrder` | `OrderPayload` | 字段相同，仅 required 不同 |
+| `WithdrawalListResponse` + `AdminWithdrawalListResponse` | `WithdrawalListResponse` | 结构完全相同 |
+| 分页结构提取 | `Pagination`（common.yaml） | 所有 List 响应复用 |
+
+### 5.6 骨架文件规范
+
+规划中的模块使用骨架文件预留，格式：
+
+```yaml
+# TODO: 待补充完整定义 - 来源 xxx.js XxxController.method
+/path/to/endpoint:
+  get:
+    summary: 接口简述
+    description: "# TODO: 待补充完整定义"
+    tags:
+      - ModuleName
+    # ... 基础参数
+    responses:
+      '200':
+        description: 获取成功
+      '401':
+        description: 未授权
+```
+
+**规则**：
+- 骨架文件必须标注 `# TODO: 待补充` 注释
+- 标注路由来源（如 `来源: admin.js AdminTenantController.list`）
+- 空骨架文件（如 customer-service.yaml）使用 `paths: {}`
+
+### 5.7 Tags 分类
+
+| Tag | 对应路径文件 | 范围 |
+|-----|------------|------|
+| `Authentication` | `auth.yaml` | `/auth/*` |
+| `Orders` | `orders.yaml` | `/orders/*` |
+| `Map` | `map.yaml` | `/map/*`、`/workers/*/location`、`/orders/*/track` |
+| `Finance` | `finance.yaml` | `/finance/*` |
+| `AdminFinance` | `finance-admin.yaml` | `/admin/withdrawals/*`、`/admin/commissions/*`、`/admin/configs`、`/admin/reports/*`、`/admin/finance/*` |
+| `Referral` | `referral.yaml` | `/referral/*` |
+| `AdminReferral` | `referral-admin.yaml` | `/admin/referral/*` |
+| `Payments` | `payments.yaml` | `/payments/*`、`/v1/payments/wechat/notify` |
+| `AdminTenants` | `tenants.yaml` | `/admin/tenants/*` |
+| `Tenant` | `tenant-portal.yaml` | `/tenant/*`、`/auth/tenant-*`、`/auth/worker-*` |
+| `ThirdParty` | `third-party.yaml` | `/v1/orders/*`、`/v1/payments/wechat/create` |
+| `CustomerService` | `customer-service.yaml` | 客服（规划中） |
+| `TransferStation` | `transfer-station.yaml` | 转驿（规划中） |
+
+### 5.8 响应格式
 
 所有 API 响应统一格式：
 
@@ -341,26 +422,44 @@ openapi/
 }
 ```
 
-### 5.5 安全定义
+### 5.9 安全定义
+
+安全方案定义在 `openapi/components/security-schemes.yaml`：
 
 ```yaml
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-    TenantCode:
-      type: apiKey
-      in: header
-      name: x-tenant-code
+bearerAuth:
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+
+apiKeyAuth:
+  type: apiKey
+  in: header
+  name: X-Api-Key
+  description: 第三方平台 API Key
 ```
 
 需要认证的接口必须声明：
 ```yaml
 security:
   - bearerAuth: []
-  - TenantCode: []
+```
+
+需要租户识别的接口必须包含 `x-tenant-code` 请求头参数：
+```yaml
+parameters:
+  - in: header
+    name: x-tenant-code
+    required: true
+    schema:
+      type: string
+    description: 租户编码
+```
+
+第三方接入接口使用 API Key 认证：
+```yaml
+security:
+  - apiKeyAuth: []
 ```
 
 ---
@@ -542,24 +641,120 @@ pages/
 
 新增一个功能模块时，必须完成以下步骤：
 
-- [ ] 在 `openapi/` 对应模块文件中定义接口（API-First）
+### 9.1 API 定义（API-First）
+- [ ] 在 `openapi/paths/{domain}.yaml` 中定义接口路径
+- [ ] 在 `openapi/components/schemas/{domain}.yaml` 中定义数据模型
+- [ ] 在 `openapi/openapi.yaml` 中注册 $ref 引用
+- [ ] 如果是新业务域，创建新的路径文件和 schema 文件
+- [ ] 骨架端点必须标注 `# TODO: 待补充` 注释
+
+### 9.2 后端实现
 - [ ] 创建 Model（`backend/models/Xxx.js`）
 - [ ] 创建 Controller（`backend/controllers/XxxController.js`）
 - [ ] 在对应路由文件中注册路由
+- [ ] Controller 方法必须有 `try/catch`
+- [ ] 错误日志格式：`ControllerName.methodName error:`
+
+### 9.3 数据库
 - [ ] 如需新表，更新 `docs/database/schema.sql`
+- [ ] 同步更新 `openapi/components/schemas/` 下对应模块的 schema
+- [ ] 表名使用复数形式，字段名使用 `snake_case`
+- [ ] 必须包含 `created_at`、`updated_at` 时间戳
+
+### 9.4 前端/管理后台
 - [ ] 管理后台如需页面，创建对应 HTML
-- [ ] 验证 `npm run validate-api` 通过
+- [ ] 侧边栏模块名称 ≤ 6 字，选择合适的 Font Awesome 图标
+- [ ] 总后台和租户后台共有的模块，必须使用相同名称和图标
+
+### 9.5 验证与清理
+- [ ] 验证 API 响应格式符合规范（`success`、`data`、`message`）
 - [ ] 清理调试代码和 console.log
+- [ ] 确保所有 $ref 路径正确（相对路径、JSON Pointer 转义）
 
 ---
 
 ## 10. 禁止事项
 
+### 10.1 安全与数据
 1. **禁止**在代码中硬编码数据库密码、JWT Secret 等敏感信息
 2. **禁止**字符串拼接 SQL（必须用参数化查询）
-3. **禁止**在 Controller 中直接写 SQL（必须通过 Model）
-4. **禁止**新增 API 不同步 `openapi/` 模块文件
-5. **禁止**在根目录散落脚本文件
-6. **禁止**提交 `.env`、`node_modules/`、调试文件、备份文件
-7. **禁止**直接修改生产数据库（必须通过 SQL 脚本）
-8. **禁止**SCP 逐文件同步后端代码到服务器（必须用 rsync 或 git）
+3. **禁止**直接修改生产数据库（必须通过 SQL 脚本）
+4. **禁止**在 `/opt/wuliu-saas/` 下执行任何未备份的数据库操作
+
+### 10.2 代码规范
+5. **禁止**在 Controller 中直接写 SQL（必须通过 Model）
+6. **禁止**新增 API 不同步 `openapi/` 模块文件
+7. **禁止**在 Model/Controller 中直接 `mysql.createConnection()`（必须用 `getTenantConnection`）
+8. **禁止**获取数据库连接后不在 `finally` 中 `release()`
+
+### 10.3 文件与部署
+9. **禁止**在根目录散落脚本文件（必须放 `scripts/`）
+10. **禁止**提交 `.env`、`node_modules/`、调试文件、备份文件
+11. **禁止**SCP 逐文件同步后端代码到服务器（必须用 rsync 或 git）
+12. **禁止**用本地 .db 文件 SCP 到服务器覆盖生产数据库
+
+### 10.4 OpenAPI 规范
+13. **禁止**在 `openapi/openapi.yaml` 中直接定义路径或 Schema（必须拆分到模块文件）
+14. **禁止**在路径文件中使用绝对路径引用 Schema（必须用 `../components/schemas/`）
+15. **禁止**重复定义已合并的 Schema（如 `CreateOrder`、`UpdateOrder` 已合并为 `OrderPayload`）
+16. **禁止**新增骨架端点不标注 `# TODO: 待补充` 注释
+
+---
+
+## 11. 自动化校验
+
+### 11.1 校验脚本
+
+项目提供 `scripts/validate-skills.sh` 脚本，自动检查代码是否符合本规范。
+
+**运行方式**：
+```bash
+# 完整校验（输出详细信息）
+npm run validate-skills
+# 或
+./scripts/validate-skills.sh
+
+# 静默模式（只输出错误和统计）
+npm run validate-skills:quiet
+
+# 自动修复（清理调试文件、从 git 移除 node_modules 等）
+npm run validate-skills:fix
+```
+
+### 11.2 检查项
+
+| 类别 | 检查项 | 级别 |
+|------|--------|------|
+| OpenAPI | 目录结构完整性 | 错误 |
+| OpenAPI | 主入口无内联定义 | 错误 |
+| OpenAPI | 文件命名规范 | 错误 |
+| OpenAPI | $ref 使用相对路径 | 错误 |
+| OpenAPI | 骨架端点 TODO 标注 | 通过 |
+| 后端 | Controller try/catch | 错误 |
+| 后端 | Model 使用 getTenantConnection | 警告 |
+| 后端 | 无直接 mysql.createConnection | 错误 |
+| 后端 | 无字符串拼接 SQL | 错误 |
+| 后端 | 连接在 finally 中 release | 错误 |
+| 后端 | Controller 错误日志格式 | 警告 |
+| 文件 | 根目录无散落脚本 | 警告 |
+| 文件 | .env 未被 git 跟踪 | 错误 |
+| 文件 | 无调试/备份文件 | 警告 |
+| 文件 | node_modules 未被 git 跟踪 | 错误 |
+| 数据库 | schema.sql 存在 | 警告 |
+| 管理后台 | 入口文件存在 | 警告 |
+| Skills | skills.md 存在且版本正确 | 错误/警告 |
+
+### 11.3 Git Hook 集成
+
+`precommit` 脚本已配置为自动运行 `validate-skills:quiet`，在提交前自动校验。
+
+如需手动触发：
+```bash
+npm run precommit
+```
+
+### 11.4 自动修复能力
+
+`--fix` 选项可自动修复以下问题：
+- 清理 `server_debug*.js`、`temp_*.js`、`*.backup`、`*.bak` 文件
+- 从 git 中移除被跟踪的 `node_modules`

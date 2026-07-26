@@ -1,0 +1,17 @@
+# ============================================================
+# 租户模块 Schema - Tenant（骨架，后续补充更多字段）
+# 模块: tenant
+# ============================================================
+
+Tenant:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    tenant_code:
+      type: string
+      example: "tenant1"
+    name:
+      type: string
+      example: "商户A"

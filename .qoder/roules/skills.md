@@ -24,9 +24,13 @@ xiaoyi-banyun/
 ├── tenant-admin/            # 租户后台（静态 HTML + Bootstrap 5）
 ├── deployment/              # 部署文档
 ├── docs/                    # 项目文档
+├── openapi/                 # API 规范（模块化目录）
+│   ├── openapi.yaml         # 主入口（聚合 $ref）
+│   ├── paths/               # 按业务域拆分的路径定义
+│   └── components/          # 可复用组件（schemas, securitySchemes）
 ├── scripts/                 # 运维/工具脚本
 ├── test/                    # 集成测试
-└── openapi.yaml             # API 规范（单一事实来源）
+└── openapi.legacy.yaml      # 旧版单文件 API 规范（备份）
 ```
 
 ### 1.2 文件放置规则
@@ -241,15 +245,56 @@ const pool = getTenantConnection(tenantCode);
 
 ### 5.1 核心原则
 
-`openapi.yaml` 是 API 的 **单一事实来源（Single Source of Truth）**。
+`openapi/openapi.yaml` 是 API 的 **单一事实来源（Single Source of Truth）**，采用模块化目录结构：
+
+```
+openapi/
+├── openapi.yaml              # 主入口（聚合 $ref）
+├── paths/                    # 按业务域拆分的路径定义
+│   ├── auth.yaml             # 认证（4 端点）
+│   ├── orders.yaml           # 订单主流程（8 端点）
+│   ├── map.yaml              # 地图/轨迹/位置（7 端点，骨架）
+│   ├── finance.yaml          # 用户端财务（4 端点）
+│   ├── finance-admin.yaml    # 管理端财务（13 端点）
+│   ├── referral.yaml         # 用户端推荐（7 端点）
+│   ├── referral-admin.yaml   # 管理端推荐（9 端点）
+│   ├── payments.yaml         # 支付回调（2 端点）
+│   ├── tenants.yaml          # 租户管理（8 端点，骨架）
+│   ├── tenant-portal.yaml    # 租户后台（11 端点，骨架）
+│   ├── third-party.yaml      # 第三方接入（5 端点）
+│   ├── customer-service.yaml # 客服（规划中，空骨架）
+│   └── transfer-station.yaml # 转驿（规划中，空骨架）
+└── components/
+    ├── schemas/              # 按业务域拆分的 Schema
+    │   ├── common.yaml       # ErrorResponse + Pagination + ChangePasswordRequest
+    │   ├── auth.yaml         # User, UserLogin, UserRegistration, AuthResponse, UserInfoResponse
+    │   ├── order.yaml        # OrderPayload, Order, OrderResponse, OrderListResponse
+    │   ├── finance.yaml      # Account, Withdrawal, Payment, Commission, SystemConfig + 响应
+    │   ├── referral.yaml     # ReferralCampaign, Referral, ReferralReward, ReferralStats + 响应
+    │   ├── third-party.yaml  # ThirdPartyOrderCreate, ThirdPartyOrder, ThirdPartyOrderResponse, ReconciliationResponse
+    │   └── tenant.yaml       # Tenant（骨架）
+    └── security-schemes.yaml # bearerAuth + apiKeyAuth
+```
 
 ### 5.2 新增/修改 API 时必须
 
-1. **先更新 `openapi.yaml`**，再写代码（API-First）
-2. 在对应的 `paths` 下添加路由定义
-3. 在 `components/schemas` 中定义或更新数据模型
+1. **先更新 `openapi/` 下对应模块文件**，再写代码（API-First）
+2. 在对应的 `paths/{domain}.yaml` 下添加路由定义
+3. 在 `components/schemas/{domain}.yaml` 中定义或更新数据模型
 4. 使用 `$ref` 引用，避免重复定义
 5. 每个接口必须包含：`summary`、`tags`、`parameters`（如有）、`requestBody`（如有）、`responses`
+6. 新增业务域需创建新的 `paths/{domain}.yaml` 和 `components/schemas/{domain}.yaml`，并在 `openapi/openapi.yaml` 中注册 $ref
+
+### 5.3 命名规则
+
+| 规则 | 示例 |
+|------|------|
+| 文件名：全小写 + 短横线分隔 | `finance-admin.yaml`、`third-party.yaml` |
+| 管理端加 `-admin` 后缀 | `finance.yaml`（用户端）/ `finance-admin.yaml`（管理端） |
+| Schema：PascalCase | `Order`、`WithdrawalRequest` |
+| 请求体用 `*Request` 后缀 | `WithdrawalRequest`、`ThirdPartyOrderCreate` |
+| 响应用 `*Response` 后缀 | `OrderResponse`、`OrderListResponse` |
+| 合并后统一命名 | `OrderPayload`（合并 CreateOrder + UpdateOrder） |
 
 ### 5.3 Tags 分类
 
@@ -497,7 +542,7 @@ pages/
 
 新增一个功能模块时，必须完成以下步骤：
 
-- [ ] 在 `openapi.yaml` 中定义接口（API-First）
+- [ ] 在 `openapi/` 对应模块文件中定义接口（API-First）
 - [ ] 创建 Model（`backend/models/Xxx.js`）
 - [ ] 创建 Controller（`backend/controllers/XxxController.js`）
 - [ ] 在对应路由文件中注册路由
@@ -513,7 +558,7 @@ pages/
 1. **禁止**在代码中硬编码数据库密码、JWT Secret 等敏感信息
 2. **禁止**字符串拼接 SQL（必须用参数化查询）
 3. **禁止**在 Controller 中直接写 SQL（必须通过 Model）
-4. **禁止**新增 API 不同步 `openapi.yaml`
+4. **禁止**新增 API 不同步 `openapi/` 模块文件
 5. **禁止**在根目录散落脚本文件
 6. **禁止**提交 `.env`、`node_modules/`、调试文件、备份文件
 7. **禁止**直接修改生产数据库（必须通过 SQL 脚本）

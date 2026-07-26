@@ -1,0 +1,214 @@
+# ============================================================
+# 租户管理路径 - AdminTenants（8 端点，骨架）
+# 模块: tenants
+# 来源: admin.js → AdminTenantController
+# ============================================================
+
+paths:
+  # TODO: 待补充完整定义 - 来源 admin.js AdminTenantController.list
+  /admin/tenants:
+    get:
+      summary: 获取租户列表（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminTenants
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 admin.js AdminTenantController.pending
+  /admin/tenants/pending:
+    get:
+      summary: 获取待审核租户列表（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminTenants
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 admin.js AdminTenantController.getById
+  /admin/tenants/{id}:
+    get:
+      summary: 获取租户详情（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminTenants
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 租户ID
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+        '404':
+          description: 租户不存在
+    put:
+      summary: 更新租户信息（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminTenants
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 租户ID
+      responses:
+        '200':
+          description: 更新成功
+        '401':
+          description: 未授权
+    delete:
+      summary: 删除租户（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminTenants
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 租户ID
+      responses:
+        '200':
+          description: 删除成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 admin.js AdminTenantController.approve
+  /admin/tenants/{id}/approve:
+    put:
+      summary: 审核通过租户（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminTenants
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 租户ID
+      responses:
+        '200':
+          description: 审核通过
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 admin.js AdminTenantController.reject
+  /admin/tenants/{id}/reject:
+    put:
+      summary: 审核拒绝租户（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminTenants
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 租户ID
+      responses:
+        '200':
+          description: 审核拒绝
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 admin.js AdminTenantController.toggleStatus
+  /admin/tenants/{id}/toggle-status:
+    put:
+      summary: 切换租户启用/禁用状态（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminTenants
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 租户ID
+      responses:
+        '200':
+          description: 状态切换成功
+        '401':
+          description: 未授权

@@ -1,0 +1,144 @@
+# ============================================================
+# 认证模块路径 - Authentication（4 端点）
+# 模块: auth
+# ============================================================
+
+paths:
+  /auth/register:
+    post:
+      summary: 用户注册
+      tags:
+        - Authentication
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/auth.yaml#/UserRegistration'
+      responses:
+        '201':
+          description: 注册成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/auth.yaml#/AuthResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /auth/login:
+    post:
+      summary: 用户登录
+      tags:
+        - Authentication
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/auth.yaml#/UserLogin'
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/auth.yaml#/AuthResponse'
+        '401':
+          description: 用户名或密码错误
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /auth/me:
+    get:
+      summary: 获取当前用户信息
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/auth.yaml#/UserInfoResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /auth/change-password:
+    put:
+      summary: 修改密码
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.yaml#/ChangePasswordRequest'
+      responses:
+        '200':
+          description: 密码修改成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "密码修改成功"
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'

@@ -1,0 +1,212 @@
+# ============================================================
+# 租户后台路径 - Tenant（11 端点，骨架）
+# 模块: tenant-portal
+# 来源: tenant.js → TenantController + AuthController
+# ============================================================
+
+paths:
+  # TODO: 待补充完整定义 - 来源 tenant.js AuthController.tenantRegister
+  /auth/tenant-register:
+    post:
+      summary: 租户管理员注册
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Tenant
+      responses:
+        '201':
+          description: 注册成功
+        '400':
+          description: 请求参数错误
+
+  # TODO: 待补充完整定义 - 来源 tenant.js AuthController.workerRegister
+  /auth/worker-register:
+    post:
+      summary: 工人注册（租户下）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Tenant
+      responses:
+        '201':
+          description: 注册成功
+        '400':
+          description: 请求参数错误
+
+  # TODO: 待补充完整定义 - 来源 tenant.js AuthController.tenantLogin
+  /auth/tenant-login:
+    post:
+      summary: 租户管理员登录
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Tenant
+      responses:
+        '200':
+          description: 登录成功
+        '401':
+          description: 用户名或密码错误
+
+  # TODO: 待补充完整定义 - 来源 tenant.js AuthController.workerLogin
+  /auth/worker-login:
+    post:
+      summary: 工人登录
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Tenant
+      responses:
+        '200':
+          description: 登录成功
+        '401':
+          description: 用户名或密码错误
+
+  # TODO: 待补充完整定义 - 来源 tenant.js TenantController.getInfo
+  /tenant/info:
+    get:
+      summary: 获取租户信息
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Tenant
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 tenant.js TenantController.getDashboard
+  /tenant/dashboard:
+    get:
+      summary: 获取租户仪表盘数据
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Tenant
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 tenant.js TenantController.getOrders
+  /tenant/orders:
+    get:
+      summary: 获取租户订单列表
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Tenant
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 tenant.js TenantController.getWorkers
+  /tenant/workers:
+    get:
+      summary: 获取租户工人列表
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Tenant
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 tenant.js TenantController.getUsers
+  /tenant/users:
+    get:
+      summary: 获取租户用户列表
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Tenant
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 tenant.js TenantController.getFinanceOverview
+  /tenant/finance/overview:
+    get:
+      summary: 获取租户财务概览
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Tenant
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 tenant.js TenantController.updateSettings
+  /tenant/settings:
+    put:
+      summary: 更新租户设置
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Tenant
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 更新成功
+        '401':
+          description: 未授权

@@ -1,0 +1,178 @@
+# ============================================================
+# 地图/轨迹/位置路径 - Map（7 端点，骨架）
+# 模块: map
+# 来源: api.js → MapController
+# ============================================================
+
+paths:
+  # TODO: 待补充完整定义 - 来源 api.js MapController.searchAddress
+  /map/search-address:
+    get:
+      summary: 地址搜索
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Map
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: keyword
+          required: true
+          schema:
+            type: string
+          description: 搜索关键词
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 api.js MapController.geocode
+  /map/geocode:
+    post:
+      summary: 地理编码（地址→坐标）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Map
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 api.js MapController.reverseGeocode
+  /map/reverse-geocode:
+    post:
+      summary: 逆地理编码（坐标→地址）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Map
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 api.js MapController.calculateDistance
+  /map/calculate-distance:
+    post:
+      summary: 距离计算
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Map
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 api.js
+  /workers/{workerId}/location:
+    get:
+      summary: 获取工人位置
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Map
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: workerId
+          required: true
+          schema:
+            type: integer
+          description: 工人ID
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 api.js
+  /workers/location:
+    put:
+      summary: 更新工人位置
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Map
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 更新成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充完整定义 - 来源 api.js
+  /orders/{orderId}/track:
+    get:
+      summary: 订单轨迹追踪
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - Map
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: integer
+          description: 订单ID
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权

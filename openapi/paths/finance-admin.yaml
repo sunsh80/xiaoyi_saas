@@ -1,0 +1,486 @@
+# ============================================================
+# 管理端财务路径 - AdminFinance（8 已有 + 5 骨架 = 13 端点）
+# 模块: finance-admin
+# ============================================================
+
+paths:
+  /admin/withdrawals:
+    get:
+      summary: 获取提现申请列表（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, processing, completed, rejected]
+          description: 提现状态筛选
+        - in: query
+          name: user_id
+          schema:
+            type: integer
+          description: 用户ID筛选
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/finance.yaml#/WithdrawalListResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/withdrawals/{id}/approve:
+    put:
+      summary: 批准提现申请（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 提现申请ID
+      responses:
+        '200':
+          description: 批准成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/finance.yaml#/WithdrawalResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '404':
+          description: 提现申请不存在
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/withdrawals/{id}/reject:
+    put:
+      summary: 拒绝提现申请（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 提现申请ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                remark:
+                  type: string
+                  description: 拒绝原因
+      responses:
+        '200':
+          description: 拒绝成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/finance.yaml#/WithdrawalResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '404':
+          description: 提现申请不存在
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/withdrawals/{id}/processing:
+    put:
+      summary: 更新提现申请为处理中状态（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 提现申请ID
+      responses:
+        '200':
+          description: 状态更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/finance.yaml#/WithdrawalResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '404':
+          description: 提现申请不存在
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/commissions:
+    get:
+      summary: 获取佣金记录列表（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: order_id
+          schema:
+            type: integer
+          description: 订单ID筛选
+        - in: query
+          name: admin_user_id
+          schema:
+            type: integer
+          description: 管理员ID筛选
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/finance.yaml#/CommissionListResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/commissions/statistics:
+    get:
+      summary: 获取佣金统计（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: start_date
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - in: query
+          name: end_date
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/finance.yaml#/CommissionStatisticsResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/configs:
+    get:
+      summary: 获取系统配置（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      configs:
+                        type: array
+                        items:
+                          $ref: '../components/schemas/finance.yaml#/SystemConfig'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+    put:
+      summary: 更新系统配置（管理后台）
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - config_key
+                - config_value
+              properties:
+                config_key:
+                  type: string
+                  description: 配置键
+                config_value:
+                  type: string
+                  description: 配置值
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "配置更新成功"
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  # ======================
+  # 骨架端点 - 待补充实现
+  # ======================
+
+  # TODO: 待补充 - 来源 admin.js AdminReportController
+  /admin/reports/statistics:
+    get:
+      summary: 获取统计报表（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充 - 来源 admin.js AdminFinanceController
+  /admin/finance/overview:
+    get:
+      summary: 获取财务概览（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充 - 来源 admin.js
+  /admin/commission/config:
+    get:
+      summary: 获取佣金配置（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权
+    put:
+      summary: 更新佣金配置（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 更新成功
+        '401':
+          description: 未授权
+
+  # TODO: 待补充 - 来源 admin.js
+  /admin/orders/{id}/commission:
+    get:
+      summary: 获取订单佣金详情（管理后台）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - AdminFinance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 订单ID
+      responses:
+        '200':
+          description: 获取成功
+        '401':
+          description: 未授权

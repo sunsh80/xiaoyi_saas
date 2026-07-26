@@ -1,0 +1,320 @@
+# ============================================================
+# 财务模块 Schema - Account / Withdrawal / Payment / Commission / SystemConfig + 响应
+# 模块: finance
+# 说明: WithdrawalListResponse 统一了原 WithdrawalListResponse + AdminWithdrawalListResponse
+# ============================================================
+
+Account:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    user_id:
+      type: integer
+      example: 1
+    tenant_id:
+      type: integer
+      example: 1
+    account_type:
+      type: string
+      enum: [platform, tenant, user]
+      example: "user"
+    balance:
+      type: number
+      format: decimal
+      example: 1000.00
+    frozen_amount:
+      type: number
+      format: decimal
+      example: 0.00
+    available_balance:
+      type: number
+      format: decimal
+      example: 1000.00
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+    updated_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+
+AccountResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    data:
+      type: object
+      properties:
+        account:
+          $ref: 'finance.yaml#/Account'
+
+WithdrawalRequest:
+  type: object
+  required:
+    - amount
+    - account_info
+  properties:
+    amount:
+      type: number
+      format: decimal
+      description: 提现金额
+    account_info:
+      type: object
+      description: 提现账户信息
+      properties:
+        account_type:
+          type: string
+          enum: [bank_card, alipay, wechat_pay]
+          description: 账户类型
+        account_number:
+          type: string
+          description: 账户号码
+        account_name:
+          type: string
+          description: 账户名称
+    remark:
+      type: string
+      description: 备注
+
+Withdrawal:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    user_id:
+      type: integer
+      example: 1
+    amount:
+      type: number
+      format: decimal
+      example: 500.00
+    account_info:
+      type: object
+      description: 提现账户信息
+      properties:
+        account_type:
+          type: string
+          example: "wechat_pay"
+        account_number:
+          type: string
+          example: "wx123456"
+        account_name:
+          type: string
+          example: "张三"
+    status:
+      type: string
+      enum: [pending, processing, completed, rejected]
+      example: "pending"
+    remark:
+      type: string
+      example: "首次提现"
+    processed_by:
+      type: integer
+      example: 1
+    processed_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+    updated_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+
+WithdrawalResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: "提现申请已提交"
+    data:
+      type: object
+      properties:
+        withdrawal:
+          $ref: 'finance.yaml#/Withdrawal'
+
+WithdrawalListResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    data:
+      type: object
+      properties:
+        withdrawals:
+          type: array
+          items:
+            $ref: 'finance.yaml#/Withdrawal'
+        pagination:
+          $ref: 'common.yaml#/Pagination'
+
+Payment:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    order_id:
+      type: integer
+      example: 1
+    payer_id:
+      type: integer
+      example: 1
+    payee_id:
+      type: integer
+      example: 2
+    amount:
+      type: number
+      format: decimal
+      example: 280.00
+    payment_method:
+      type: string
+      enum: [wechat_pay, alipay, balance]
+      example: "wechat_pay"
+    transaction_no:
+      type: string
+      example: "TX202401230001"
+    status:
+      type: string
+      enum: [pending, paid, failed, refunded]
+      example: "paid"
+    payment_time:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+    updated_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+
+PaymentListResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    data:
+      type: object
+      properties:
+        payments:
+          type: array
+          items:
+            $ref: 'finance.yaml#/Payment'
+        pagination:
+          $ref: 'common.yaml#/Pagination'
+
+Commission:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    order_id:
+      type: integer
+      example: 1
+    admin_user_id:
+      type: integer
+      example: 1
+    commission_rate:
+      type: number
+      format: decimal
+      example: 0.1000
+    commission_amount:
+      type: number
+      format: decimal
+      example: 28.00
+    platform_revenue:
+      type: number
+      format: decimal
+      example: 28.00
+    description:
+      type: string
+      example: "订单 XY2401231503210001 的抽佣，比例 10%"
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+
+CommissionListResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    data:
+      type: object
+      properties:
+        commissions:
+          type: array
+          items:
+            $ref: 'finance.yaml#/Commission'
+        pagination:
+          $ref: 'common.yaml#/Pagination'
+
+CommissionStatisticsResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    data:
+      type: object
+      properties:
+        statistics:
+          type: object
+          properties:
+            total_orders:
+              type: integer
+              example: 150
+            total_commission:
+              type: number
+              format: decimal
+              example: 4200.00
+            total_revenue:
+              type: number
+              format: decimal
+              example: 4200.00
+            avg_rate:
+              type: number
+              format: decimal
+              example: 0.1000
+
+SystemConfig:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    config_key:
+      type: string
+      example: "commission_rate"
+    config_value:
+      type: string
+      example: "0.1000"
+    description:
+      type: string
+      example: "默认抽佣比例 10%"
+    updated_by:
+      type: integer
+      example: 1
+    updated_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"

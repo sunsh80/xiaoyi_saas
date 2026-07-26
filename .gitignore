@@ -52,3 +52,6 @@ desktop.ini
 *.iso
 *.exe
 *.pkg
+
+# OpenAPI 旧版备份
+openapi.legacy.yaml

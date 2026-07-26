@@ -1,0 +1,195 @@
+# ============================================================
+# 第三方接入路径 - ThirdParty（4 已有 + 1 骨架 = 5 端点）
+# 模块: third-party
+# ============================================================
+
+paths:
+  /v1/orders:
+    post:
+      summary: 第三方创建订单
+      description: 第三方平台通过 API Key 认证创建订单
+      tags:
+        - ThirdParty
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/third-party.yaml#/ThirdPartyOrderCreate'
+      responses:
+        '201':
+          description: 订单创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/third-party.yaml#/ThirdPartyOrderResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '401':
+          description: API Key 无效
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /v1/orders/{order_no}:
+    get:
+      summary: 查询第三方订单状态
+      tags:
+        - ThirdParty
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: order_no
+          required: true
+          schema:
+            type: string
+          description: 订单编号
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/third-party.yaml#/ThirdPartyOrderResponse'
+        '404':
+          description: 订单不存在
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /v1/orders/{order_no}/cancel:
+    post:
+      summary: 取消第三方订单
+      tags:
+        - ThirdParty
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: order_no
+          required: true
+          schema:
+            type: string
+          description: 订单编号
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: 取消原因
+      responses:
+        '200':
+          description: 取消成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/third-party.yaml#/ThirdPartyOrderResponse'
+        '400':
+          description: 无法取消
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /v1/orders/reconciliation:
+    get:
+      summary: 对账查询
+      description: 按日期范围查询订单列表，用于第三方对账
+      tags:
+        - ThirdParty
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: startDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - in: query
+          name: endDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/third-party.yaml#/ReconciliationResponse'
+
+  # TODO: 待补充 - 来源 v1.js WechatPayController
+  /v1/payments/wechat/create:
+    post:
+      summary: 创建微信支付（第三方）
+      description: "# TODO: 待补充完整定义"
+      tags:
+        - ThirdParty
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 创建成功
+        '401':
+          description: API Key 无效

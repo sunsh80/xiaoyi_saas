@@ -1,0 +1,103 @@
+# ============================================================
+# 认证模块 Schema - User / UserLogin / UserRegistration / AuthResponse / UserInfoResponse
+# 模块: auth
+# ============================================================
+
+UserRegistration:
+  type: object
+  required:
+    - username
+    - password
+    - phone
+    - real_name
+    - role
+  properties:
+    username:
+      type: string
+      description: 用户名
+    password:
+      type: string
+      description: 密码
+    phone:
+      type: string
+      description: 手机号
+    email:
+      type: string
+      description: 邮箱
+    real_name:
+      type: string
+      description: 真实姓名
+    role:
+      type: string
+      enum: [tenant_admin, tenant_user, worker, platform_admin, admin]
+      description: 用户角色
+
+UserLogin:
+  type: object
+  required:
+    - username
+    - password
+  properties:
+    username:
+      type: string
+      description: 用户名或手机号
+    password:
+      type: string
+      description: 密码
+
+User:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    username:
+      type: string
+      example: "user123"
+    phone:
+      type: string
+      example: "13800138000"
+    email:
+      type: string
+      example: "user@example.com"
+    real_name:
+      type: string
+      example: "张三"
+    role:
+      type: string
+      enum: [tenant_admin, tenant_user, worker, platform_admin, admin]
+    created_at:
+      type: string
+      format: date-time
+
+AuthResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: "登录成功"
+    data:
+      type: object
+      properties:
+        user:
+          $ref: 'auth.yaml#/User'
+        token:
+          type: string
+          description: JWT令牌
+
+UserInfoResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    data:
+      type: object
+      properties:
+        user:
+          $ref: 'auth.yaml#/User'
+        tenant:
+          $ref: 'tenant.yaml#/Tenant'

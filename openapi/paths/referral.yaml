@@ -1,0 +1,340 @@
+# ============================================================
+# 用户端推荐路径 - Referral（7 端点）
+# 模块: referral
+# ============================================================
+
+paths:
+  /referral/campaigns:
+    get:
+      summary: 获取当前可用的推荐活动
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      campaigns:
+                        type: array
+                        items:
+                          $ref: '../components/schemas/referral.yaml#/ReferralCampaign'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /referral/campaigns/{id}:
+    get:
+      summary: 获取推荐活动详情
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      campaign:
+                        $ref: '../components/schemas/referral.yaml#/ReferralCampaign'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /referral/stats:
+    get:
+      summary: 获取用户的推荐统计
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      stats:
+                        $ref: '../components/schemas/referral.yaml#/ReferralStats'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /referral/rewards:
+    get:
+      summary: 获取用户的推荐奖励记录
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, paid, failed]
+          description: 奖励状态筛选
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/referral.yaml#/ReferralRewardsResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /referral/total-rewards:
+    get:
+      summary: 获取用户的总奖励金额
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      totalRewards:
+                        type: number
+                        format: decimal
+                        example: 150.00
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /referral/generate-link:
+    post:
+      summary: 生成推荐链接/二维码
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - campaignId
+              properties:
+                campaignId:
+                  type: integer
+                  description: 活动ID
+      responses:
+        '200':
+          description: 生成成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      referralCode:
+                        type: string
+                        example: "REF_123_1705982400000"
+                      referralLink:
+                        type: string
+                        example: "https://xiaoyibanyun.com/register?ref=REF_123_1705982400000&campaign=1"
+                      shareInfo:
+                        $ref: '../components/schemas/referral.yaml#/ShareInfo'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /referral/confirm:
+    post:
+      summary: 确认推荐关系（被推荐人完成首次订单后）
+      tags:
+        - Referral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - referralCode
+              properties:
+                referralCode:
+                  type: string
+                  description: 推荐码
+      responses:
+        '200':
+          description: 确认成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐关系确认成功"
+                  data:
+                    type: object
+                    properties:
+                      referral:
+                        $ref: '../components/schemas/referral.yaml#/Referral'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '404':
+          description: 推荐码无效
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'

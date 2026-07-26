@@ -1,0 +1,474 @@
+# ============================================================
+# 管理端推荐路径 - AdminReferral（9 端点）
+# 模块: referral-admin
+# ============================================================
+
+paths:
+  /admin/referral/campaigns:
+    get:
+      summary: 获取推荐活动列表（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [draft, active, paused, ended]
+          description: 活动状态筛选
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/referral.yaml#/ReferralCampaignListResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+    post:
+      summary: 创建推荐活动（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/referral.yaml#/ReferralCampaignCreateRequest'
+      responses:
+        '201':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐活动创建成功"
+                  data:
+                    type: object
+                    properties:
+                      campaign:
+                        $ref: '../components/schemas/referral.yaml#/ReferralCampaign'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/referral/campaigns/{id}:
+    get:
+      summary: 获取推荐活动详情（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      campaign:
+                        $ref: '../components/schemas/referral.yaml#/ReferralCampaign'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+    put:
+      summary: 更新推荐活动（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/referral.yaml#/ReferralCampaignUpdateRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐活动更新成功"
+                  data:
+                    type: object
+                    properties:
+                      campaign:
+                        $ref: '../components/schemas/referral.yaml#/ReferralCampaign'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/referral/campaigns/{id}/activate:
+    put:
+      summary: 激活推荐活动（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      responses:
+        '200':
+          description: 激活成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐活动已激活"
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/referral/campaigns/{id}/pause:
+    put:
+      summary: 暂停推荐活动（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      responses:
+        '200':
+          description: 暂停成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐活动已暂停"
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/referral/campaigns/{id}/end:
+    put:
+      summary: 结束推荐活动（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 活动ID
+      responses:
+        '200':
+          description: 结束成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "推荐活动已结束"
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+        '404':
+          description: 活动不存在
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/referral/stats:
+    get:
+      summary: 获取推荐统计（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: campaignId
+          schema:
+            type: integer
+          description: 活动ID筛选
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      stats:
+                        $ref: '../components/schemas/referral.yaml#/ReferralAdminStats'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+
+  /admin/referral/list:
+    get:
+      summary: 获取推荐列表（管理后台）
+      tags:
+        - AdminReferral
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: x-tenant-code
+          required: true
+          schema:
+            type: string
+          description: 租户编码
+        - in: query
+          name: campaignId
+          schema:
+            type: integer
+          description: 活动ID筛选
+        - in: query
+          name: referrerId
+          schema:
+            type: integer
+          description: 推荐人ID筛选
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, confirmed, rewarded, expired]
+          description: 状态筛选
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: 页码
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: 每页数量
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/referral.yaml#/ReferralListResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'

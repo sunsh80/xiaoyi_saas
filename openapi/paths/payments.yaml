@@ -1,0 +1,68 @@
+# ============================================================
+# 支付回调路径 - Payments（2 端点）
+# 模块: payments
+# ============================================================
+
+paths:
+  /payments/callback:
+    post:
+      summary: 支付回调接口
+      tags:
+        - Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - transaction_no
+                - order_id
+                - status
+              properties:
+                transaction_no:
+                  type: string
+                  description: 第三方交易号
+                order_id:
+                  type: integer
+                  description: 订单ID
+                status:
+                  type: string
+                  enum: [success, failed]
+                  description: 支付状态
+      responses:
+        '200':
+          description: 回调处理成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "支付回调处理成功"
+
+  /v1/payments/wechat/notify:
+    post:
+      summary: 微信支付回调通知
+      description: 微信支付结果通知回调接口
+      tags:
+        - Payments
+      requestBody:
+        required: true
+        content:
+          application/xml:
+            schema:
+              type: object
+              description: 微信支付回调数据（XML格式）
+      responses:
+        '200':
+          description: 处理成功
+          content:
+            application/xml:
+              schema:
+                type: string
+                example: "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>"

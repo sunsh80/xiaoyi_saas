@@ -1,0 +1,321 @@
+# ============================================================
+# 小蚁搬运 SaaS 平台 API - 主入口
+# 模块化 OpenAPI 规范（聚合 $ref）
+# ============================================================
+# 文档结构：
+#   openapi/
+#   ├── openapi.yaml          ← 本文件（主入口）
+#   ├── paths/                ← 按业务域拆分的路径定义
+#   └── components/           ← 可复用组件（schemas, securitySchemes）
+# ============================================================
+
+openapi: 3.0.0
+
+info:
+  title: 小蚁搬运 SaaS 平台 API
+  description: 小蚁搬运是一个SaaS架构的多租户跑腿装卸平台，支持货物的装卸搬运工作。
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api
+    description: 开发环境
+  - url: https://api.xiaoyibanyun.com/api
+    description: 生产环境
+
+tags:
+  - name: Authentication
+    description: 用户认证
+  - name: Orders
+    description: 订单主流程
+  - name: Map
+    description: 地图/轨迹/位置
+  - name: Finance
+    description: 用户端财务
+  - name: AdminFinance
+    description: 管理端财务
+  - name: Referral
+    description: 用户端推荐
+  - name: AdminReferral
+    description: 管理端推荐
+  - name: Payments
+    description: 支付回调
+  - name: AdminTenants
+    description: 租户管理
+  - name: Tenant
+    description: 租户后台
+  - name: ThirdParty
+    description: 第三方接入
+  - name: CustomerService
+    description: 客服（规划中）
+  - name: TransferStation
+    description: 转驿（规划中）
+
+# ============================================================
+# 路径聚合 - 每个路径通过 $ref 引用对应业务域文件
+# JSON Pointer 转义: / → ~1
+# ============================================================
+paths:
+  # ---- Authentication (4) ----
+  /auth/register:
+    $ref: './paths/auth.yaml#/paths/~1auth~1register'
+  /auth/login:
+    $ref: './paths/auth.yaml#/paths/~1auth~1login'
+  /auth/me:
+    $ref: './paths/auth.yaml#/paths/~1auth~1me'
+  /auth/change-password:
+    $ref: './paths/auth.yaml#/paths/~1auth~1change-password'
+
+  # ---- Orders (8) ----
+  /orders:
+    $ref: './paths/orders.yaml#/paths/~1orders'
+  /orders/{id}:
+    $ref: './paths/orders.yaml#/paths/~1orders~1{id}'
+  /orders/{id}/assign:
+    $ref: './paths/orders.yaml#/paths/~1orders~1{id}~1assign'
+  /orders/{id}/start:
+    $ref: './paths/orders.yaml#/paths/~1orders~1{id}~1start'
+  /orders/{id}/complete:
+    $ref: './paths/orders.yaml#/paths/~1orders~1{id}~1complete'
+  /orders/{id}/cancel:
+    $ref: './paths/orders.yaml#/paths/~1orders~1{id}~1cancel'
+
+  # ---- Map (7, 骨架) ----
+  /map/search-address:
+    $ref: './paths/map.yaml#/paths/~1map~1search-address'
+  /map/geocode:
+    $ref: './paths/map.yaml#/paths/~1map~1geocode'
+  /map/reverse-geocode:
+    $ref: './paths/map.yaml#/paths/~1map~1reverse-geocode'
+  /map/calculate-distance:
+    $ref: './paths/map.yaml#/paths/~1map~1calculate-distance'
+  /workers/{workerId}/location:
+    $ref: './paths/map.yaml#/paths/~1workers~1{workerId}~1location'
+  /workers/location:
+    $ref: './paths/map.yaml#/paths/~1workers~1location'
+  /orders/{orderId}/track:
+    $ref: './paths/map.yaml#/paths/~1orders~1{orderId}~1track'
+
+  # ---- Finance (4) ----
+  /finance/account:
+    $ref: './paths/finance.yaml#/paths/~1finance~1account'
+  /finance/withdrawals:
+    $ref: './paths/finance.yaml#/paths/~1finance~1withdrawals'
+  /finance/payments:
+    $ref: './paths/finance.yaml#/paths/~1finance~1payments'
+
+  # ---- Payments (2) ----
+  /payments/callback:
+    $ref: './paths/payments.yaml#/paths/~1payments~1callback'
+  /v1/payments/wechat/notify:
+    $ref: './paths/payments.yaml#/paths/~1v1~1payments~1wechat~1notify'
+
+  # ---- AdminFinance (8 已有 + 5 骨架) ----
+  /admin/withdrawals:
+    $ref: './paths/finance-admin.yaml#/paths/~1admin~1withdrawals'
+  /admin/withdrawals/{id}/approve:
+    $ref: './paths/finance-admin.yaml#/paths/~1admin~1withdrawals~1{id}~1approve'
+  /admin/withdrawals/{id}/reject:
+    $ref: './paths/finance-admin.yaml#/paths/~1admin~1withdrawals~1{id}~1reject'
+  /admin/withdrawals/{id}/processing:
+    $ref: './paths/finance-admin.yaml#/paths/~1admin~1withdrawals~1{id}~1processing'
+  /admin/commissions:
+    $ref: './paths/finance-admin.yaml#/paths/~1admin~1commissions'
+  /admin/commissions/statistics:
+    $ref: './paths/finance-admin.yaml#/paths/~1admin~1commissions~1statistics'
+  /admin/configs:
+    $ref: './paths/finance-admin.yaml#/paths/~1admin~1configs'
+  /admin/reports/statistics:
+    $ref: './paths/finance-admin.yaml#/paths/~1admin~1reports~1statistics'
+  /admin/finance/overview:
+    $ref: './paths/finance-admin.yaml#/paths/~1admin~1finance~1overview'
+  /admin/commission/config:
+    $ref: './paths/finance-admin.yaml#/paths/~1admin~1commission~1config'
+  /admin/orders/{id}/commission:
+    $ref: './paths/finance-admin.yaml#/paths/~1admin~1orders~1{id}~1commission'
+
+  # ---- Referral (7) ----
+  /referral/campaigns:
+    $ref: './paths/referral.yaml#/paths/~1referral~1campaigns'
+  /referral/campaigns/{id}:
+    $ref: './paths/referral.yaml#/paths/~1referral~1campaigns~1{id}'
+  /referral/stats:
+    $ref: './paths/referral.yaml#/paths/~1referral~1stats'
+  /referral/rewards:
+    $ref: './paths/referral.yaml#/paths/~1referral~1rewards'
+  /referral/total-rewards:
+    $ref: './paths/referral.yaml#/paths/~1referral~1total-rewards'
+  /referral/generate-link:
+    $ref: './paths/referral.yaml#/paths/~1referral~1generate-link'
+  /referral/confirm:
+    $ref: './paths/referral.yaml#/paths/~1referral~1confirm'
+
+  # ---- AdminReferral (9) ----
+  /admin/referral/campaigns:
+    $ref: './paths/referral-admin.yaml#/paths/~1admin~1referral~1campaigns'
+  /admin/referral/campaigns/{id}:
+    $ref: './paths/referral-admin.yaml#/paths/~1admin~1referral~1campaigns~1{id}'
+  /admin/referral/campaigns/{id}/activate:
+    $ref: './paths/referral-admin.yaml#/paths/~1admin~1referral~1campaigns~1{id}~1activate'
+  /admin/referral/campaigns/{id}/pause:
+    $ref: './paths/referral-admin.yaml#/paths/~1admin~1referral~1campaigns~1{id}~1pause'
+  /admin/referral/campaigns/{id}/end:
+    $ref: './paths/referral-admin.yaml#/paths/~1admin~1referral~1campaigns~1{id}~1end'
+  /admin/referral/stats:
+    $ref: './paths/referral-admin.yaml#/paths/~1admin~1referral~1stats'
+  /admin/referral/list:
+    $ref: './paths/referral-admin.yaml#/paths/~1admin~1referral~1list'
+
+  # ---- ThirdParty (4 已有 + 1 骨架) ----
+  /v1/orders:
+    $ref: './paths/third-party.yaml#/paths/~1v1~1orders'
+  /v1/orders/{order_no}:
+    $ref: './paths/third-party.yaml#/paths/~1v1~1orders~1{order_no}'
+  /v1/orders/{order_no}/cancel:
+    $ref: './paths/third-party.yaml#/paths/~1v1~1orders~1{order_no}~1cancel'
+  /v1/orders/reconciliation:
+    $ref: './paths/third-party.yaml#/paths/~1v1~1orders~1reconciliation'
+  /v1/payments/wechat/create:
+    $ref: './paths/third-party.yaml#/paths/~1v1~1payments~1wechat~1create'
+
+  # ---- AdminTenants (8, 骨架) ----
+  /admin/tenants:
+    $ref: './paths/tenants.yaml#/paths/~1admin~1tenants'
+  /admin/tenants/pending:
+    $ref: './paths/tenants.yaml#/paths/~1admin~1tenants~1pending'
+  /admin/tenants/{id}:
+    $ref: './paths/tenants.yaml#/paths/~1admin~1tenants~1{id}'
+  /admin/tenants/{id}/approve:
+    $ref: './paths/tenants.yaml#/paths/~1admin~1tenants~1{id}~1approve'
+  /admin/tenants/{id}/reject:
+    $ref: './paths/tenants.yaml#/paths/~1admin~1tenants~1{id}~1reject'
+  /admin/tenants/{id}/toggle-status:
+    $ref: './paths/tenants.yaml#/paths/~1admin~1tenants~1{id}~1toggle-status'
+
+  # ---- Tenant Portal (11, 骨架) ----
+  /auth/tenant-register:
+    $ref: './paths/tenant-portal.yaml#/paths/~1auth~1tenant-register'
+  /auth/worker-register:
+    $ref: './paths/tenant-portal.yaml#/paths/~1auth~1worker-register'
+  /auth/tenant-login:
+    $ref: './paths/tenant-portal.yaml#/paths/~1auth~1tenant-login'
+  /auth/worker-login:
+    $ref: './paths/tenant-portal.yaml#/paths/~1auth~1worker-login'
+  /tenant/info:
+    $ref: './paths/tenant-portal.yaml#/paths/~1tenant~1info'
+  /tenant/dashboard:
+    $ref: './paths/tenant-portal.yaml#/paths/~1tenant~1dashboard'
+  /tenant/orders:
+    $ref: './paths/tenant-portal.yaml#/paths/~1tenant~1orders'
+  /tenant/workers:
+    $ref: './paths/tenant-portal.yaml#/paths/~1tenant~1workers'
+  /tenant/users:
+    $ref: './paths/tenant-portal.yaml#/paths/~1tenant~1users'
+  /tenant/finance/overview:
+    $ref: './paths/tenant-portal.yaml#/paths/~1tenant~1finance~1overview'
+  /tenant/settings:
+    $ref: './paths/tenant-portal.yaml#/paths/~1tenant~1settings'
+
+# ============================================================
+# 组件聚合
+# ============================================================
+components:
+  securitySchemes:
+    bearerAuth:
+      $ref: './components/security-schemes.yaml#/bearerAuth'
+    apiKeyAuth:
+      $ref: './components/security-schemes.yaml#/apiKeyAuth'
+
+  schemas:
+    # ---- Common ----
+    ErrorResponse:
+      $ref: './components/schemas/common.yaml#/ErrorResponse'
+    Pagination:
+      $ref: './components/schemas/common.yaml#/Pagination'
+    ChangePasswordRequest:
+      $ref: './components/schemas/common.yaml#/ChangePasswordRequest'
+
+    # ---- Auth ----
+    UserRegistration:
+      $ref: './components/schemas/auth.yaml#/UserRegistration'
+    UserLogin:
+      $ref: './components/schemas/auth.yaml#/UserLogin'
+    User:
+      $ref: './components/schemas/auth.yaml#/User'
+    AuthResponse:
+      $ref: './components/schemas/auth.yaml#/AuthResponse'
+    UserInfoResponse:
+      $ref: './components/schemas/auth.yaml#/UserInfoResponse'
+
+    # ---- Order ----
+    OrderPayload:
+      $ref: './components/schemas/order.yaml#/OrderPayload'
+    Order:
+      $ref: './components/schemas/order.yaml#/Order'
+    OrderResponse:
+      $ref: './components/schemas/order.yaml#/OrderResponse'
+    OrderListResponse:
+      $ref: './components/schemas/order.yaml#/OrderListResponse'
+
+    # ---- Finance ----
+    Account:
+      $ref: './components/schemas/finance.yaml#/Account'
+    AccountResponse:
+      $ref: './components/schemas/finance.yaml#/AccountResponse'
+    WithdrawalRequest:
+      $ref: './components/schemas/finance.yaml#/WithdrawalRequest'
+    Withdrawal:
+      $ref: './components/schemas/finance.yaml#/Withdrawal'
+    WithdrawalResponse:
+      $ref: './components/schemas/finance.yaml#/WithdrawalResponse'
+    WithdrawalListResponse:
+      $ref: './components/schemas/finance.yaml#/WithdrawalListResponse'
+    Payment:
+      $ref: './components/schemas/finance.yaml#/Payment'
+    PaymentListResponse:
+      $ref: './components/schemas/finance.yaml#/PaymentListResponse'
+    Commission:
+      $ref: './components/schemas/finance.yaml#/Commission'
+    CommissionListResponse:
+      $ref: './components/schemas/finance.yaml#/CommissionListResponse'
+    CommissionStatisticsResponse:
+      $ref: './components/schemas/finance.yaml#/CommissionStatisticsResponse'
+    SystemConfig:
+      $ref: './components/schemas/finance.yaml#/SystemConfig'
+
+    # ---- Referral ----
+    ReferralCampaign:
+      $ref: './components/schemas/referral.yaml#/ReferralCampaign'
+    Referral:
+      $ref: './components/schemas/referral.yaml#/Referral'
+    ReferralReward:
+      $ref: './components/schemas/referral.yaml#/ReferralReward'
+    ReferralStats:
+      $ref: './components/schemas/referral.yaml#/ReferralStats'
+    ReferralAdminStats:
+      $ref: './components/schemas/referral.yaml#/ReferralAdminStats'
+    ReferralRewardsResponse:
+      $ref: './components/schemas/referral.yaml#/ReferralRewardsResponse'
+    ShareInfo:
+      $ref: './components/schemas/referral.yaml#/ShareInfo'
+    ReferralCampaignCreateRequest:
+      $ref: './components/schemas/referral.yaml#/ReferralCampaignCreateRequest'
+    ReferralCampaignUpdateRequest:
+      $ref: './components/schemas/referral.yaml#/ReferralCampaignUpdateRequest'
+    ReferralCampaignListResponse:
+      $ref: './components/schemas/referral.yaml#/ReferralCampaignListResponse'
+    ReferralListResponse:
+      $ref: './components/schemas/referral.yaml#/ReferralListResponse'
+
+    # ---- ThirdParty ----
+    ThirdPartyOrderCreate:
+      $ref: './components/schemas/third-party.yaml#/ThirdPartyOrderCreate'
+    ThirdPartyOrder:
+      $ref: './components/schemas/third-party.yaml#/ThirdPartyOrder'
+    ThirdPartyOrderResponse:
+      $ref: './components/schemas/third-party.yaml#/ThirdPartyOrderResponse'
+    ReconciliationResponse:
+      $ref: './components/schemas/third-party.yaml#/ReconciliationResponse'
+
+    # ---- Tenant ----
+    Tenant:
+      $ref: './components/schemas/tenant.yaml#/Tenant'

@@ -1,0 +1,422 @@
+# ============================================================
+# 推荐模块 Schema - ReferralCampaign / Referral / ReferralReward / ReferralStats + 响应
+# 模块: referral
+# ============================================================
+
+ReferralCampaign:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    campaign_name:
+      type: string
+      example: "春季拉新活动"
+    campaign_title:
+      type: string
+      example: "邀请好友，共享好礼"
+    campaign_description:
+      type: string
+      example: "邀请好友注册并完成首单，双方均可获得奖励"
+    share_title:
+      type: string
+      example: "快来加入小蚁搬运，一起赚钱吧！"
+    share_desc:
+      type: string
+      example: "专业搬运服务，安全可靠，收益丰厚"
+    share_image:
+      type: string
+      example: "https://example.com/share-image.jpg"
+    referral_reward_type:
+      type: string
+      enum: [fixed, percentage]
+      example: "fixed"
+    referral_reward_amount:
+      type: number
+      format: decimal
+      example: 10.00
+    referral_reward_percentage:
+      type: number
+      format: decimal
+      example: 0.05
+    referee_reward_type:
+      type: string
+      enum: [fixed, percentage]
+      example: "fixed"
+    referee_reward_amount:
+      type: number
+      format: decimal
+      example: 5.00
+    referee_reward_percentage:
+      type: number
+      format: decimal
+      example: 0.02
+    reward_limit_per_referrer:
+      type: integer
+      example: 10
+    reward_limit_per_referee:
+      type: integer
+      example: 1
+    start_time:
+      type: string
+      format: date-time
+      example: "2024-01-01T00:00:00.000Z"
+    end_time:
+      type: string
+      format: date-time
+      example: "2024-03-31T23:59:59.000Z"
+    status:
+      type: string
+      enum: [draft, active, paused, ended]
+      example: "active"
+    created_by:
+      type: integer
+      example: 1
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+    updated_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+
+Referral:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    referrer_user_id:
+      type: integer
+      example: 100
+    referee_user_id:
+      type: integer
+      example: 101
+    campaign_id:
+      type: integer
+      example: 1
+    referral_code:
+      type: string
+      example: "REF_100_1705982400000"
+    status:
+      type: string
+      enum: [pending, confirmed, rewarded, expired]
+      example: "pending"
+    confirmed_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+    rewarded_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+
+ReferralReward:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    referral_id:
+      type: integer
+      example: 1
+    user_id:
+      type: integer
+      example: 100
+    reward_type:
+      type: string
+      enum: [referrer, referee]
+      example: "referrer"
+    reward_amount:
+      type: number
+      format: decimal
+      example: 10.00
+    reward_description:
+      type: string
+      example: "推荐奖励 - 活动: 春季拉新活动"
+    status:
+      type: string
+      enum: [pending, paid, failed]
+      example: "pending"
+    paid_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+    updated_at:
+      type: string
+      format: date-time
+      example: "2024-01-23T15:03:21.000Z"
+
+ReferralStats:
+  type: object
+  properties:
+    total_referrals:
+      type: integer
+      example: 25
+    confirmed_referrals:
+      type: integer
+      example: 20
+    rewarded_referrals:
+      type: integer
+      example: 18
+
+ReferralAdminStats:
+  type: object
+  properties:
+    total_referrals:
+      type: integer
+      example: 150
+    confirmed_referrals:
+      type: integer
+      example: 120
+    rewarded_referrals:
+      type: integer
+      example: 100
+    total_referrer_rewards:
+      type: number
+      format: decimal
+      example: 1200.00
+    total_referee_rewards:
+      type: number
+      format: decimal
+      example: 600.00
+    total_rewards:
+      type: number
+      format: decimal
+      example: 1800.00
+
+ReferralRewardsResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    data:
+      type: object
+      properties:
+        rewards:
+          type: array
+          items:
+            $ref: 'referral.yaml#/ReferralReward'
+        pagination:
+          $ref: 'common.yaml#/Pagination'
+
+ShareInfo:
+  type: object
+  properties:
+    title:
+      type: string
+      example: "快来加入小蚁搬运，一起赚钱吧！"
+    desc:
+      type: string
+      example: "专业搬运服务，安全可靠，收益丰厚"
+    imageUrl:
+      type: string
+      example: "https://example.com/share-image.jpg"
+    path:
+      type: string
+      example: "/pages/auth/register?ref=REF_123_1705982400000&campaign=1"
+
+ReferralCampaignCreateRequest:
+  type: object
+  required:
+    - campaign_name
+    - campaign_title
+    - share_title
+    - start_time
+    - end_time
+  properties:
+    campaign_name:
+      type: string
+      description: 活动名称
+    campaign_title:
+      type: string
+      description: 活动标题
+    campaign_description:
+      type: string
+      description: 活动描述
+    share_title:
+      type: string
+      description: 分享标题
+    share_desc:
+      type: string
+      description: 分享描述
+    share_image:
+      type: string
+      description: 分享图片
+    referral_reward_type:
+      type: string
+      enum: [fixed, percentage]
+      description: 推荐人奖励类型
+    referral_reward_amount:
+      type: number
+      format: decimal
+      description: 推荐人固定奖励金额
+    referral_reward_percentage:
+      type: number
+      format: decimal
+      description: 推荐人奖励百分比
+    referee_reward_type:
+      type: string
+      enum: [fixed, percentage]
+      description: 被推荐人奖励类型
+    referee_reward_amount:
+      type: number
+      format: decimal
+      description: 被推荐人固定奖励金额
+    referee_reward_percentage:
+      type: number
+      format: decimal
+      description: 被推荐人奖励百分比
+    reward_limit_per_referrer:
+      type: integer
+      description: 推荐人奖励上限次数
+    reward_limit_per_referee:
+      type: integer
+      description: 被推荐人奖励上限次数
+    start_time:
+      type: string
+      format: date-time
+      description: 活动开始时间
+    end_time:
+      type: string
+      format: date-time
+      description: 活动结束时间
+
+ReferralCampaignUpdateRequest:
+  type: object
+  properties:
+    campaign_name:
+      type: string
+      description: 活动名称
+    campaign_title:
+      type: string
+      description: 活动标题
+    campaign_description:
+      type: string
+      description: 活动描述
+    share_title:
+      type: string
+      description: 分享标题
+    share_desc:
+      type: string
+      description: 分享描述
+    share_image:
+      type: string
+      description: 分享图片
+    referral_reward_type:
+      type: string
+      enum: [fixed, percentage]
+      description: 推荐人奖励类型
+    referral_reward_amount:
+      type: number
+      format: decimal
+      description: 推荐人固定奖励金额
+    referral_reward_percentage:
+      type: number
+      format: decimal
+      description: 推荐人奖励百分比
+    referee_reward_type:
+      type: string
+      enum: [fixed, percentage]
+      description: 被推荐人奖励类型
+    referee_reward_amount:
+      type: number
+      format: decimal
+      description: 被推荐人固定奖励金额
+    referee_reward_percentage:
+      type: number
+      format: decimal
+      description: 被推荐人奖励百分比
+    reward_limit_per_referrer:
+      type: integer
+      description: 推荐人奖励上限次数
+    reward_limit_per_referee:
+      type: integer
+      description: 被推荐人奖励上限次数
+    start_time:
+      type: string
+      format: date-time
+      description: 活动开始时间
+    end_time:
+      type: string
+      format: date-time
+      description: 活动结束时间
+    status:
+      type: string
+      enum: [draft, active, paused, ended]
+      description: 活动状态
+
+ReferralCampaignListResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    data:
+      type: object
+      properties:
+        campaigns:
+          type: array
+          items:
+            $ref: 'referral.yaml#/ReferralCampaign'
+        pagination:
+          $ref: 'common.yaml#/Pagination'
+
+ReferralListResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    data:
+      type: object
+      properties:
+        referrals:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              referrer_user_id:
+                type: integer
+                example: 100
+              referee_user_id:
+                type: integer
+                example: 101
+              campaign_id:
+                type: integer
+                example: 1
+              referral_code:
+                type: string
+                example: "REF_100_1705982400000"
+              status:
+                type: string
+                enum: [pending, confirmed, rewarded, expired]
+                example: "rewarded"
+              referrer_name:
+                type: string
+                example: "张三"
+              referee_name:
+                type: string
+                example: "李四"
+              campaign_name:
+                type: string
+                example: "春季拉新活动"
+              created_at:
+                type: string
+                format: date-time
+                example: "2024-01-23T15:03:21.000Z"
+        pagination:
+          $ref: 'common.yaml#/Pagination'

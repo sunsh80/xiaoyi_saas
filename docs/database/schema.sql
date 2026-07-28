@@ -287,6 +287,7 @@ CREATE TABLE third_party_platforms (
     api_key VARCHAR(100) UNIQUE NOT NULL COMMENT 'API Key',
     api_secret VARCHAR(255) NOT NULL COMMENT 'API Secret (用于签名验证)',
     callback_url VARCHAR(500) COMMENT '默认回调地址',
+    adapter_class VARCHAR(100) DEFAULT NULL COMMENT '适配器类名，如 SaasWebhookAdapter',
     status TINYINT DEFAULT 1 COMMENT '状态: 0-禁用, 1-启用',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -321,3 +322,41 @@ INSERT INTO system_configs (config_key, config_value, description) VALUES
 ('payment_methods', '["wechat_pay", "alipay"]', '可用支付方式'),
 ('min_withdrawal_amount', '10.00', '最小提现金额'),
 ('default_referral_campaign_id', '1', '默认推荐活动ID');
+
+-- Webhook 状态映射配置表 (Webhook Status Mappings)
+CREATE TABLE webhook_status_mappings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    platform_code VARCHAR(50) NOT NULL COMMENT '平台编码，如 saas/huolala',
+    external_status VARCHAR(50) NOT NULL COMMENT '外部系统状态值',
+    external_label VARCHAR(100) COMMENT '外部系统状态中文标签',
+    internal_status VARCHAR(50) NOT NULL COMMENT '小蚁内部状态值',
+    description VARCHAR(200) COMMENT '说明',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '软删除',
+    UNIQUE KEY uk_platform_external (platform_code, external_status)
+) COMMENT='Webhook 状态映射配置表';
+
+-- 外部 Webhook 接收日志表 (Incoming Webhook Logs)
+CREATE TABLE incoming_webhook_logs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    platform_code VARCHAR(50) NOT NULL COMMENT '来源平台编码',
+    event_type VARCHAR(100) NOT NULL COMMENT '事件类型',
+    event_id VARCHAR(100) COMMENT '事件唯一 ID',
+    raw_body TEXT NOT NULL COMMENT '原始请求体',
+    mapped_order_id INT COMMENT '关联的小蚁订单 ID',
+    external_order_no VARCHAR(100) COMMENT '外部订单号',
+    external_old_status VARCHAR(50) COMMENT '变更前状态',
+    external_new_status VARCHAR(50) COMMENT '变更后状态',
+    mapped_status VARCHAR(50) COMMENT '映射后的内部状态',
+    processing_status ENUM('success', 'failed', 'ignored') DEFAULT 'success' COMMENT '处理结果',
+    error_message TEXT COMMENT '错误信息',
+    signature_valid TINYINT(1) DEFAULT 0 COMMENT '签名是否验证通过',
+    response_time_ms INT COMMENT '处理耗时（毫秒）',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_platform (platform_code),
+    INDEX idx_order (mapped_order_id),
+    INDEX idx_event_id (event_id),
+    INDEX idx_created (created_at)
+) COMMENT='外部 Webhook 接收日志表';

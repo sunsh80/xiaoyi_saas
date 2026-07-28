@@ -389,6 +389,7 @@ components:
 | `AdminTenants` | `tenants.yaml` | `/admin/tenants/*` |
 | `Tenant` | `tenant-portal.yaml` | `/tenant/*`、`/auth/tenant-*`、`/auth/worker-*` |
 | `ThirdParty` | `third-party.yaml` | `/v1/orders/*`、`/v1/payments/wechat/create` |
+| `Webhook` | `webhook.yaml` | `/v1/webhook/*` |
 | `CustomerService` | `customer-service.yaml` | 客服（规划中） |
 | `TransferStation` | `transfer-station.yaml` | 转驿（规划中） |
 

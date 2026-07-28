@@ -1,0 +1,122 @@
+# ============================================================
+# Webhook 模块 Schema - WebhookIncomingPayload / WebhookStatusMapping / IncomingWebhookLog
+# 模块: webhook
+# ============================================================
+
+WebhookIncomingPayload:
+  type: object
+  required:
+    - event_type
+    - data
+  properties:
+    event_type:
+      type: string
+      description: 事件类型
+      example: order.status.changed
+    event_time:
+      type: string
+      format: date-time
+      description: 事件发生时间
+    data:
+      type: object
+      required:
+        - new_status
+      properties:
+        saas_order_id:
+          type: string
+          description: SaaS 订单 ID（优先第三方订单号）
+        saas_order_no:
+          type: string
+          description: SaaS 订单号
+        tms_order_id:
+          type: string
+          nullable: true
+          description: TMS 订单 ID
+        tms_order_no:
+          type: string
+          nullable: true
+          description: TMS 订单号
+        old_status:
+          type: string
+          description: 变更前状态
+        new_status:
+          type: string
+          description: 变更后状态
+        status_label:
+          type: string
+          description: 状态中文标签
+        status_description:
+          type: string
+          description: 状态中文描述
+        operator:
+          type: object
+          nullable: true
+          properties:
+            type:
+              type: string
+            id:
+              type: integer
+        extra_data:
+          type: object
+          description: 额外数据
+
+WebhookStatusMapping:
+  type: object
+  properties:
+    id:
+      type: integer
+    platform_code:
+      type: string
+    external_status:
+      type: string
+    external_label:
+      type: string
+    internal_status:
+      type: string
+    description:
+      type: string
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+
+IncomingWebhookLog:
+  type: object
+  properties:
+    id:
+      type: integer
+    platform_code:
+      type: string
+    event_type:
+      type: string
+    event_id:
+      type: string
+    raw_body:
+      type: string
+    mapped_order_id:
+      type: integer
+      nullable: true
+    external_order_no:
+      type: string
+    external_old_status:
+      type: string
+    external_new_status:
+      type: string
+    mapped_status:
+      type: string
+      nullable: true
+    processing_status:
+      type: string
+      enum: [success, failed, ignored]
+    error_message:
+      type: string
+      nullable: true
+    signature_valid:
+      type: boolean
+    response_time_ms:
+      type: integer
+    created_at:
+      type: string
+      format: date-time

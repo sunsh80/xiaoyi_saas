@@ -482,106 +482,120 @@ ADD COLUMN adapter_class VARCHAR(100) DEFAULT NULL
 
 ## OpenAPI 变更（API-First）
 
-> **⚠️ 规范要求**（skills 第 5.2 节）：**先更新 `openapi.yaml`，再写代码**。新增 API 必须在 `openapi.yaml` 中定义。
+> **⚠️ 规范要求**（skills 第 5.2 节）：**先更新 `openapi/` 模块文件，再写代码**。新增 API 必须在模块化目录中定义。
 
 ### 新增 Tag
 
+在 `openapi/openapi.yaml` 的 `tags` 列表中新增：
+
 ```yaml
-# 在 tags 列表中新增
 - name: Webhook
   description: 外部平台 Webhook 接收端点
 ```
 
-### 新增路径
+### 新增路径文件
+
+创建 `openapi/paths/webhook.yaml`：
 
 ```yaml
-# 在 paths 中新增
-/api/v1/webhook/incoming/{platform_code}:
-  post:
-    summary: 接收外部平台 Webhook 推送
-    description: |
-      统一的外部 Webhook 接收入口。不同平台通过 path 参数 platform_code 区分。
-      请求需携带平台分配的签名信息（各平台签名算法不同）。
-      即使订单不存在或处理失败，也返回 HTTP 200 避免推送方重试。
-    tags:
-      - Webhook
-    parameters:
-      - name: platform_code
-        in: path
-        required: true
-        schema:
-          type: string
-          example: saas
-        description: 平台编码（如 saas、huolala）
-      - name: X-API-Key
-        in: header
-        required: true
-        schema:
-          type: string
-        description: 平台分配的 API Key
-      - name: X-SaaS-Signature
-        in: header
-        required: true
-        schema:
-          type: string
-          example: sha256=a1b2c3d4...
-        description: HMAC-SHA256 签名（SaaS 平台）
-      - name: X-SaaS-Timestamp
-        in: header
-        required: true
-        schema:
-          type: string
-        description: Unix 秒级时间戳（SaaS 平台）
-      - name: X-SaaS-Event-ID
-        in: header
-        schema:
-          type: string
-        description: 事件唯一 ID（SaaS 平台）
-    requestBody:
-      required: true
-      content:
-        application/json:
+# ============================================================
+# Webhook 接收路径 - Webhook（1 端点）
+# 模块: webhook
+# ============================================================
+
+paths:
+  /v1/webhook/incoming/{platform_code}:
+    post:
+      summary: 接收外部平台 Webhook 推送
+      description: |
+        统一的外部 Webhook 接收入口。不同平台通过 path 参数 platform_code 区分。
+        请求需携带平台分配的签名信息（各平台签名算法不同）。
+        即使订单不存在或处理失败，也返回 HTTP 200 避免推送方重试。
+      tags:
+        - Webhook
+      parameters:
+        - name: platform_code
+          in: path
+          required: true
           schema:
-            $ref: '#/components/schemas/WebhookIncomingPayload'
-    responses:
-      '200':
-        description: 已接收（无论处理成功与否均返回 200）
+            type: string
+            example: saas
+          description: 平台编码（如 saas、huolala）
+        - name: X-API-Key
+          in: header
+          required: true
+          schema:
+            type: string
+          description: 平台分配的 API Key
+        - name: X-SaaS-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+            example: sha256=a1b2c3d4...
+          description: HMAC-SHA256 签名（SaaS 平台）
+        - name: X-SaaS-Timestamp
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Unix 秒级时间戳（SaaS 平台）
+        - name: X-SaaS-Event-ID
+          in: header
+          schema:
+            type: string
+          description: 事件唯一 ID（SaaS 平台）
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                success:
-                  type: boolean
-                message:
-                  type: string
+              $ref: '../components/schemas/webhook.yaml#/WebhookIncomingPayload'
+      responses:
+        '200':
+          description: 已接收（无论处理成功与否均返回 200）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                example:
+                  success: true
+                  message: 已接收
+        '401':
+          description: 签名验证失败
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
               example:
-                success: true
-                message: 已接收
-      '401':
-        description: 签名验证失败
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-            example:
-              success: false
-              message: 签名验证失败
-      '404':
-        description: 平台未注册
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-            example:
-              success: false
-              message: 平台未注册
+                success: false
+                message: 签名验证失败
+        '404':
+          description: 平台未注册
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas/common.yaml#/ErrorResponse'
+              example:
+                success: false
+                message: 平台未注册
 ```
 
-### 新增 Schema
+### 新增 Schema 文件
+
+创建 `openapi/components/schemas/webhook.yaml`：
 
 ```yaml
-# 在 components/schemas 中新增
+# ============================================================
+# Webhook 模块 Schema - WebhookIncomingPayload / WebhookStatusMapping / IncomingWebhookLog
+# 模块: webhook
+# ============================================================
+
 WebhookIncomingPayload:
   type: object
   required:
@@ -701,6 +715,27 @@ IncomingWebhookLog:
       format: date-time
 ```
 
+### 在主入口注册 $ref
+
+在 `openapi/openapi.yaml` 中追加：
+
+```yaml
+# paths 部分追加
+paths:
+  /v1/webhook/incoming/{platform_code}:
+    $ref: './paths/webhook.yaml#/paths/~1v1~1webhook~1incoming~1{platform_code}'
+
+# components/schemas 部分追加
+components:
+  schemas:
+    WebhookIncomingPayload:
+      $ref: './components/schemas/webhook.yaml#/WebhookIncomingPayload'
+    WebhookStatusMapping:
+      $ref: './components/schemas/webhook.yaml#/WebhookStatusMapping'
+    IncomingWebhookLog:
+      $ref: './components/schemas/webhook.yaml#/IncomingWebhookLog'
+```
+
 ---
 
 ## 代码变更清单
@@ -720,7 +755,7 @@ IncomingWebhookLog:
 
 | 文件 | 变更 | 规范对齐 |
 |------|------|---------|
-| `openapi.yaml` | 新增 Webhook tag + 路径 + Schema | **API-First**（skills 第 5.2 节） |
+| `openapi/paths/webhook.yaml` + `openapi/components/schemas/webhook.yaml` + `openapi/openapi.yaml` | 新增 Webhook 路径 + Schema + $ref 注册 | **API-First**（skills 第 5.2 节） |
 | `backend/routes/v1.js` | 新增 `/webhook/incoming/:platform_code` 路由 | 注释块分组 + 无 tenant 中间件 |
 | `backend/models/ThirdPartyPlatform.js` | 支持 `adapter_class` 字段 | 构造函数映射新字段 |
 | `docs/database/schema.sql` | 追加新表 DDL | skills 第 4.3 节要求 |
@@ -1303,15 +1338,95 @@ SaaS 侧的推送日志记录在 `webhook_logs` 表中，包含完整的请求/�
 
 实施开发前必须完成以下步骤：
 
-- [x] 在 `openapi.yaml` 中定义接口（API-First）— 新增 Webhook tag + 路径 + Schema
+- [x] 在 `openapi/paths/webhook.yaml` 中定义接口路径（API-First）
+- [x] 在 `openapi/components/schemas/webhook.yaml` 中定义数据模型
+- [x] 在 `openapi/openapi.yaml` 中注册 $ref 引用
 - [x] 创建 Model — `IncomingWebhookLog.js`、`WebhookStatusMapping.js`
 - [x] 创建 Controller — `WebhookIncomingController.js`
+- [x] 创建 Webhook 适配器 — `WebhookAdapterManager.js`、`SaasWebhookAdapter.js`
 - [x] 在对应路由文件中注册路由 — `backend/routes/v1.js`
 - [x] 新增表更新 `docs/database/schema.sql` — `webhook_status_mappings`、`incoming_webhook_logs`
 - [x] 租户中间件豁免 — `tenant.js` 添加 `/v1/webhook/incoming/` 豁免
+- [x] 创建数据库迁移脚本 — `scripts/migrations/001_add_webhook_tables.sql`
+- [x] 执行数据库迁移 — 2 新表 + 1 新字段 + 11 条 SaaS 状态映射
+- [x] 注册 SaaS 平台 — `third_party_platforms` 表（code=saas, adapter=SaasWebhookAdapter）
+- [x] 验证 `npm run validate-api` 通过
+- [x] 验证 `npm run validate-skills` 通过
+- [x] 端到端测试 — 404/401/200 场景全部通过，日志写入正常
 - [ ] 管理后台如需页面，创建对应 HTML — 后续迭代
-- [ ] 验证 `npm run validate-api` 通过
-- [ ] 清理调试代码和 console.log
+- [ ] 生产环境部署 — rsync 代码 + 执行迁移 + 更换正式密钥
+- [ ] 端到端联调 — 用真实订单测试状态变更推送
+
+---
+
+## 实施记录（2026-07-26）
+
+### 已完成工作
+
+#### 1. OpenAPI 模块化文件
+
+| 文件 | 说明 |
+|------|------|
+| `openapi/paths/webhook.yaml` | Webhook 路径定义（1 端点） |
+| `openapi/components/schemas/webhook.yaml` | 3 个 Schema（WebhookIncomingPayload / WebhookStatusMapping / IncomingWebhookLog） |
+| `openapi/openapi.yaml` | 注册 Webhook tag + path $ref + 3 个 schema $ref |
+
+#### 2. 后端代码
+
+| 文件 | 说明 |
+|------|------|
+| `backend/controllers/WebhookIncomingController.js` | 统一接收入口 |
+| `backend/services/webhook/WebhookAdapterManager.js` | 适配器注册与路由 |
+| `backend/services/webhook/SaasWebhookAdapter.js` | SaaS 签名验证 + 状态映射 + 订单关联 |
+| `backend/models/IncomingWebhookLog.js` | 接收日志模型 |
+| `backend/models/WebhookStatusMapping.js` | 状态映射模型 |
+| `backend/models/ThirdPartyPlatform.js` | 新增 `adapter_class` 字段映射 |
+| `backend/routes/v1.js` | 新增 webhook 路由 + 租户中间件豁免 |
+| `backend/middleware/tenant.js` | 豁免 `/v1/webhook/incoming/` |
+
+#### 3. 数据库
+
+| 变更 | 说明 |
+|------|------|
+| `webhook_status_mappings` 表 | 状态映射配置表（已创建） |
+| `incoming_webhook_logs` 表 | 接收日志表（已创建） |
+| `third_party_platforms.adapter_class` | 适配器类名字段（已添加） |
+| SaaS 状态映射 | 11 条初始数据（已插入） |
+| `docs/database/schema.sql` | 同步更新 DDL |
+
+#### 4. 迁移脚本
+
+| 文件 | 说明 |
+|------|------|
+| `scripts/migrations/001_add_webhook_tables.sql` | 完整迁移脚本（2 表 + 1 字段 + 初始数据） |
+
+#### 5. 平台注册
+
+```sql
+-- 已注册 SaaS 平台（测试密钥，上线前需更换）
+INSERT INTO third_party_platforms (name, code, api_key, api_secret, adapter_class, status)
+VALUES ('数孪智运 SaaS', 'saas', 'saas_api_key_test', 'saas_api_secret_test', 'SaasWebhookAdapter', 1);
+```
+
+#### 6. 验证结果
+
+| 验证项 | 结果 |
+|--------|------|
+| `node -c` 语法检查 | ✅ 8/8 通过 |
+| `npm run validate-api` | ✅ valid |
+| `npm run validate-skills:quiet` | ✅ 通过（0 错误） |
+| 端到端测试：404 平台未注册 | ✅ |
+| 端到端测试：401 签名失败 | ✅ |
+| 端到端测试：200 订单不存在 | ✅ |
+| 日志写入 DB | ✅ |
+
+### 待完成工作
+
+| 任务 | 优先级 | 说明 |
+|------|--------|------|
+| 端到端联调 | 高 | 用真实订单测试状态变更推送 |
+| 生产部署 | 高 | rsync 代码 + 执行迁移 + 更换正式密钥 |
+| 管理后台页面 | 低 | Webhook 推送日志查看 + 状态映射管理 |
 
 ---
 
@@ -1407,8 +1522,9 @@ headers['X-SaaS-Event-ID'] = `evt_${Date.now()}_${Math.random().toString(36).sub
 | 4.1 连接管理 | ✅ | 统一 getTenantConnection，finally 中 release |
 | 4.2 SQL 规范 | ✅ | 参数化查询、snake_case 字段、created_at/updated_at |
 | 4.3 Schema 变更 | ✅ | 同步更新 docs/database/schema.sql |
-| 5.2 API-First | ✅ | 先更新 openapi.yaml，再写代码 |
-| 5.4 响应格式 | ✅ | 统一 `{ success, data/message }` |
+| 5.2 API-First | ✅ | 先更新 openapi/paths/ 和 openapi/components/schemas/，再写代码 |
+| 5.4 $ref 引用规则 | ✅ | 路径文件使用相对路径 ../components/schemas/ |
+| 5.8 响应格式 | ✅ | 统一 `{ success, data/message }` |
 | 6.1 HTTP 状态码 | ✅ | 200/401/404 按规范使用 |
 | 8.3 访问入口 | ✅ | 管理后台后续迭代遵循 hash 路由 |
 | 9 新增模块 Checklist | ✅ | 完整清单见上方 |
@@ -1416,8 +1532,8 @@ headers['X-SaaS-Event-ID'] = `evt_${Date.now()}_${Math.random().toString(36).sub
 
 ---
 
-**文档版本**: v3.0（skills 规范对齐修订版）
+**文档版本**: v3.2（开发实施完成版）
 **创建日期**: 2026-07-26
 **更新日期**: 2026-07-26
-**状态**: 待评审
-**下一步**: 评审方案 → 确认 API Key/Secret → 实施开发
+**状态**: 开发完成，待联调
+**下一步**: 端到端联调 → 生产部署 → 更换正式密钥

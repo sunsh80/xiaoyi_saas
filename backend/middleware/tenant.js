@@ -40,7 +40,8 @@ async function tenantMiddleware(req, res, next) {
   if (req.originalUrl.startsWith('/auth/') ||
       req.originalUrl.startsWith('/admin/') ||
       req.originalUrl.startsWith('/images/') ||
-      req.originalUrl === '/payments/callback') {
+      req.originalUrl === '/payments/callback' ||
+      req.originalUrl.includes('/v1/webhook/incoming/')) {
     return next();
   }
 

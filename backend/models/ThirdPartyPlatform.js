@@ -12,6 +12,7 @@ class ThirdPartyPlatform {
     this.api_key = data.api_key;
     this.api_secret = data.api_secret;
     this.callback_url = data.callback_url;
+    this.adapter_class = data.adapter_class;
     this.status = data.status;
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;

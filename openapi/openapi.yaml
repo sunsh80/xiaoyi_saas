@@ -45,6 +45,8 @@ tags:
     description: 租户后台
   - name: ThirdParty
     description: 第三方接入
+  - name: Webhook
+    description: 外部平台 Webhook 接收端点
   - name: CustomerService
     description: 客服（规划中）
   - name: TransferStation
@@ -176,6 +178,10 @@ paths:
     $ref: './paths/third-party.yaml#/paths/~1v1~1orders~1reconciliation'
   /v1/payments/wechat/create:
     $ref: './paths/third-party.yaml#/paths/~1v1~1payments~1wechat~1create'
+
+  # ---- Webhook (1) ----
+  /v1/webhook/incoming/{platform_code}:
+    $ref: './paths/webhook.yaml#/paths/~1v1~1webhook~1incoming~1{platform_code}'
 
   # ---- AdminTenants (8, 骨架) ----
   /admin/tenants:
@@ -319,3 +325,11 @@ components:
     # ---- Tenant ----
     Tenant:
       $ref: './components/schemas/tenant.yaml#/Tenant'
+
+    # ---- Webhook ----
+    WebhookIncomingPayload:
+      $ref: './components/schemas/webhook.yaml#/WebhookIncomingPayload'
+    WebhookStatusMapping:
+      $ref: './components/schemas/webhook.yaml#/WebhookStatusMapping'
+    IncomingWebhookLog:
+      $ref: './components/schemas/webhook.yaml#/IncomingWebhookLog'
